@@ -17,10 +17,11 @@
             >
                 <view 
                     class="item"
+                    :class="{'disabled':date.disabled, 'today':date.today}"
                     v-for="(date,i) in month"
                     :key="i"
                 >
-                    {{date.getDate()}}
+                    {{date.date.getDate()}}
                 </view>
             </view> 
         </view>
@@ -48,12 +49,18 @@ export default {
             const nextYear = year
             const nextMonth = month + 1
 
-            if(month == 12){
+            this.nowYear = year
+            this.nowMonth = month
+            this.nowDate = this.currentDate.getDate()
+
+            if(month == 11){
                 nextMonth = 1
                 nextYear = year + 1
             }
 
             this.months = this.initMonth(year, month)
+
+            this.months = this.months.concat(this.initMonth(nextYear, nextMonth))
         },
         initMonth(year, month){
             const firstDay = new Date(year, month, 1)
@@ -61,19 +68,38 @@ export default {
             const daysInMonth = lastDay.getDate()
             const startDayOfWeek = firstDay.getDay()
             const dates = []
+            const today = new Date(this.nowYear, this.nowMonth, this.nowDate)
+            const last = new Date(this.nowYear, this.nowMonth, this.nowDate+10)
 
             for(let i = 0; i < startDayOfWeek; i++){
-                dates.push(new Date(year, month, 1 - startDayOfWeek + i))
+                let date = new Date(year, month, 1 - startDayOfWeek + i)
+                dates.push({
+                    date,
+                    disabled:date < today || date > last
+                })
             }
 
             for(let i = 1; i <= daysInMonth; i++){
-                dates.push(new Date(year, month, i))
+                let date = new Date(year, month, i)
+                dates.push({
+                    date,
+                    disabled:date < today || date > last,
+                    today:date.getTime() == today.getTime()
+                })
             }
 
-            while(dates.length % 7 !== 0){
-                dates.push(new Date(year, month + 1, dates.length - daysInMonth + 1))
+            //补齐最后几天
+            if(dates.length % 7 !== 0){
+                let j = 1
+                while(dates.length % 7 !== 0){
+                    let date = new Date(year, month + 1, j)
+                    dates.push({
+                        date,
+                        disabled:date < today || date > last
+                    })
+                    j++
+                }
             }
-
             return [dates]
         }
     }
@@ -101,6 +127,12 @@ export default {
                 width:calc(100% / 7);  
                 text-align:center;
                 vertical-align:top; 
+                &.disabled {
+                    color:#999;
+                }
+                &.today {
+                    color:#f00;
+                }
             }
         }
     }
