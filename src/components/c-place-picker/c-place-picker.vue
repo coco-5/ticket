@@ -12,7 +12,7 @@
                 @click="closePop"
             >
                 关闭
-            </view>
+            </view> 
         </view>
         <view 
             class="bd"
