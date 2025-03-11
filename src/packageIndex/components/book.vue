@@ -2,9 +2,9 @@
     <view class="book">
         <view @click="isShowDeparturePop = true">选择出发地点</view>
         <view @click="isShowArrivalPop = true">选择到达地点</view>
-        <view>选择日期</view>
+        <view @click="isShowDatePop = true">选择日期</view>
         
-        <c-pop
+        <!-- <c-pop
             height="65vh"
             :isShow="isShowDeparturePop"
             @cbClosePop="cbCloseDepartPop"
@@ -18,8 +18,8 @@
                 >
                 </c-place-picker>
             </template>
-        </c-pop>
-
+        </c-pop> -->
+<!-- 
         <c-pop
             height="65vh"
             :isShow="isShowArrivalPop"
@@ -34,9 +34,20 @@
                 >
                 </c-place-picker>
             </template>
+        </c-pop> -->
+
+        <c-pop
+            height="65vh"
+            :isShow="isShowDatePop"
+            @cbClosePop="cbCloseDatePop"
+        >
+            <template #content>
+                <c-date></c-date>
+            </template>
         </c-pop>
     </view>
 </template>
+
 <script>
 export default {
     data(){
@@ -65,6 +76,7 @@ export default {
                     name:'上海3'
                 },
             ],
+            isShowDatePop:false,
         }
     },
     mounted(){
@@ -81,13 +93,15 @@ export default {
         },
         cbChooseArrival(item){
 
+        },
+        cbCloseDatePop(){
+            this.cbCloseDatePop = false
         }
     }
 }
 </script>
 
 <style lang="scss" scoped>
-.page {
-
+.book {
 }
 </style>
