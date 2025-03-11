@@ -1,0 +1,46 @@
+{
+	"indexPage":"pages/index/index",
+	"pages": [
+		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationBarTitleText": "首页"
+			}
+		}
+		
+	],
+	"subPackages":[
+        {
+            "root": "packageTicket",
+			"pages": [
+				{
+					"path": "pages/passenger/passenger"
+				},
+				{
+					"path": "pages/cut/cut",
+					"style": {
+						"disableScroll":true,
+						"navigationBarTitleText": "",
+						"navigationStyle": "custom"
+					}
+				}
+			]
+        }
+	],
+	"wxResource":{
+		
+	},
+	"globalStyle":{
+		"navigationBarBackgroundColor": "#FFF",
+		"navigationBarTextStyle": "black",
+		"backgroundColor":"#ffffff"
+	},
+	"easycom": {
+		"autoscan": true,
+		"custom": {
+			// "^hq-(.*)": "@/hqview-ui/components/hq-$1/hq-$1.vue",
+		  	"^hq-(.*)": "@hqwx/hqview-ui/components/hq-$1/hq-$1.vue",
+		  	"^c-(.*)": "@/components/c-$1/c-$1.vue"
+		}
+	}
+}
