@@ -1,4 +1,4 @@
-<template>x 
+<template>
     <view 
         class="c-picker-box" 
         :style="{height:height}"
