@@ -9,7 +9,10 @@
                 :list="bannerList"
             ></c-banner>
         </view>
-        <book></book>
+
+        <view class="book">
+            <book></book>
+        </view>
     </view>
 </template>
 
@@ -41,6 +44,6 @@ export default {
 
 .banner {
     height:437rpx;
-    background:#FFF;
+    background:#CCC;
 }
 </style>

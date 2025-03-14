@@ -5,7 +5,8 @@ let baseConfig = {
     appName : 'tiku_pro',
     proxyApi:{
         japi:'https://japi.hqwx.com'
-    }
+    },
+    imgPath:'http://182.254.192.167:6003/vue/upload/static/'
 }
 
 //wx1609c559ef1b5809
