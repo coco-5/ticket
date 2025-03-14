@@ -43,27 +43,35 @@
         </view>
 
         <view class="date">
-            <template
+            <view 
+                class="item"
+                v-if="tabType == 'round' || (tabType == 'one' && item.type == 'departureDate')"
+                v-for="(item,index) in dateList"
+                :key="index"
             >
                 <view 
-                    class="item"
-                    v-if="tabType == 'round' || (tabType == 'one' && item.type == 'departureDate')"
-                    v-for="(item,index) in dateList"
-                    :key="index"
+                    class="t1"
                 >
-                    <view 
-                        class="t1"
-                    >
-                        {{item.name}}
-                    </view>
-                    <view 
-                        class="t2"
-                        @click="showDatePop(item)"
-                    >
-                        {{item.value}} 
-                    </view>
-                </view>  
-            </template>  
+                    {{item.name}}
+                </view>
+                <view 
+                    class="t2"
+                    @click="showDatePop(item)"
+                >
+                    {{item.value}} 
+                </view>
+            </view>  
+        </view>
+
+        <view 
+            class="btn"
+            @click="goBook"
+        >
+            立即购票
+        </view>
+
+        <view class="tips">
+            无需选择返程时间，返程自动默认显示日期内有效
         </view>
         
         <c-pop
@@ -193,6 +201,9 @@ export default {
             destinationList[0].value = arrivalDest
             destinationList[1].value = departureDest
         },
+        goBook(){
+
+        }
     }
 }
 </script>
@@ -200,6 +211,7 @@ export default {
 <style lang="scss" scoped>
 .book {
     margin:0 15rpx 24rpx;
+    padding-bottom:32rpx;
     background:#FFF;
     border-radius:30rpx;
     .tab {
@@ -286,6 +298,28 @@ export default {
             background:url('http://182.254.192.167:6003/vue/upload/static/index/qh2.png') no-repeat;
             background-size:contain;
         }
+    }
+    .date {
+        border-bottom:0 none;
+    }
+    .btn {
+        margin:0 auto 32rpx;
+        width:664rpx;
+        height:100rpx;
+        line-height:100rpx;
+        background:linear-gradient(87deg, #FFA63F, #EB5628);
+        border-radius:50rpx;
+        color:#FFF;
+        font-size:34rpx;
+        font-weight:500;
+        text-align:center;
+    }
+    .tips {
+        margin:0 44rpx;
+        height:40rpx;
+        line-height:40rpx;
+        color:#F36A27;
+        font-size:26rpx;
     }
     &.one {
         .tab {
