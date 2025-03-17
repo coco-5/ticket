@@ -36,8 +36,8 @@
 </template>
 
 <script>
-import book from '@/packageIndex/components/book.vue'
-import cooperate from '@/packageIndex/components/cooperate.vue'
+import book from '@/packageIndex/components/book'
+import cooperate from '@/packageIndex/components/cooperate'
 export default {
     components:{
         book,

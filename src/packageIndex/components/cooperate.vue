@@ -2,17 +2,27 @@
     <view class="c-cooperate">
         <view 
             class="item"
+            @click="go(item)"
             v-for="(item,index) in list"
             :key="index"
         >
             <img :src="item.ico"/>
             <view class="text">{{item.name}}</view>
         </view>
+
+        <card
+            :isShow="isShowCard"
+            @cbClosePop="cbCloseCard"
+        ></card>
     </view>
 </template>
 
 <script>
+import card from '@/packageIndex/components/card'
 export default {
+    components:{
+        card,
+    },
     data() {
         return {
             list:[
@@ -24,14 +34,23 @@ export default {
                 {type:'aomen',name:'海上看澳门',ico:'http://182.254.192.167:6003/vue/upload/static/cooperate/ad5.png'},
                 {type:'book',name:'邮轮预定',ico:'http://182.254.192.167:6003/vue/upload/static/cooperate/ad6.png'},
                 {type:'island',name:'海岛游',ico:'http://182.254.192.167:6003/vue/upload/static/cooperate/ad7.png'}
-            ]       
+            ],
+            isShowCard:false       
         }
     },
     mounted(){
 
     },
     methods: {
-        
+        go(item){
+            if(item.type == 'buy'){
+                this.isShowCard = true
+                return
+            }
+        },
+        cbCloseCard(){
+            this.isShowCard = false
+        }   
     }
 }
 </script>

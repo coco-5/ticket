@@ -20,8 +20,45 @@
 					"path": "pages/cut/cut",
 					"style": {
 						"disableScroll":true,
-						"navigationBarTitleText": "",
-						"navigationStyle": "custom"
+						"navigationBarTitleText":"",
+						"navigationStyle":"custom"
+					}
+				}
+			]
+        },
+        {
+            "root": "packageBook",
+			"pages": [
+				{
+					"path": "pages/flight/one",
+					"style": {
+						"navigationBarTitleText":"航班"
+					}
+				},
+				{
+					"path": "pages/flight/round",
+					"style": {
+						"navigationBarTitleText":"航班"
+					}
+				}
+			]
+        },
+        {
+            "root": "packageUser",
+			"pages": [
+				{
+					"path": "pages/user/user"
+				},
+				{
+					"path": "pages/passenger/list",
+					"style": { 
+						"navigationBarTitleText":"乘客信息"
+					}
+				},
+				{
+					"path": "pages/passenger/add",
+					"style": { 
+						"navigationBarTitleText":"乘客信息"
 					}
 				}
 			]
