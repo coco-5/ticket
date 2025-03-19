@@ -1,7 +1,7 @@
 <template>
     <view class="page">
         <destination></destination>
-        round
+        round 1
     </view>
 </template>
 
