@@ -19,6 +19,7 @@
                 </view>
             </view>
         </scroll-view>
+
         <view 
             class="ico"
             @click="isShowDatePop = true"
@@ -26,6 +27,16 @@
             <view class="calc"></view>
             <view class="text">日历</view>
         </view>
+
+        <c-pop
+            height="65vh"
+            :isShow="isShowDatePop"
+            @cbClosePop="cbCloseDatePop"
+        >
+            <template #content>
+                <c-date></c-date>
+            </template>
+        </c-pop>
     </view>
 </template>
 
@@ -83,6 +94,9 @@ export default{
             }
 
             this.daysList = daysList
+        },
+        cbCloseDatePop(){
+            this.isShowDatePop = false
         }
     }
 }
