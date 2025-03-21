@@ -40,6 +40,18 @@
 					"style": {
 						"navigationBarTitleText":"航班"
 					}
+				},
+				{
+					"path": "pages/space/space",
+					"style": {
+						"navigationBarTitleText":"航班"
+					}
+				},
+				{
+					"path": "pages/order/order",
+					"style": {
+						"navigationBarTitleText":"填写信息"
+					}
 				}
 			]
         },

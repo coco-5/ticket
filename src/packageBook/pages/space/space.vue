@@ -60,6 +60,20 @@
                 <view class="btn">预定</view>
             </view>
         </view>
+
+        <view class="tips">如需要购买VIP包房请到线下售票厅购买</view>
+
+        <c-pop
+            height="65vh"
+            :isShow="isShoPop"
+            @cbClosePop="cbClosePop"
+        >
+            <template #content>
+                <view v-if="popType == 'book'">book</view>
+                <view v-else-if="popType == 'ticket'">ticket</view>
+                <view v-else-if="popType == 'refund'">refund</view>
+            </template>
+        </c-pop>
     </view>
 </template>
 
@@ -72,7 +86,9 @@ export default {
                 {type:'book',name:'预定须知'},
                 {type:'ticket',name:'取票说明'},    
                 {type:'refund',name:'退票说明'}
-            ]
+            ],
+            isShoPop:false,
+            popType:''
         }
     },
     onLoad(e){
@@ -80,7 +96,13 @@ export default {
     },
     methods:{
         chooseRule(item){
+            this.isShoPop = true
 
+            this.popType = item.type
+        },
+        cbClosePop(){
+            this.isShoPop = false
+            this.popType = ''
         }
     }
 }
@@ -156,7 +178,7 @@ export default {
                 position:absolute;
                 top:50%;
                 left:50%;
-                transform:translateX(-50%);
+                transform:translate(-50%,-50%);
                 width:103rpx;
                 height:5rpx;
                 background:url('http://182.254.192.167:6003/vue/upload/static/order/car2.png') no-repeat;
@@ -275,5 +297,17 @@ export default {
             text-align:center;
         }
     }
+}
+
+.tips {
+    position:absolute;
+    bottom:60rpx;
+    left:0;
+    width:100%;
+    height:30rpx;
+    line-height:30rpx;
+    color:#939292;
+    font-size:24rpx;
+    text-align:center;
 }
 </style>
