@@ -72,6 +72,30 @@
 					"style": { 
 						"navigationBarTitleText":"乘客信息"
 					}
+				},
+				{
+					"path": "pages/member/list",
+					"style": { 
+						"navigationBarTitleText":"会员信息"
+					}
+				},
+				{
+					"path": "pages/member/apply",
+					"style": { 
+						"navigationBarTitleText":"会员申请"
+					}
+				},
+				{
+					"path": "pages/member/binding",
+					"style": { 
+						"navigationBarTitleText":"会员申请"
+					}
+				},
+				{
+					"path": "pages/member/result",
+					"style": { 
+						"navigationBarTitleText":"会员申请"
+					}
 				}
 			]
         }
