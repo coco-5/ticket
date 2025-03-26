@@ -108,6 +108,12 @@
 					"style": { 
 						"navigationBarTitleText":"订单详情"
 					}
+				},
+				{
+					"path": "pages/order/code",
+					"style": { 
+						"navigationBarTitleText":"二维码核销"
+					}
 				}
 			]
         }
