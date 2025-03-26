@@ -96,6 +96,18 @@
 					"style": { 
 						"navigationBarTitleText":"会员申请"
 					}
+				},
+				{
+					"path": "pages/order/list",
+					"style": { 
+						"navigationBarTitleText":"订单"
+					}
+				},
+				{
+					"path": "pages/order/detail",
+					"style": { 
+						"navigationBarTitleText":"订单详情"
+					}
 				}
 			]
         }
