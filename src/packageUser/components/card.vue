@@ -1,5 +1,7 @@
 <template>
-    <view class="c-card">
+    <view 
+        class="c-card disabled"
+    >
         <view class="main">
             <view class="left">
                 <view class="num">20</view>
@@ -66,6 +68,7 @@ export default {
 
 <style lang="scss" scoped>
 .c-card {
+    position:relative;
     margin-bottom:16rpx;
     .main {
         position:relative;
@@ -169,6 +172,18 @@ export default {
 
                 }
             }
+        }
+    }
+    &.disabled {
+        &::before {
+            content:' ';
+            position:absolute;
+            top:0;
+            right:0;
+            width:99rpx;
+            height:99rpx;
+            background:url('http://182.254.192.167:6003/vue/upload/static/ticketCard/invalid.png') no-repeat;
+            background-size:contain;
         }
     }
 }

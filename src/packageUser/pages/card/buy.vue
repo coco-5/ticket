@@ -1,16 +1,6 @@
 <template>
     <view class="page">
-        <view class="tabs">
-            <view 
-                class="item"
-                :class="tabIndex == index ? 'on' : ''"
-                v-for="(item,index) in tabs"
-                :key="index"
-            >
-                {{item.name}}
-            </view>
-        </view>
-
+        <view class="block"></view>
         <view class="list">
             <card
                 class="item"
@@ -58,6 +48,21 @@ export default {
 
 <style lang="scss" scoped>
 .page {
-    
+    min-height:100vh;
+    background:#F8F8F8;  
 }
+
+.block {
+    height:24rpx;
+}
+
+.list {
+    box-sizing:border-box;
+    margin:0 auto;
+    padding:32rpx;
+    width:710rpx;
+    background:#FFF;
+    border-radius:20rpx;
+}
+
 </style>
