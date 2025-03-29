@@ -52,6 +52,12 @@
 					"style": {
 						"navigationBarTitleText":"填写信息"
 					}
+				},
+				{
+					"path": "pages/order/services",
+					"style": {
+						"navigationBarTitleText":"增值服务选择"
+					}
 				}
 			]
         },
