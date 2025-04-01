@@ -10,44 +10,8 @@
 
         <view class="wrap-top">
             <view class="top">
-                <view class="detail">
-                    <view class="tag">去程</view>
-                    <view class="date">10月23日 周五</view>
-                </view>
-                <view class="dates">
-                    <view class="date-item">
-                        <view class="d">08:00</view>
-                        <view class="t">蛇口港口</view>
-                    </view>
-                    <view class="long">
-                        <view class="time">耗时5分</view>
-                        <view class="ico"></view>
-                        <view class="type">普通位</view>
-                    </view>
-                    <view class="date-item">
-                        <view class="d">08:00</view>
-                        <view class="t">蛇口港口</view>
-                    </view>
-                </view>
-                <view class="detail">
-                    <view class="tag back">去程</view>
-                    <view class="date">10月23日 周五</view>
-                </view>
-                <view class="dates">
-                    <view class="date-item">
-                        <view class="d">08:00</view>
-                        <view class="t">蛇口港口</view>
-                    </view>
-                    <view class="long">
-                        <view class="time">耗时5分</view>
-                        <view class="ico"></view>
-                        <view class="type">普通位</view>
-                    </view>
-                    <view class="date-item">
-                        <view class="d">08:00</view>
-                        <view class="t">蛇口港口</view>
-                    </view>
-                </view>
+                <c-trip-detail></c-trip-detail>
+                <c-trip-detail></c-trip-detail>
             </view>
         </view>
 
@@ -56,26 +20,8 @@
                 乘客<view class="ico"></view>
             </view>
             <view class="bd">
-                <view class="item">
-                    <view class="label">
-                        <text class="name">童嘉颖</text>
-                        <text class="tag">成人</text>
-                    </view>
-                    <view class="right">
-                        <text>港澳通行证</text>
-                        <text class="b">C10****41</text>
-                    </view>
-                </view>
-                <view class="item">
-                    <view class="label">
-                        <text class="name">童嘉颖</text>
-                        <text class="tag">成人</text>
-                    </view>
-                    <view class="right">
-                        <text>居民身份证</text>
-                        <text class="b">32**************05</text>
-                    </view>
-                </view>
+                <c-passenger-item></c-passenger-item>
+                <c-passenger-item></c-passenger-item>
             </view>
         </view>
 
@@ -84,30 +30,7 @@
                 订单明细<view class="ico"></view>
             </view>
             <view class="bd">
-                <view class="item">
-                    <view class="label">
-                        <text class="name">订单编号</text>
-                    </view>
-                    <view class="right">
-                        <text>TK202404015693214</text>
-                    </view>
-                </view>
-                <view class="item">
-                    <view class="label">
-                        <text class="name">下单时间</text>
-                    </view>
-                    <view class="right">
-                        <text>2024-04-01 10:00</text>
-                    </view>
-                </view>
-                <view class="item">
-                    <view class="label">
-                        <text class="name">票价总额</text>
-                    </view>
-                    <view class="right">
-                        <text>MOP 300.00</text>
-                    </view>
-                </view>
+                <c-order-item></c-order-item>
             </view>
         </view>
 
@@ -301,30 +224,6 @@ export default {
         padding:0 40rpx;
         font-size:28rpx;
         overflow:hidden;
-        .item {
-            position:relative;
-            margin-bottom:24rpx;
-            .label {
-                display:inline-block;
-                height:32rpx;
-                line-height:32rpx;
-                color:rgba(0,0,0,.9);
-                vertical-align:middle;
-            }
-            .right {
-                position:absolute;
-                top:0;
-                right:0;
-                height:32rpx;
-                color:rgba(0,0,0,.7);
-            }
-        }
-    }
-}
-
-.wrap-passanger {
-    .bd {
-
     }
 }
 

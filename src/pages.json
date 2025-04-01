@@ -58,6 +58,12 @@
 					"style": {
 						"navigationBarTitleText":"增值服务选择"
 					}
+				},
+				{
+					"path": "pages/pay/way",
+					"style": {
+						"navigationBarTitleText":"支付方式"
+					}
 				}
 			]
         },
