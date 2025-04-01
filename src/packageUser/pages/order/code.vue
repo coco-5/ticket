@@ -4,6 +4,7 @@
             <view 
                 class="item"
                 :class="tabIndex == index ? 'on' : ''"
+                @click="changeTab(index)"
                 v-for="(item,index) in tabs"
                 :key="index"
             >
@@ -11,82 +12,109 @@
             </view>
         </view>
 
-        <view class="wrap-code">
-            <view class="dest">
-                <text class="t">内港码头</text>
-                <text class="i"></text>
-                <text class="t">内港码头</text>
-            </view>
-            <view class="tips-nodes">
-                <rich-text :nodes="nodes"></rich-text>
-            </view>
-            <view class="tips-code">凭二维码验票乘船</view>
-            <view class="swpier-code">
-                <view 
-                    class="btn prev"
-                    :class="codeIndex == 0 ? 'disabled' : ''"
-                ></view>
-                <view 
-                    class="btn next"
-                ></view>
-                <swiper class="swiper">
-                    <swiper-item 
-                        class="swiper-item"
-                        v-for="(item,index) in codeList"
-                        :key="index"
-                    >
-                        <image />
-                    </swiper-item>
-                </swiper>
-                <view class="dots">
+        <view v-if="tabIndex == 0">
+            <view class="wrap-code">
+                <view class="dest">
+                    <text class="t">内港码头</text>
+                    <text class="i"></text>
+                    <text class="t">内港码头</text>
+                </view>
+                <view class="tips-nodes">
+                    <rich-text :nodes="nodes"></rich-text>
+                </view>
+                <view class="tips-code">凭二维码验票乘船</view>
+                <view class="swpier-code">
                     <view 
-                        class="dot"
-                        :class="index == codeIndex ? 'on' : ''"
-                        v-for="(item,index) in codeList"
-                        :key="index"
+                        class="btn prev"
+                        :class="codeIndex == 0 ? 'disabled' : ''"
                     ></view>
+                    <view 
+                        class="btn next"
+                    ></view>
+                    <swiper class="swiper">
+                        <swiper-item 
+                            class="swiper-item"
+                            v-for="(item,index) in codeList"
+                            :key="index"
+                        >
+                            <image />
+                        </swiper-item>
+                    </swiper>
+                    <view class="dots">
+                        <view 
+                            class="dot"
+                            :class="index == codeIndex ? 'on' : ''"
+                            v-for="(item,index) in codeList"
+                            :key="index"
+                        ></view>
+                    </view>
+                </view>
+                <view class="btn-refresh">刷新二维码</view>
+                <view class="btn-line"></view>
+                <view class="item-passenger">
+                    <view class="user">
+                        <view class="name">
+                            <text class="n">童嘉颖</text>
+                            <text class="t">成人</text>
+                        </view>
+                        <view class="cheng">去程</view>
+                    </view>
+                    <view class="item">
+                        <text class="label">港澳通行证</text>
+                        <text class="right">C10****41</text>
+                    </view>
+                    <view class="item">
+                        <text class="label">票号</text>
+                        <text class="right">1180747363</text>
+                    </view>
+                    <view class="item">
+                        <text class="label">座位</text>
+                        <text class="right">55号</text>
+                        <view class="tips">*座位号以当天入闸后的实际座位号为准</view>
+                    </view>
+                    <view class="item">
+                        <text class="label">出发时间</text>
+                        <text class="right">2024-04-01  10:40</text>
+                    </view>
                 </view>
             </view>
-            <view class="btn-refresh">刷新二维码</view>
-            <view class="btn-line"></view>
-            <view class="item-passenger">
-                <view class="user">
-                    <view class="name">
-                        <text class="n">童嘉颖</text>
-                        <text class="t">成人</text>
-                    </view>
-                    <view class="cheng">去程</view>
-                </view>
-                <view class="item">
-                    <text class="label">港澳通行证</text>
-                    <text class="right">C10****41</text>
-                </view>
-                <view class="item">
-                    <text class="label">票号</text>
-                    <text class="right">1180747363</text>
-                </view>
-                <view class="item">
-                    <text class="label">座位</text>
-                    <text class="right">55号</text>
-                    <view class="tips">*座位号以当天入闸后的实际座位号为准</view>
-                </view>
-                <view class="item">
-                    <text class="label">出发时间</text>
-                    <text class="right">2024-04-01  10:40</text>
-                </view>
+
+            <view class="thanks">感谢您购买我司轮渡航班，祝您旅途愉快！</view>
+
+            <view 
+                class="banner"
+                v-if="bannerList.length > 0"
+            >
+                <c-banner
+                    style="height:189rpx;"
+                    :list="bannerList"
+                ></c-banner>
             </view>
         </view>
 
-        <view class="thanks">感谢您购买我司轮渡航班，祝您旅途愉快！</view>
+        <view v-if="tabIndex == 1">
+            <view class="wrap-top">
+                <c-trip-detail></c-trip-detail>
+            </view>
 
-        <view 
-            class="banner"
-            v-if="bannerList.length > 0"
-        >
-            <c-banner
-                style="height:189rpx;"
-                :list="bannerList"
-            ></c-banner>
+            <view class="wrap-passanger">
+                <view class="hd">
+                    乘客
+                </view>
+                <view class="bd">
+                    <c-passenger-item></c-passenger-item>
+                    <c-passenger-item></c-passenger-item>
+                </view>
+            </view>
+
+            <view class="wrap-order">
+                <view class="hd">
+                    订单明细
+                </view>
+                <view class="bd">
+                    <c-order-item></c-order-item>
+                </view>
+            </view>
         </view>
 
         <view class="actions">
@@ -114,6 +142,9 @@ export default {
 
     },
     methods:{
+        changeTab(index){
+            this.tabIndex = index
+        }
     }
 }
 </script>
@@ -351,6 +382,37 @@ export default {
 .banner {
     height:189rpx;
     background:#CCC;
+}
+
+.wrap-top {
+    margin:24rpx 20rpx;
+    position:relative;
+    padding:0 40rpx;
+    background:linear-gradient(205deg, #FFF7F4, #FFFFFF);
+    border-radius:20rpx;
+    overflow:hidden;
+}
+
+.wrap-passanger,
+.wrap-order {
+    margin:20rpx auto;
+    width:710rpx;
+    background:#FFF;
+    border-radius:20rpx;
+    .hd {
+        position:relative;
+        padding:0 40rpx;
+        height:110rpx;
+        line-height:110rpx;
+        color:#000;
+        font-size:32rpx;
+        font-weight:500;
+    }
+    .bd {
+        padding:0 40rpx;
+        font-size:28rpx;
+        overflow:hidden;
+    }
 }
 
 .actions {

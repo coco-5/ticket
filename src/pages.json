@@ -128,6 +128,12 @@
 					}
 				},
 				{
+					"path": "pages/order/pay",
+					"style": { 
+						"navigationBarTitleText":"待支付"
+					}
+				},
+				{
 					"path": "pages/card/list",
 					"style": { 
 						"navigationBarTitleText":"票卡"
