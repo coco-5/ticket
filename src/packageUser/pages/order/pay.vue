@@ -7,7 +7,7 @@
                 <image />
             </view>
             <view class="price">
-                <view class="text">MOP<text>30.00</text></view>
+                <view class="text mop">MOP<text>30.00</text></view>
                 <view class="text">RMB<text>25.00</text></view>
             </view>
         </view>
@@ -64,6 +64,68 @@ export default {
 .page {
     min-height:100vh;
     background:#F8F8F8;
+}
+
+.wrap-code {
+    padding-top:40rpx;
+    text-align:center;
+    .tips {
+        margin-bottom:20rpx;
+        height:32rpx;
+        line-height:32rpx;
+        color:#333;
+        font-size:28rpx;
+        text {
+            display:inline-block;
+            margin:0 8rpx;
+            color:#FE5A26;
+            vertical-align:middle;
+        }
+    }
+    .code {
+        margin:40rpx auto 0;
+        width:356rpx;
+        image {
+            width:356rpx;
+            height:356rpx;
+            background:#EEE;
+        }
+    }
+    .price {
+        height:100rpx;
+        line-height:100rpx;
+        .text {
+            display:inline-block;
+            margin:0 20rpx;
+            font-size:22rpx;
+            vertical-align:middle;
+            text {
+                font-size:30rpx;
+            }
+            &.mop {
+                color:#FE6630;
+            }
+        }
+    }
+}
+
+.wrap-way {
+    margin:0 auto;
+    width:710rpx;
+    background:#FFF;
+    border-radius:20rpx;
+    .hd {
+        margin:0 38rpx;
+        height:107rpx;
+        line-height:107rpx;
+        border-bottom:1px solid #F7F7F7;
+        color:#000;
+        font-size:32rpx;
+        font-weight:500;
+    }
+    .bd {
+        padding:20rpx 38rpx;
+    }
 }
 
 .wrap-passanger,
