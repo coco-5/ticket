@@ -1,6 +1,8 @@
 <template>
     <view class="page">
-        <destination></destination>
+        <destination
+            :options="options"
+        ></destination>
 
         <view class="dates">
             <date></date>
@@ -60,6 +62,7 @@ export default {
     },
     data(){
         return{
+            options:{},
             list:[{},{},{}]
         }
     },

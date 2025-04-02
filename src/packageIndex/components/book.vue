@@ -33,7 +33,12 @@
                     class="t2"
                     @click="showDestPop(item)"
                 >
-                    {{item.value}} 
+                    <template v-if="item.type == 'departureDest'">
+                        {{departureList[departureIndex].name}} 
+                    </template>
+                    <template v-else>
+                        {{arrivalList[arrivalIndex].name}}
+                    </template>
                 </view>
             </view>
             <view 
@@ -58,7 +63,12 @@
                     class="t2"
                     @click="showDatePop(item)"
                 >
-                    {{item.value}} 
+                    <template v-if="item.type == 'departureDate'">
+                        {{timeFormat(departureDate,'yyyy-mm-dd')}}
+                    </template>
+                    <template v-if="item.type == 'arrivalDate'">
+                        {{timeFormat(arrivalDate,'yyyy-mm-dd')}}
+                    </template>
                 </view>
             </view>  
         </view>
@@ -83,6 +93,7 @@
                 <c-place-picker
                     :list="departureList"
                     :title="'出发港'"
+                    :current="departureIndex"
                     @cbClosePop="cbCloseDepartPop"
                     @cbChoose="cbChooseDeparture"
                 >
@@ -119,6 +130,7 @@
 </template>
 
 <script>
+import utils from '@/utils/utils'
 export default {
     data(){
         return{
@@ -127,49 +139,68 @@ export default {
                 {type:'round', name:'往返',active:false}
             ],
             destinationList:[
-                {type:'departureDest', name:'出发港',value:'111'},
-                {type:'arrivalDest', name:'到达港',value:'222'}
+                {type:'departureDest', name:'出发港'},
+                {type:'arrivalDest', name:'到达港'}
             ],
             dateList:[
-                {type:'departureDate', name:'出发时间',value:'111'},
-                {type:'arrivalDate', name:'往返时间',value:'222'}
+                {type:'departureDate', name:'出发时间'},
+                {type:'arrivalDate', name:'往返时间'}
             ],
             tabType:'one',
             isShowDeparturePop:false,
             departureList:[
                 {
-                    name:'北京1'
+                    name:'北京1',
+                    value:'北京1'
                 },
                 {
-                    name:'北京2'
+                    name:'北京2',
+                    value:'北京2'
                 },
                 {
-                    name:'北京3'
+                    name:'北京3',
+                    value:'北京2'
                 },
             ],
+            departureIndex:0,
             isShowArrivalPop:false,
             arrivalList:[
                 {
-                    name:'上海1'
+                    name:'上海1',
+                    value:'上海1'
                 },
                 {
-                    name:'上海2'
+                    name:'上海2',
+                    value:'上海2'
                 },
                 {
-                    name:'上海3'
+                    name:'上海3',
+                    value:'上海3'
                 },
             ],
+            arrivalIndex:0,
             isShowDatePop:false,
+            departureDate:(new Date()).getTime(),
+            arrivalDate:'',
         }
     },
     mounted(){
+        this.initArrivalDate()
     },
     methods:{
+        timeFormat:utils.timeFormat,
+        initArrivalDate(){
+            let today = new Date(this.departureDate)
+            let different = 6
+
+            this.arrivalDate = today.setDate(today.getDate() + different)
+        },
         cbCloseDepartPop(){
             this.isShowDeparturePop = false
         },
         cbChooseDeparture(item){
-
+            this.departureDest = item.value
+            console.log(999,item)
         },
         cbCloseArrivalPop(){
             this.isShowArrivalPop = false
@@ -202,7 +233,25 @@ export default {
             destinationList[1].value = departureDest
         },
         goBook(){
+            let query = {
+                departureDest:encodeURIComponent(this.departureList[this.departureIndex].value),
+                arrivalDest:encodeURIComponent(this.arrivalList[this.arrivalIndex].value),
+                departureDate:this.departureDate
+            }
 
+            let url = this.tabType == 'one' ? `/packageBook/pages/flight/one` : `/packageBook/pages/flight/round`
+
+            if(this.tabType == 'round'){
+                Object.assign(query,{
+                    arrivalDate:this.arrivalDate
+                })
+            }
+
+            url += `?${utils.paramsStringify(query)}`
+
+            uni.navigateTo({
+                url
+            })
         }
     }
 }
@@ -215,16 +264,16 @@ export default {
     background:#FFF;
     border-radius:30rpx;
     .tab {
-        display:flex;
         height:104rpx;
         line-height:104rpx;
         .item {
-            flex:1;
-            background:#FFF;
+            display:inline-block;
+            width:50%;
             border-radius:30rpx 30rpx 0 0;
             color:#000;
             font-weight:500; 
             text-align:center;
+            vertical-align:top;
         }
     }
     .notice {
@@ -323,24 +372,26 @@ export default {
     }
     &.one {
         .tab {
+            background:url('http://182.254.192.167:6003/vue/upload/static/index/border2.png') no-repeat top right;
+            background-size:contain;
             .item {
-                &:nth-child(2){
+                &:last-child{
+                    position:relative;
+                    z-index:1;
                     color:rgba(0,0,0,.6);
                     font-weight:400;
-                    background:url('http://182.254.192.167:6003/vue/upload/static/index/border2.png') no-repeat;
-                    background-size:cover;
                 }
             }
         }
     }
     &.round {
         .tab {
+            background:url('http://182.254.192.167:6003/vue/upload/static/index/border1.png') no-repeat top left;
+            background-size:contain;
             .item {
                 &:nth-child(1){
                     color:rgba(0,0,0,.6);
                     font-weight:400;
-                    background:url('http://182.254.192.167:6003/vue/upload/static/index/border1.png') no-repeat;
-                    background-size:cover;
                 }
             }
         }

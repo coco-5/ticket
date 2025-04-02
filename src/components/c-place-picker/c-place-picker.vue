@@ -11,7 +11,6 @@
                 class="close" 
                 @click="closePop"
             >
-                关闭
             </view> 
         </view>
         <view 
@@ -20,6 +19,7 @@
         >
             <view 
                 class="item"
+                :class="{'active':index == current}"
                 @click="choose(item)"
                 v-for="(item,index) in list"
                 :key="index"
@@ -48,6 +48,16 @@ export default {
         title:{
             type:String,
             default:'请选择'
+        },
+        current:{
+            type:Number,
+            default:0
+        }
+    },
+    watch:{
+        current:{
+            deep:true,
+            handler(n){}
         }
     },
     methods:{
@@ -61,3 +71,58 @@ export default {
     }
 }
 </script>
+
+<style lang="scss" scoped>
+.c-picker-box {
+    .hd {
+        position:relative;
+        padding:60rpx 0;
+        height:42rpx;
+        line-height:42rpx;
+        color:#000;
+        font-size:40rp;
+        font-weight:500;
+        text-align:center;
+        .close {
+            position:absolute;
+            top:30rpx;
+            right:24rpx;
+            width:42rpx;
+            height:43rpx;
+            background:url('http://182.254.192.167:6003/vue/upload/static/common/icon-colse.png') no-repeat;
+            background-size:contain;
+        }
+    }
+    .bd {
+        padding:0 24rpx;
+        height:calc(100% - 42rpx);
+        overflow-y:auto;
+        .item {
+            height:100rpx;
+            line-height:100rpx;
+            border-bottom:1px solid #E5E5E5;
+            color:#000;
+            font-size:30rpx;
+            &:last-child {
+                border-bottom:none;
+            }
+            &.active {
+                position:relative;
+                color:#FF7937;
+                font-weight:500;
+                &::after {
+                    content:' ';
+                    position:absolute;
+                    top:50%;
+                    right:0;
+                    transform:translateY(-50%);
+                    width:34rpx;
+                    height:34rpx;
+                    background:url('http://182.254.192.167:6003/vue/upload/static/common/icon-select.png') no-repeat;
+                    background-size:contain;
+                }
+            }
+        }
+    }
+}
+</style>

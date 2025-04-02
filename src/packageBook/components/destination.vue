@@ -1,18 +1,36 @@
 <template>
-    <view class="destination">
-        <view class="text">深圳蛇口</view>
+    <view 
+        class="destination"
+        v-if="options.departureDest"
+    >
+        <view class="text">{{decode(options.departureDest)}}</view>
         <view class="ico"></view>
-        <view class="text">澳门氹仔</view>
+        <view class="text">{{decode(options.arrivalDest)}}</view>
     </view>
 </template>
 
 <script>
 export default {
+    props:{
+        options:{
+            type:Object,
+            default:{}
+        }
+    },
+    watch:{
+        options:{
+            deep:true,
+            handler(n){}
+        }
+    },
     data(){
         return{
         }
     },
     methods:{
+        decode(txt){
+            return decodeURIComponent(txt)
+        }
     }
 }
 </script>
