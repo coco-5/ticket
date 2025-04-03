@@ -6,7 +6,7 @@
         >
             <view 
                 class="item"
-                :class="current == index ? 'on' : ''"
+                :class="item.time == onDate ? 'on' : ''"
                 v-for="(item,index) in daysList"
                 :key="index"
             >
@@ -34,7 +34,10 @@
             @cbClosePop="cbCloseDatePop"
         >
             <template #content>
-                <c-date></c-date>
+                <c-date
+                    :onDate="onDate"
+                    @cbChoose="cbChooseDate"
+                ></c-date>
             </template>
         </c-pop>
     </view>
@@ -54,13 +57,21 @@ export default{
             today:new Date(),
             daysList:[],
             current:0,
+            onDate:0,
             isShowDatePop:false
         }
     },
     mounted(){
         this.initDate()
+
+        if(this.options.departureDate){
+            this.initOndate(this.options.departureDate)
+        }
     },
     methods:{
+        initOndate(date){
+            this.onDate = date
+        },
         initDate(){
             let today = this.today
             let nextMonth = new Date(today)
@@ -81,23 +92,38 @@ export default{
                     day.getMonth() === today.getMonth() &&
                     day.getDate() === today.getDate()
                 
-                if(this.options.date){
-                          
+                //定位在哪一天
+                if(this.options.departureDate){
+                    let departureDate = new Date(Number(this.options.departureDate))
+                    let isSameDate =
+                        departureDate.getFullYear() === day.getFullYear() &&
+                        departureDate.getMonth() === day.getMonth() &&
+                        departureDate.getDate() === day.getDate()
+                    if(isSameDate){
+                        current = i
+                    }
                 }
 
                 daysList.push({
                     month:utils.formatNumber(day.getMonth()+1),
                     date:utils.formatNumber(day.getDate()),
                     weekDayText:weekDayText[day.getDay()],
+                    time:new Date(day.getFullYear(),day.getMonth(),day.getDate()).getTime(),
                     isToday:isToday
                 })
             }
 
             this.daysList = daysList
+
+            this.current = current
         },
         cbCloseDatePop(){
             this.isShowDatePop = false
-        }
+        },
+        cbChooseDate(date){
+            this.initOndate(date)
+            this.cbCloseDatePop()   
+        },
     }
 }
 </script>

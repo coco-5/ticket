@@ -5,7 +5,9 @@
         ></destination>
 
         <view class="dates">
-            <date></date>
+            <date
+                :options="options"
+            ></date>
         </view>
 
         <view class="list">

@@ -123,7 +123,10 @@
             @cbClosePop="cbCloseDatePop"
         >
             <template #content>
-                <c-date></c-date>
+                <c-date
+                    :onDate="departureDate"
+                    @cbChoose="cbChooseDate"
+                ></c-date>
             </template>
         </c-pop>
     </view>
@@ -180,15 +183,24 @@ export default {
             ],
             arrivalIndex:0,
             isShowDatePop:false,
-            departureDate:(new Date()).getTime(),
+            departureDate:'',
             arrivalDate:'',
         }
     },
     mounted(){
+        this.initTodayDa()
         this.initArrivalDate()
     },
     methods:{
         timeFormat:utils.timeFormat,
+        initTodayDa(){
+            let today = new Date()
+            const year = today.getFullYear()
+            const month = today.getMonth()
+            const date = today.getDate()
+
+            this.departureDate = new Date(year, month, date).getTime()
+        },
         initArrivalDate(){
             let today = new Date(this.departureDate)
             let different = 6
@@ -200,7 +212,6 @@ export default {
         },
         cbChooseDeparture(item){
             this.departureDest = item.value
-            console.log(999,item)
         },
         cbCloseArrivalPop(){
             this.isShowArrivalPop = false
@@ -209,10 +220,14 @@ export default {
 
         },
         cbCloseDatePop(){
-            this.cbCloseDatePop = false
+            this.isShowDatePop = false
         },
         changeType(item){
             this.tabType = item.type
+        },
+        cbChooseDate(date){
+            this.departureDate = date
+            this.cbCloseDatePop()   
         },
         showDestPop(item){
             if(item.type == 'departureDest'){

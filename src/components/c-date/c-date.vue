@@ -17,7 +17,8 @@
             >
                 <view 
                     class="item"
-                    :class="{'disabled':date.disabled, 'today':date.today}"
+                    :class="{'disabled':date.disabled, 'today':date.today, 'current':date.time == onDate}"
+                    @click="choose(date)"
                     v-for="(date,i) in month"
                     :key="i"
                 >
@@ -31,6 +32,17 @@
 <script>
 export default {
     props:{
+        onDate:{
+            type:[String,Number],
+            default:0
+        }
+    },
+    watch:{
+        onDate:{
+            deep:true,
+            handler(n){
+            }
+        }  
     },
     data(){
         return {
@@ -74,6 +86,7 @@ export default {
             for(let i = 0; i < startDayOfWeek; i++){
                 let date = new Date(year, month, 1 - startDayOfWeek + i)
                 dates.push({
+                    time:date.getTime(),
                     date,
                     disabled:date < today || date > last
                 })
@@ -82,6 +95,7 @@ export default {
             for(let i = 1; i <= daysInMonth; i++){
                 let date = new Date(year, month, i)
                 dates.push({
+                    time:date.getTime(),
                     date,
                     disabled:date < today || date > last,
                     today:date.getTime() == today.getTime()
@@ -94,13 +108,19 @@ export default {
                 while(dates.length % 7 !== 0){
                     let date = new Date(year, month + 1, j)
                     dates.push({
+                        time:date.getTime(),
                         date,
                         disabled:date < today || date > last
                     })
                     j++
                 }
             }
+
             return [dates]
+        },
+        choose(item){
+            let date = (item.date).getTime()
+            this.$emit('cbChoose',date)
         }
     }
 }
@@ -130,7 +150,7 @@ export default {
                 &.disabled {
                     color:#999;
                 }
-                &.today {
+                &.current {
                     color:#f00;
                 }
             }
