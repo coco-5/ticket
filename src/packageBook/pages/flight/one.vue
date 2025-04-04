@@ -14,6 +14,7 @@
             <view 
                 class="item"
                 v-for="(item,index) in list"
+                @click="go(item)"
                 :key="index"
             >
                 <view class="date">
@@ -55,6 +56,7 @@
 </template>
 
 <script>
+import utils from '@/utils/utils'
 import date from '@/packageBook/components/date'
 import destination from '@/packageBook/components/destination'
 export default {
@@ -72,6 +74,17 @@ export default {
         this.options = e
     },
     methods:{
+        go(item){
+            let query = {
+                type:'one',
+            }
+
+            let url = `/packageBook/pages/space/space?${utils.paramsStringify(query)}`
+
+            uni.navigateTo({
+                url
+            })
+        }
     }
 }
 

@@ -2,21 +2,8 @@
     <view class="page">
         <div class="list-card">
             <view class="card">
-                <view class="detail">
-                    <view class="tag">去程</view>
-                    <view class="date">10月23日 周五</view>
-                </view>
-                <view class="dates">
-                    <view class="date-item">
-                        <view class="d">08:00</view>
-                        <view class="t">蛇口港口</view>
-                    </view>
-                    <view class="long"></view>
-                    <view class="date-item">
-                        <view class="d">08:00</view>
-                        <view class="t">蛇口港口</view>
-                    </view>
-                </view>
+                <c-trip-detail></c-trip-detail>
+                <c-trip-detail></c-trip-detail>
                 <view class="card-type">
                     <text class="t">票型</text>
                     <text class="tag">成人票、儿童票</text>
@@ -35,7 +22,11 @@
         </div>
 
         <view class="list-space">
-            <view class="item">
+            <view 
+                class="item"
+                v-for="(item,index) in listSpace"
+                :key="index"
+            >
                 <view class="type">
                     <view class="t">
                         <text class="t1">普通舱</text>
@@ -57,7 +48,12 @@
                         <text class="t2">65</text>
                     </view>
                 </view>
-                <view class="btn">预定</view>
+                <view 
+                    class="btn"
+                    @click="book(item)"
+                >
+                    预定
+                </view>
             </view>
         </view>
 
@@ -69,9 +65,32 @@
             @cbClosePop="cbClosePop"
         >
             <template #content>
-                <view v-if="popType == 'book'">book</view>
-                <view v-else-if="popType == 'ticket'">ticket</view>
-                <view v-else-if="popType == 'refund'">refund</view>
+                <view class="tabs">
+                    <view 
+                        class="item"
+                        :class="{'active': ruleIndex == index}"
+                        @click="ruleIndex = index"
+                        v-for="(item,index) in ruleList"
+                        :key="index"
+                    >
+                        <text>{{item.name}}</text>
+                    </view>   
+                    <view 
+                        class="close" 
+                        @click="isShoPop = false"
+                    >
+                    </view> 
+                </view>
+                <view class="contents">
+                    <view 
+                        class="item"
+                        v-for="(item,index) in ruleList"
+                        v-if="ruleIndex == index"
+                        :key="index"
+                    >
+                        <rich-text :nodes="item.content"></rich-text>
+                    </view>
+                </view>
             </template>
         </c-pop>
     </view>
@@ -83,10 +102,12 @@ export default {
         return{
             opetions:{},
             ruleList:[
-                {type:'book',name:'预定须知'},
-                {type:'ticket',name:'取票说明'},    
-                {type:'refund',name:'退票说明'}
+                {type:'book',name:'预定须知',content:'预定须知内容'},
+                {type:'ticket',name:'取票说明',content:'取票说明内容'},    
+                {type:'refund',name:'退票说明',content:'退票说明内容'},
             ],
+            ruleIndex:0,
+            listSpace:[{},{},{}],
             isShoPop:false,
             popType:''
         }
@@ -95,6 +116,14 @@ export default {
         this.opetions = e
     },
     methods:{
+        book(item){
+            let query = {}
+            let url = ``
+
+            uni.navigateTo({
+                url
+            })
+        },
         chooseRule(item){
             this.isShoPop = true
 
@@ -119,8 +148,7 @@ export default {
     padding:24rpx 20rpx;
     .card {
         position:relative;
-        padding:0 40rpx;
-        height:334rpx;
+        padding:0 40rpx 40rpx;
         background:linear-gradient(205deg, #FFF7F4, #FFFFFF);
         border-radius:20rpx;
         overflow:hidden;
@@ -195,6 +223,7 @@ export default {
                 vertical-align:middle;
             }
             .t {
+                margin-right:24rpx;
                 color:rgba(0,0,0,.6);
             }
             .tag {
@@ -268,14 +297,14 @@ export default {
                 .t1,
                 .t2 {
                     display:inline-block;
-                    vertical-align:middle;
+                    font-weight:500;
                 } 
                 .t1 {
+                    margin-right:4rpx;
                     font-size:22rpx;
                 }
                 .t2 {
                     font-size:40rpx;
-                    font-weight:500;
                 }
                 &.mop {
                     color:#FE6630;
@@ -309,5 +338,53 @@ export default {
     color:#939292;
     font-size:24rpx;
     text-align:center;
+}
+
+.tabs {
+    position:relative;
+    padding:60rpx 50rpx;
+    height:42rpx;
+    line-height:42rpx;
+    color:#000;
+    font-size:32rp;
+    font-weight:500;
+    .close {
+        position:absolute;
+        top:30rpx;
+        right:24rpx;
+        width:42rpx;
+        height:43rpx;
+        background:url('http://182.254.192.167:6003/vue/upload/static/common/icon-colse.png') no-repeat;
+        background-size:contain;
+    }
+    .item {
+        position:relative;
+        display:inline-block;
+        margin-right:84rpx;
+        color:#888;
+        vertical-align:middle;
+        &:last-child {
+            margin-right:0;
+        }
+        &.active {
+            color:#000;
+            font-weight:500;
+            &::before {
+                content:' ';
+                position:absolute;
+                bottom:0;
+                left:50%;
+                transform:translateX(-50%);
+                width:130rpx;
+                height:13rpx;
+                background:rgba(#FF7937,0.5);
+                text-align:center;
+            }
+            text {
+                position:relative;
+                z-index:1;
+            }
+        }
+    }
 }
 </style>

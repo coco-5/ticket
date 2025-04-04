@@ -63,7 +63,7 @@ export default {
         }
     },
     mounted(){
-        this.style = `padding-bottom:${utils.fixIPhoneX() ? 68 : 0}rpx;`
+        this.style = `padding-bottom:${utils.fixIPhoneX() ? 48 : 0}rpx;`
     },
     methods:{
         go(item){

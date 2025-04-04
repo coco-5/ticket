@@ -9,7 +9,10 @@
                 <view class="d">08:00</view>
                 <view class="t">蛇口港口</view>
             </view>
-            <view class="long">
+            <view 
+                class="long"
+                v-if="isShowLong"
+            >
                 <view class="time">耗时5分</view>
                 <view class="ico"></view>
                 <view class="type">普通位</view>
@@ -25,7 +28,10 @@
 <script>
 export default {
     props:{
-
+        isShowLong:{
+            type:Boolean,
+            default:false
+        }
     },
     data(){
         return{

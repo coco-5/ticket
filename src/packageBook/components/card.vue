@@ -1,5 +1,9 @@
 <template>
-    <view class="c-card">
+    <view 
+        class="c-card"
+        :class="item.isChoose ? 'on' : ''"
+        @click="choose(item)"
+    >
         <view class="date">
             <view class="date-item">
                 <view class="d">08:00</view>
@@ -48,7 +52,10 @@ export default {
         return{
         }
     },
-    methods: {
+    methods:{
+        choose(item){
+            this.$emit('cbChoose',item)
+        }
     }
 }
 </script>
@@ -74,8 +81,8 @@ export default {
             width:80rpx;
             vertical-align:middle;
             .d {
-                height:40rpx;
-                line-height:40rpx;
+                height:36rpx;
+                line-height:36rpx;
                 color:#000;
                 font-size:30rpx;
                 font-weight:500;
@@ -89,7 +96,7 @@ export default {
             margin:0 24rpx 0;
             vertical-align:16rpx;
             .t {
-                margin-bottom:8rpx;
+                margin-bottom:2rpx;
                 height:24rpx;
                 line-height:24rpx;
                 color:#A3A3A3;
@@ -119,7 +126,7 @@ export default {
         text-align:right;
         .price-item {
             display:inline-block;
-            margin-left:40rpx;
+            margin-left:18rpx;
             height:45rpx;
             line-height:45rpx;
             color:#000;
@@ -143,6 +150,9 @@ export default {
                 color:#FE6630;
             }
         }
+    }
+    &.on {
+        background:#FFF4EF;
     }
 }
 </style>

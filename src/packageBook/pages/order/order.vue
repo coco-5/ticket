@@ -2,8 +2,12 @@
     <view class="page">
         <view class="wrap-top">
             <view class="top">
-                <c-trip-detail></c-trip-detail>
-                <c-trip-detail></c-trip-detail>
+                <c-trip-detail
+                    :isShowLong="true"
+                ></c-trip-detail>
+                <c-trip-detail
+                    :isShowLong="true"
+                ></c-trip-detail>
                 <view class="more">
                     <view class="item">
                         <view class="label">退票</view>

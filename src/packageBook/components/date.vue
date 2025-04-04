@@ -3,10 +3,13 @@
         <scroll-view 
             class="wrap"
             scroll-x
+            :scroll-into-view="fixed ? 'item' + current : ''"
         >
             <view 
                 class="item"
                 :class="item.time == onDate ? 'on' : ''"
+                :id="'item'+index"
+                @click="choose(item)"
                 v-for="(item,index) in daysList"
                 :key="index"
             >
@@ -58,7 +61,8 @@ export default{
             daysList:[],
             current:0,
             onDate:0,
-            isShowDatePop:false
+            isShowDatePop:false,
+            fixed:true
         }
     },
     mounted(){
@@ -71,6 +75,8 @@ export default{
     methods:{
         initOndate(date){
             this.onDate = date
+
+            this.checkIndex()
         },
         initDate(){
             let today = this.today
@@ -117,10 +123,25 @@ export default{
 
             this.current = current
         },
+        checkIndex(){
+            let daysList = this.daysList
+
+            for(let i=0; i<daysList.length; i++){
+                if(daysList[i].time == this.onDate){
+                    this.current = i
+                    break
+                }
+            }
+        },
+        choose(item){
+            this.fixed = false
+            this.initOndate(item.time)
+        },
         cbCloseDatePop(){
             this.isShowDatePop = false
         },
         cbChooseDate(date){
+            this.fixed = true
             this.initOndate(date)
             this.cbCloseDatePop()   
         },
