@@ -1,11 +1,11 @@
 <template>
     <view 
         class="bottom-nav"
-        :style="style"
+        :style="bottomStyle + style"
     >
         <view 
             class="list"
-            :style="style"
+            :style="bottomStyle + style"
             v-if="isShowNav"
         >
             <slot name="content">
@@ -38,6 +38,10 @@ export default {
         isShowNav:{
             type:Boolean,
             default:false
+        },
+        style:{
+            type:String,
+            default:''
         }
     },
     watch:{
@@ -59,11 +63,11 @@ export default {
                     name:'我的',
                 }
             ],
-            style:''
+            bottomStyle:''
         }
     },
     mounted(){
-        this.style = `padding-bottom:${utils.fixIPhoneX() ? 48 : 0}rpx;`
+        this.bottomStyle = `padding-bottom:${utils.fixIPhoneX() ? 48 : 0}rpx;`
     },
     methods:{
         go(item){

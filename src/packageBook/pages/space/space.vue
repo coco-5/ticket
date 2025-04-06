@@ -97,6 +97,7 @@
 </template>
 
 <script>
+import utils from '@/utils/utils'
 export default {
     data(){
         return{
@@ -114,11 +115,18 @@ export default {
     },
     onLoad(e){
         this.opetions = e
+
+        this.iniNavigationBarTitle()
     },
     methods:{
+        iniNavigationBarTitle(){
+            uni.setNavigationBarTitle({
+                title:'111'
+            })
+        },
         book(item){
             let query = {}
-            let url = ``
+            let url = `/packageBook/pages/order/order?${utils.paramsStringify(query)}`
 
             uni.navigateTo({
                 url

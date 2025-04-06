@@ -32,24 +32,19 @@
                 class="bd"
                 v-if="listPassenger.length"
             >
-                <view 
-                    class="item"
+                <c-passenger-item
+                    :needAction="true"
                     v-for="(item,index) in listPassenger"
                     :key="index"
-                >
-                    <view class="ico"></view>
-                    <view class="name">
-                        <text class="n">童嘉颖</text>
-                        <text class="t">成人</text>
-                    </view>
-                    <view class="passport">
-                        <view class="n">身份证</view>
-                        <view class="t">32**************05</view>
-                    </view>
-                </view>
+                ></c-passenger-item>
             </view>
             <view class="ft">
-                <view class="btn">添加/删减乘客</view>
+                <view 
+                    class="btn"
+                    @click="isShowPassengerPop = true"
+                >
+                    添加/删减乘客
+                </view>
             </view>
         </view>
 
@@ -76,7 +71,10 @@
             <view class="bd">儿童身高超过1.2米，需要购票成人票。1.2米及以下的儿童需要携带儿童到售票处领取免费的儿童票，才可以验票通过检票闸机。</view>
         </view>
 
-        <view class="wrap-actions">
+        <view 
+            class="wrap-actions"
+            :style="actionsStyle"
+        >
             <view class="notice">
                 <text class="ico"></text>
                 <text class="text">勾选表示已阅读并同意 购取票/退订须知</text>
@@ -95,22 +93,57 @@
                 </view>
             </view>
         </view>
+
+        <c-pop
+            :height="popHeight + 'vh'"
+            :isShow="isShowPassengerPop"
+            @cbClosePop="cbClosePassengerPop"
+        >
+            <template #content>
+                <popPassenger
+                    :height="popHeight"
+                    @cbClosePop="cbClosePassengerPop"
+                ></popPassenger>
+            </template>
+        </c-pop>
+
+        <c-bottom
+            :style="bottomStyle"
+        ></c-bottom>
     </view>
 </template>
 
 <script>
+import utils from '@/utils/utils'
+import popPassenger from '@/packageBook/components/pop-passenger'
 export default {
+    components:{
+        popPassenger
+    },
     data(){
         return{
             options:'',
-            listPassenger:[{},{}],    
+            listPassenger:[{},{}],   
+            bottomStyle:'',
+            actionsStyle:'',
+            isShowPassengerPop:false,
+            popHeight:45,
         }
     },
     onLoad(e){
         this.options = e
+
+        this.fixedBottom()
     },
     methods:{
-        
+        fixedBottom(){
+            this.actionsStyle = `padding-bottom:${utils.fixIPhoneX() ? 48 : 0}rpx;`
+            this.bottomStyle = `padding-bottom:${utils.fixIPhoneX() ? 48 : 0}rpx; height:200rpx;`
+            this.popHeight = utils.fixIPhoneX() ? 50 : 45
+        },  
+        cbClosePassengerPop(){
+            this.isShowPassengerPop = false
+        },
     }
 }
 </script>
@@ -137,7 +170,7 @@ export default {
                 margin-bottom:8rpx;
                 height:30rpx;
                 line-height:30rpx;
-                color:rgba(0,0,0,.6);
+                color:rgba(#000,.6);
                 font-size:22rpx;
                 .label,
                 .text,
@@ -147,7 +180,7 @@ export default {
                 }
                 .text {
                     margin-left:24rpx;
-                    color:rgba(0,0,0,0.9);
+                    color:rgba(#000,.9);
                 }
                 .notice {
                     margin-left:40rpx;
@@ -337,6 +370,12 @@ export default {
 }
 
 .wrap-actions {
+    position:fixed;
+    bottom:0;
+    left:0;
+    width:100%;
+    height:180rpx;
+    background:#FFF;
     .notice {
         padding:0 44rpx;
         height:50rpx;

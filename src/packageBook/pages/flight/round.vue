@@ -98,6 +98,7 @@ export default {
         go(){
             let query = {
                 type:'round',
+                
             }
 
             let url = `/packageBook/pages/space/space?${utils.paramsStringify(query)}`
