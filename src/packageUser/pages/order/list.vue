@@ -4,6 +4,7 @@
             <view 
                 class="item"
                 :class="tabIndex == index ? 'on' : ''"
+                @click="tabIndex = index"
                 v-for="(item,index) in tabList"
                 :key="index"
             >
@@ -16,15 +17,20 @@
             v-if="bannerList.length > 0"
         >
             <c-banner
-                style="height:437rpx;"
+                style="height:190rpx;"
                 :list="bannerList"
             ></c-banner>
         </view>
 
-        <view class="list">
+        <view 
+            class="list"
+            v-if="allList[`type-`+tabIndex].list.length"
+        >
             <view 
                 class="item"
-                v-for="(item,index) in list"
+                :data-item="item"
+                @click="goDetail"
+                v-for="(item,index) in allList[`type-`+tabIndex].list"
                 :key="index"
             >
                 <view class="state">代支付</view>
@@ -42,9 +48,25 @@
                 </view>
                 <view class="actions">
                     <view class="btn">取消订单</view>
-                    <view class="btn orange">验票二维码</view>
+                    <view 
+                        class="btn orange"
+                        :data-item="item"
+                        @click.stop="goCode"
+                    >
+                        验票二维码
+                    </view>
                 </view>
             </view>
+        </view>
+
+        <view 
+            class="no-content"
+            v-else
+        >
+            <c-no-content
+                type="note"
+                title="当前没有相关订单"
+            ></c-no-content>
         </view>
 
         <c-bottom
@@ -55,6 +77,7 @@
 </template>
 
 <script>
+import utils from '@/utils/utils'
 export default{
     data(){
         return{
@@ -65,35 +88,75 @@ export default{
                     type:'0'
                 },
                 {
-                    name:'待付款',
+                    name:'待支付',
                     type:'1'
                 },
                 {
-                    name:'待出行',
+                    name:'已支付',
                     type:'2'
                 },
                 {
-                    name:'待评价',
+                    name:'已登船',
                     type:'3'
-                },
-                {
-                    name:'已完成',
-                    type:'4'
                 }
             ],
+            allList:{
+                'type-0':{
+                    isRequest:false,
+                    done:false,
+                    pageNo:1,
+                    list:[{},{},{},{}],
+                },
+                'type-1':{
+                    isRequest:false,
+                    done:false,
+                    pageNo:1,
+                    list:[{}],
+                },
+                'type-2':{
+                    isRequest:false,
+                    done:false,
+                    pageNo:1,
+                    list:[{},{}],
+                },
+                'type-3':{
+                    isRequest:false,
+                    done:false,
+                    pageNo:1,
+                    list:[],
+                }      
+            },
             tabIndex:0,
             bannerList:['https://oss-hqwx-edu24ol.hqwx.com/miniapp/takepicture/common/ico-home.png','https://oss-hqwx-edu24ol.hqwx.com/miniapp/takepicture/common/ico-home-on.png','https://oss-hqwx-edu24ol.hqwx.com/miniapp/takepicture/common/ico-user.png'],
-            list:[{},{},{}]
         }
     },
     onLoad(e){
         this.options = e
     },
     methods:{
+        goDetail(item){
+            let query = {}
 
+            let url = `/packageUser/pages/order/detail?${utils.paramsStringify(query)}`
+
+            uni.navigateTo({
+                url
+            })
+
+        },
+        goCode(item){
+            let query = {}
+
+            let url = `/packageUser/pages/order/code?${utils.paramsStringify(query)}`
+
+            uni.navigateTo({
+                url
+            })
+        }
     }
 }
 </script>
+
 <style lang="scss" scoped>
 .page {
     min-height:100vh;
@@ -102,21 +165,21 @@ export default{
 
 .tabs {
     display:flex;
-    padding:0 50rpx;
-    height:40rpx;
-    line-height:40rpx;
+    height:108rpx;
+    line-height:108rpx;
     .item {
         position:relative;
         flex:1;
-        height:40rpx;
         color:#000;
         font-size:30rpx;
+        text-align:center;
         &.on {
-            font-weight:500;
             &::before {
+                content:' ';
                 position:absolute;
-                bottom:0;
+                bottom:25rpx;
                 left:50%;
+                transform:translateX(-50%);
                 width:36rpx;
                 height:8rpx;
                 background:#EF672D;
@@ -128,7 +191,9 @@ export default{
 }
 
 .banner {
-    height:437rpx;
+    margin:0 auto;
+    width:710rpx;
+    height:190rpx;
     background:#CCC;
 }
 
@@ -220,5 +285,9 @@ export default{
             font-size:26rpx;
         }
     }
+}
+
+.no-content {
+    margin:300rpx auto 0;
 }
 </style>

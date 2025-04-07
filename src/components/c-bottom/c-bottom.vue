@@ -53,14 +53,17 @@ export default {
                 {
                     type:'home',
                     name:'首页',
+                    url:'/pages/index/index'
                 },
                 {
                     type:'order',
                     name:'订单',
+                    url:'/packageUser/pages/order/list'    
                 },
                 {
                     type:'my',
                     name:'我的',
+                    url:'/packageUser/pages/user/user'
                 }
             ],
             bottomStyle:''
@@ -71,10 +74,8 @@ export default {
     },
     methods:{
         go(item){
-            let url = item.type == 'index' ? '/pages/index/index' : '/packageUser/pages/user/user'
-
             uni.reLaunch({
-                url:url
+                url:item.url
             })
         }
     }

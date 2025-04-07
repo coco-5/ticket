@@ -25,6 +25,11 @@
                 <view class="name">{{ item.name }}</view>
             </view>
         </view>
+
+        <c-bottom
+            current="2"
+            :isShowNav="true"
+        ></c-bottom>
     </view>
 </template>
 
