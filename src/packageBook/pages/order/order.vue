@@ -52,16 +52,18 @@
             <view class="name">优惠</view>
             <view class="tag">粤通珠澳次数卡 </view>
             <view class="price">
-                <text class="text">-$30</text>
+                <text class="type">-MOP</text>
+                <text class="text">$30</text>
                 <text class="ico"></text>
             </view>
         </view>
 
         <view class="wrap-added">
             <view class="name">增值服务</view>
-            <view class="more">
-                <text class="text">已选珠海大酒店 +接车服务</text>
-                <text class="price">-$30</text>
+            <view class="price">
+                <text class="more">已选珠海大酒店 +接车服务</text>
+                <text class="type">MOP</text>
+                <text class="text">-$30</text>
                 <text class="ico"></text>
             </view>
         </view>
@@ -82,11 +84,17 @@
             <view class="actions">
                 <view class="text">订单总金额</view>
                 <view class="btn">
-                    <view class="item">
+                    <view 
+                        class="item"
+                        @click="goPay"
+                    >
                         <view class="price">RMB<text>0</text></view>
                         <view class="t">提交订单</view>
                     </view>
-                    <view class="item rmb">
+                    <view 
+                        class="item rmb"
+                        @click="goPay"
+                    >
                         <view class="price">MOP<text>0</text></view>
                         <view class="t">提交订单</view>
                     </view>
@@ -102,6 +110,7 @@
             <template #content>
                 <popPassenger
                     :height="popHeight"
+                    :list="listPassenger"
                     @cbClosePop="cbClosePassengerPop"
                 ></popPassenger>
             </template>
@@ -144,6 +153,17 @@ export default {
         cbClosePassengerPop(){
             this.isShowPassengerPop = false
         },
+        goPay(){
+            let query = {
+
+            }
+
+            let url = `/packageBook/pages/pay/way?${utils.paramsStringify(query)}`
+
+            uni.navigateTo({
+                url
+            })
+        }
     }
 }
 </script>
@@ -268,7 +288,8 @@ export default {
     }
 }
 
-.wrap-coupon {
+.wrap-coupon,
+.wrap-added {
     position:relative;
     margin:24rpx 20rpx;
     padding-left:24rpx;
@@ -304,15 +325,38 @@ export default {
         font-size:30rpx;
         text {
             display:inline-block;
-            vertical-align:middle;
+        }
+        .type {
+            font-size:22rpx;
+        }
+        .text {
+            font-size:30rpx;
+        }
+        .more {
+            color:rgba(#000,.7);
+            font-size:28rpx;
+            white-space:nowrap;
         }
         .ico {
-            margin-left:40rpx;
+            margin-left:16rpx;
             width:14rpx;
             height:25rpx;
             background:url('http://182.254.192.167:6003/vue/upload/static/my/icon-arrow.png') no-repeat;
             background-size:contain;
         }
+    }
+}
+
+.wrap-coupon {
+    .tag {
+        padding:0 12rpx;
+        height:42rpx;
+        line-height:42rpx;
+        background:#FFF5F2;
+        border:1px solid #FD5A26;
+        border-radius:10rpx;
+        font-size:22rpx;
+        color:#FD5A26;
     }
 }
 
@@ -324,38 +368,10 @@ export default {
     line-height:90rpx;
     background:#FFF;
     border-radius:20rpx;
-    .name {
-        display:inline-block;
-        color:#000;
-        font-size:30rpx;
-        vertical-align:middle;
-    }
-    .more {
-        position:absolute;
-        top:50%;
-        right:44rpx;
-        transform:translateY(-50%);
-        text {
-            display:inline-block;
-            color:rgba(0,0,0,.7);
-            font-size:30rpx;
-            vertical-align:middle;
-        }
-        .price {
-            color:#FD5A26;
-        }
-        .ico {
-            margin-left:40rpx;
-            width:14rpx;
-            height:25rpx;
-            background:url('http://182.254.192.167:6003/vue/upload/static/my/icon-arrow.png') no-repeat;
-            background-size:contain;
-        }
-    }
 }
 
 .wrap-tips {
-    margin:24rpx 20rpx;
+    margin:40rpx 32rpx 24rpx;
     .hd {
         margin-bottom:24rpx;
         height:40rpx;

@@ -15,8 +15,25 @@
             :style="bdStyle"
         >
             <view class="list">
-                <view class="item">
-
+                <view 
+                    class="item"
+                    v-for="(item,index) in list"
+                    :key="index"
+                    @click="choose(item)"
+                >
+                    <view class="action"></view>
+                    <view class="name">
+                        <text class="n">张三好</text>
+                        <text class="t">成人票</text>
+                    </view>
+                    <view class="passport">
+                        <text class="n">港澳通行证</text>
+                        <text class="t">G123456789</text>
+                    </view>
+                    <view 
+                        class="edit"
+                        @click="edit(item)"
+                    ></view>
                 </view>
             </view>
         </view>
@@ -24,11 +41,19 @@
             class="ft"
             :style="ftStyle"
         >
-            <view class="actions">
+            <view 
+                class="actions"
+                @click="add"
+            >
                 <text class="ico"></text>
                 <text class="txt">添加乘客</text>
             </view>
-            <view class="btn">确定</view>
+            <view 
+                class="btn"
+                @click="closePop"
+            >
+                确定
+            </view>
         </view>
     </view>
 </template>
@@ -40,10 +65,18 @@ export default {
         height:{
             type:String,
             default:'50%'
+        },
+        list:{
+            type:Array,
+            default:[]
         }
     },
     watch:{
         height:{
+            deep:true,
+            handler(nv){}
+        },
+        list:{
             deep:true,
             handler(nv){}
         }
@@ -68,6 +101,32 @@ export default {
         },
         closePop(){
             this.$emit('cbClosePop')
+        },
+        choose(item){
+            this.$emit('cbChoose',item)
+        },
+        add(){
+            let query = {
+                type:'add'
+            }
+
+            let url = `/packageUser/pages/passenger/add?${utils.paramsStringify(query)}`
+
+            uni.navigateTo({
+                url
+            })
+        },
+        edit(item){
+            let query = {
+                type:'edit',
+                id:item.id
+            }
+
+            let url = `/packageUser/pages/passenger/add?${utils.paramsStringify(query)}`
+
+            uni.navigateTo({
+                url
+            })
         }
     }
 }
@@ -99,6 +158,68 @@ export default {
     .bd {
         height:calc(100% - 120rpx - 42rpx - 30rpx - 100rpx);
         overflow-y:auto;
+        .item {
+            position:relative;
+            margin:0 45rpx;
+            padding:12rpx 60rpx 24rpx;
+            height:100rpx;
+            border-bottom:1px solid rgba(#000,.1);
+            overflow:hidden;
+            .action {
+                position:absolute;
+                top:50%;
+                left:0;
+                transform:translateY(-50%);
+                width:34rpx;
+                height:34rpx;
+                background:#000;
+            }
+            .name {
+                margin:16rpx 0 8rpx;
+                height:32rpx;
+                line-height:32rpx;
+                .t,
+                .n {
+                    display:inline-block;
+                    vertical-align:middle;
+                }
+                .n {
+                    margin-right:16rpx;
+                    color:rgba(#000,.9);
+                    font-size:28rpx;
+                    font-weight:500;
+                }
+                .t {
+                    padding:0 8rpx;
+                    height:30rpx;
+                    line-height:30rpx;
+                    border:1px solid #F47B33;
+                    border-radius:5rpx;
+                    color:#F47B33;
+                    font-size:18rpx;
+                }
+            }
+            .passport {
+                color:rgba(#000,.5);
+                font-size:18rpx;
+                .n {
+                    margin-right:8rpx;
+                }
+            }
+            .edit {
+                position:absolute;
+                top:50%;
+                right:0;
+                transform:translateY(-50%);
+                width:28rpx;
+                height:28rpx;
+                background:url('http://182.254.192.167:6003/vue/upload/static/passenger/icon-edit.png') no-repeat;
+                background-size:contain;
+            }
+            &:last-child {
+                border-bottom:none;
+            }
+        }
     }
     .ft {
         position:absolute;
