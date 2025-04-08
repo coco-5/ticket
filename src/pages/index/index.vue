@@ -38,6 +38,7 @@
 <script>
 import book from '@/packageIndex/components/book'
 import cooperate from '@/packageIndex/components/cooperate'
+import { getBannerListApi } from '@/api/common'
 export default {
     components:{
         book,
@@ -52,8 +53,19 @@ export default {
     },
     onLoad(e){
         this.options = e
+
+        this.getBannerList()
     },
     methods:{
+        getBannerList(){
+            let params = {}
+
+            return new Promise((resolve)=>{
+                getBannerListApi(params).then((res)=>{
+
+                })
+            })
+        }
     }
 }
 </script>

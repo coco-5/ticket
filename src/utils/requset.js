@@ -63,42 +63,19 @@ function request(){
 
     function _request(method,url,data,config){
         let options = {}
-        let postHeader = {}
-        let postData = {}
-        let uuid = utils.guid()
-        let sequenceNo = utils.timeFormat('','yyyymmddhhMMssSSS')
 
         for(let key in baseConfig.proxyApi){
-            if(url.indexOf(`/${key}`) == 0){
+            if(url.indexOf(`/${key}`) > 0){
                 url = url.replace(`/${key}`,baseConfig.proxyApi[key])
                 break
             }
         }
-
-        if(method === 'POST'){
-            postHeader = {
-                'content-type': 'application/json',
-                'x-request-id': uuid
-            }
-        }
-
-        postData.sequenceNo = sequenceNo
-        postData.encryptParam = data ? utils.encryptByAES(JSON.stringify(data)) : ''
-
-        /* console.log(999,'url',url)
-        console.log(999,'data',data) */
-
-        postData.signature = utils.md5({
-            encryptParam:postData.encryptParam || '',
-            uuid:uuid || '',
-            sequenceNo:sequenceNo|| ''
-        })
  
         options.method = method
-        options.header = Object.assign({},_this.config.header,postHeader, config.header);
-        options.data = Object.assign({},_this.config.baseData,postData)
+        options.header = Object.assign({},_this.config.header, config.header);
+        options.data = Object.assign({},_this.config.baseData)
         options.dataType = config.dataType || _this.config.dataType
-        options.timeout = config.timeout || _this.config.timeout;
+        options.timeout = config.timeout || _this.config.timeout
         options.url = url
 
         // 开发者自定义扩展字段，透传返回到响应拦截器

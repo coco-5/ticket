@@ -4,14 +4,18 @@ let baseConfig = {
     pageSize : 20,
     appName : 'tiku_pro',
     proxyApi:{
-        japi:'https://japi.hqwx.com'
+        main:'https://newxcx.wqcpt.com'
     },
     imgPath:'http://182.254.192.167:6003/vue/upload/static/'
 }
 
-//wx1609c559ef1b5809
-//wx111c751bb91520d0
+//wxb44343ae74bf830e 
 //https://lanhuapp.com/link/#/invite?sid=lXZKZPqa
 //https://ie2ll24u7e.feishu.cn/wiki/QLDIwIVILiS20Jkay0gcPSzcnVe?from=from_copylink
 //https://ie2ll24u7e.feishu.cn/base/NtsVb8jpjabO9BsfevocQESKnfe?table=tblaf5CmA5NDtkz3&view=vewBHLaAGe
+
+//https://ytcwtest.gztengyue.com.cn/stage-api/swagger-ui/index.html
+
+//import QRCode from 'qrcodejs2'
+
 module.exports = baseConfig
