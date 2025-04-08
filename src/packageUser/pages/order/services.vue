@@ -6,7 +6,6 @@
                 @change="tabIndex = $event"
             ></c-services-tab>
         </view>
-        services
     </view>
 </template>
 

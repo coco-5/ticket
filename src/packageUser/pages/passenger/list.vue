@@ -1,10 +1,16 @@
 <template>
     <view class="page">
-        <view class="btn-add">
+        <view 
+            class="btn-add"
+            @click="goAdd"
+        >
             <view class="ico"></view>
             <view class="text">添加乘客</view>
         </view>
-        <view class="list">
+        <view 
+            class="list"
+            v-if="list.length > 0"
+        >
             <view 
                 class="item"
                 v-for="(item,index) in list"
@@ -15,13 +21,35 @@
                 <view class="tag tag2">儿童</view>
                 <view class="default">默认</view>
                 <view class="passport">港澳通行证 C10256841</view>
-                <view class="ico"></view>
+                <view 
+                    class="ico"
+                    @click="edit(item)"
+                ></view>
             </view>
         </view>
+
+        <view 
+            class="no-content"
+            v-else
+        >
+            <c-no-content
+                type="note"
+                title="当前没有相关乘客"
+            ></c-no-content>
+        </view>
+
+        <view 
+            class="btn"
+            @click="goHome"
+        >
+            返回购票
+        </view>
+
     </view>
 </template>
 
 <script>
+import utils from '@/utils/utils'
 export default {
     data(){
         return{
@@ -33,7 +61,28 @@ export default {
         this.options = e;
     },
     methods:{
-        
+        goAdd(){
+            this.go('add')
+        },
+        edit(item){
+            this.go('edit',item)
+        },
+        go(type,item){
+            let query = {
+                type,
+                id:(item && item.id) || 0
+            }
+            let url = `/packageUser/pages/passenger/add?${utils.paramsStringify(query)}`
+
+            uni.navigateTo({
+                url
+            })
+        },
+        goHome(){
+            uni.navigateTo({
+                url:`/pages/index/index`
+            })
+        }
     }
 }
 </script>
@@ -133,5 +182,18 @@ export default {
         background:url('http://182.254.192.167:6003/vue/upload/static/passenger/icon-edit.png') no-repeat;
         background-size:contain;
     }
+}
+
+.btn {
+    margin:24rpx auto;
+    width:710rpx;
+    height:100rpx;
+    line-height:100rpx;
+    background:linear-gradient(87deg, #FFA63F, #EB5628);
+    border-radius:50rpx;
+    color:#FFF;
+    font-size:34rpx;
+    font-weight:500;
+    text-align:center;
 }
 </style>

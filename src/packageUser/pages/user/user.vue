@@ -18,6 +18,7 @@
         <view class="list">
             <view 
                 class="item"
+                @click="go(item)"
                 v-for="(item,index) in list"
                 :key="index"
             >
@@ -39,11 +40,12 @@ export default {
         return{
             options:{},
             list:[
-                {type:'ld',name:'轮渡订单',link:'/packageUser/pages/file/file',ico:'icon-ld'},
-                {type:'sp',name:'商品订单',link:'/packageUser/pages/file/file',ico:'icon-sp'},
-                {type:'ck',name:'乘客',link:'/packageUser/pages/file/file',ico:'icon-ck'},
-                {type:'pk',name:'票卡',link:'/packageUser/pages/file/file',ico:'icon-pk'},
-				{type:'vip',name:'会员信息',link:'',ico:'icon-vip'},
+                {type:'ld',name:'轮渡订单',link:'/packageUser/pages/order/list',ico:'icon-ld'},
+                {type:'ld',name:'我的增值服务',link:'/packageUser/pages/order/services',ico:'icon-ld'},
+                {type:'sp',name:'商品订单',link:'',ico:'icon-sp'},
+                {type:'ck',name:'乘客',link:'/packageUser/pages/passenger/list',ico:'icon-ck'},
+                {type:'pk',name:'票卡',link:'/packageUser/pages/card/list',ico:'icon-pk'},
+				{type:'vip',name:'会员信息',link:'/packageUser/pages/member/list',ico:'icon-vip'},
             ]
         }
     },
@@ -54,7 +56,19 @@ export default {
 
     },
     methods:{
+        go(item){
+            if(!item.link){
+                uni.showToast({
+                    title:'敬请期待',
+                    icon:'none'
+                })
+                return
+            }
 
+            uni.navigateTo({
+                url:item.link
+            })
+        }
     }
 }
 </script>
