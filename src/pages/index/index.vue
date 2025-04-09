@@ -7,6 +7,8 @@
             <c-banner
                 style="height:437rpx;"
                 :list="bannerList"
+                :current="bannerIndex"
+                @change="changeBanner"
             ></c-banner>
         </view>
 
@@ -25,6 +27,8 @@
             <c-banner
                 style="width:720rpx;height:147rpx;background:#FFF;"
                 :list="bottomBannerList"
+                :current="bottomBannerIndex"
+                @change="changeBottomBanner"
             ></c-banner>
         </view>
 
@@ -47,24 +51,43 @@ export default {
     data(){
         return{
             options:{},
-            bannerList:['https://oss-hqwx-edu24ol.hqwx.com/miniapp/takepicture/common/ico-home.png','https://oss-hqwx-edu24ol.hqwx.com/miniapp/takepicture/common/ico-home-on.png','https://oss-hqwx-edu24ol.hqwx.com/miniapp/takepicture/common/ico-user.png'],
+            bannerList:[],
+            bannerIndex:0,
             bottomBannerList:['https://oss-hqwx-edu24ol.hqwx.com/miniapp/takepicture/common/ico-home.png','https://oss-hqwx-edu24ol.hqwx.com/miniapp/takepicture/common/ico-home-on.png','https://oss-hqwx-edu24ol.hqwx.com/miniapp/takepicture/common/ico-user.png'],
+            bottomBannerIndex:0,
         }
     },
     onLoad(e){
         this.options = e
 
-        this.getBannerList()
+        this.getList()
     },
     methods:{
+        getList(){
+            let list = [
+                this.getBannerList()
+            ]
+
+            Promise.all(list).then(()=>{
+            })
+        },
         getBannerList(){
             let params = {}
 
             return new Promise((resolve)=>{
                 getBannerListApi(params).then((res)=>{
-
+                    if(res.data.code == 200){
+                        let data = res.data.data || []
+                        this.bannerList = data
+                    }
                 })
             })
+        },
+        changeBanner(index){
+            this.bannerIndex = index
+        },
+        changeBottomBanner(index){
+            this.bottomBannerIndex = index
         }
     }
 }

@@ -63,17 +63,17 @@ function request(){
 
     function _request(method,url,data,config){
         let options = {}
+        let headerData = {}
 
-        for(let key in baseConfig.proxyApi){
-            if(url.indexOf(`/${key}`) > 0){
-                url = url.replace(`/${key}`,baseConfig.proxyApi[key])
-                break
-            }
+        url = `${baseConfig.proxyApi.main}${url}`
+
+        headerData = {
+            'Authorization': 'Bearer ' + (uni.getStorageSync('token') || '')
         }
  
         options.method = method
-        options.header = Object.assign({},_this.config.header, config.header);
-        options.data = Object.assign({},_this.config.baseData)
+        options.header = Object.assign({},_this.config.header, headerData, config.header)
+        options.data = Object.assign({},_this.config.baseData,data)
         options.dataType = config.dataType || _this.config.dataType
         options.timeout = config.timeout || _this.config.timeout
         options.url = url

@@ -46,6 +46,7 @@
 </template>
 
 <script>
+import { getTicketCardApi } from '@/api/common'
 export default {
     props:{
         isShow:{
@@ -58,7 +59,24 @@ export default {
             list:[{type:1},{type:2},{type:3}]
         }
     },
+    mounted(){
+        this.getList()
+    },
     methods:{
+        getList(){
+            let params = {}
+
+            return new Promise((resolve)=>{
+                getTicketCardApi(params).then((res)=>{
+                    if(res.data.code == 200){
+                        let data = res.data.data || []
+
+                        resolve(data)
+                    }
+                })
+
+            })
+        },
         cbClosePop(){
             this.$emit('cbClosePop')
         },

@@ -13,6 +13,12 @@ export default{
     },
     onLoad(e){
         this.options = e
+
+        if(this.options.title){
+            uni.setNavigationBarTitle({
+                title:this.options.title
+            })
+        }
     },
     methods:{
 

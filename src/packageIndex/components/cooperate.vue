@@ -46,6 +46,11 @@ export default {
             if(item.type == 'buy'){
                 this.isShowCard = true
                 return
+            }else{
+                uni.showToast({
+                    title:'即将上线，敬请期待',
+                    icon:'none'
+                })
             }
         },
         cbCloseCard(){
