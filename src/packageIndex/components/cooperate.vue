@@ -5,9 +5,10 @@
             @click="go(item)"
             v-for="(item,index) in list"
             :key="index"
+            v-if="item.display == 1"
         >
-            <img :src="item.ico"/>
-            <view class="text">{{item.name}}</view>
+            <img :src="item.icon"/>
+            <view class="text">{{item.title}}</view>
         </view>
 
         <card
@@ -18,6 +19,7 @@
 </template>
 
 <script>
+import { getPartnerListApi } from '@/api/common'
 import card from '@/packageIndex/components/card'
 export default {
     components:{
@@ -26,31 +28,50 @@ export default {
     data() {
         return {
             list:[
-                {type:'buy',name:'票卡购票',ico:'http://182.254.192.167:6003/vue/upload/static/index/ad-pkgp.png'},
-                {type:'stop',name:'停航航班',ico:'http://182.254.192.167:6003/vue/upload/static/cooperate/ad2.png'},
-                {type:'note-buy',name:'购票通知',ico:'http://182.254.192.167:6003/vue/upload/static/cooperate/ad1.png'},
-                {type:'note-stop',name:'退票须知',ico:'http://182.254.192.167:6003/vue/upload/static/cooperate/ad3.png'},
-                {type:'mall',name:'优选商城',ico:'http://182.254.192.167:6003/vue/upload/static/cooperate/ad4.png'},
-                {type:'aomen',name:'海上看澳门',ico:'http://182.254.192.167:6003/vue/upload/static/cooperate/ad5.png'},
-                {type:'book',name:'邮轮预定',ico:'http://182.254.192.167:6003/vue/upload/static/cooperate/ad6.png'},
-                {type:'island',name:'海岛游',ico:'http://182.254.192.167:6003/vue/upload/static/cooperate/ad7.png'}
+                {
+                    type:'card',
+                    sort:0,
+                    display:1, 
+                    title:'票卡购票',
+                    icon:'http://182.254.192.167:6003/vue/upload/static/index/ad-pkgp.png'
+                }
             ],
             isShowCard:false       
         }
     },
     mounted(){
-
+        this.getPartnerList()
     },
     methods: {
+        getPartnerList(){
+            getPartnerListApi().then(res=>{
+                if(res.data.code == 200){
+                    let data = res.data.data || []
+
+                    this.list = this.list.concat(data)
+
+                    this.list.sort((a, b) => a.sort - b.sort)
+                }
+            })
+        },
         go(item){
-            if(item.type == 'buy'){
+            if(item.type == 'card'){
                 this.isShowCard = true
                 return
             }else{
-                uni.showToast({
-                    title:'即将上线，敬请期待',
-                    icon:'none'
-                })
+                if(item.link){
+                    let url = `/pages/notice/notice?url=${item.link}`
+
+                    uni.navigateTo({
+                        url:url
+                    })
+                }else{
+                    uni.showToast({
+                        title:'即将上线，敬请期待',
+                        icon:'none'
+                    })
+
+                }
             }
         },
         cbCloseCard(){

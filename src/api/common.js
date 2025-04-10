@@ -1,11 +1,17 @@
-import utils from '@/utils/utils'
 import Vue from 'vue'
-
 let _this = Vue.prototype
+
+export function getAdvertiseListApi(params){
+    params = Object.assign({}, params)
+    return new Promise((resolve, reject)=>{
+        _this.$http.get(`/stage-api/advertise/list`,params).then((res)=>{
+            resolve(res)
+        })
+    })
+}
+
 export function getBannerListApi(params){
-    params = Object.assign({
-        Authorization:uni.getStorageSync('token')
-    }, params)
+    params = Object.assign({}, params)
     return new Promise((resolve, reject)=>{
         _this.$http.get(`/stage-api/banner/list`,params).then((res)=>{
             resolve(res)
@@ -13,24 +19,21 @@ export function getBannerListApi(params){
     })
 }
 
-export function smsLoginApi(params){
-    params = Object.assign({
-        unionCode:434343445
-    }, params)
+export function getNoticeListApi(params){
+    params = Object.assign({}, params)
 
     return new Promise((resolve, reject)=>{
-        _this.$http.get(`/stage-api/login/wx/smsLogin`,params).then((res)=>{
+        _this.$http.get(`/stage-api/notice/list`,params).then((res)=>{
             resolve(res)
         })
     })
 }
 
-
-export function getTicketCardApi(params){
+export function getPartnerListApi(params){
     params = Object.assign({}, params)
 
     return new Promise((resolve, reject)=>{
-        _this.$http.get(`/stage-api/ticketCard/sale/page`,params).then((res)=>{
+        _this.$http.get(`/stage-api/partner/list`,params).then((res)=>{
             resolve(res)
         })
     })

@@ -22,13 +22,13 @@
 
         <view 
             class="bottom-banner"
-            v-if="bottomBannerList.length > 0"
+            v-if="advertiseList.length > 0"
         >
             <c-banner
-                style="width:720rpx;height:147rpx;background:#FFF;"
-                :list="bottomBannerList"
-                :current="bottomBannerIndex"
-                @change="changeBottomBanner"
+                style="width:720rpx;height:147rpx;"
+                :list="advertiseList"
+                :current="advertiseIndex"
+                @change="changeAdvertise"
             ></c-banner>
         </view>
 
@@ -42,7 +42,7 @@
 <script>
 import book from '@/packageIndex/components/book'
 import cooperate from '@/packageIndex/components/cooperate'
-import { getBannerListApi } from '@/api/common'
+import { getBannerListApi, getAdvertiseListApi } from '@/api/common'
 export default {
     components:{
         book,
@@ -53,8 +53,8 @@ export default {
             options:{},
             bannerList:[],
             bannerIndex:0,
-            bottomBannerList:['https://oss-hqwx-edu24ol.hqwx.com/miniapp/takepicture/common/ico-home.png','https://oss-hqwx-edu24ol.hqwx.com/miniapp/takepicture/common/ico-home-on.png','https://oss-hqwx-edu24ol.hqwx.com/miniapp/takepicture/common/ico-user.png'],
-            bottomBannerIndex:0,
+            advertiseList:[],
+            advertiseIndex:0,
         }
     },
     onLoad(e){
@@ -65,7 +65,8 @@ export default {
     methods:{
         getList(){
             let list = [
-                this.getBannerList()
+                this.getBannerList(),
+                this.getAdvertiseList()
             ]
 
             Promise.all(list).then(()=>{
@@ -83,11 +84,23 @@ export default {
                 })
             })
         },
+        getAdvertiseList(){
+            let params = {
+                position:1
+            }
+
+            getAdvertiseListApi(params).then((res)=>{
+                if(res.data.code == 200){
+                    let data = res.data.data || []
+                    this.advertiseList = data
+                }
+            })
+        },
         changeBanner(index){
             this.bannerIndex = index
         },
-        changeBottomBanner(index){
-            this.bottomBannerIndex = index
+        changeAdvertise(index){
+            this.advertiseIndex = index
         }
     }
 }
@@ -101,7 +114,6 @@ export default {
 
 .banner {
     height:437rpx;
-    background:#CCC;
 }
 
 .cooperate {

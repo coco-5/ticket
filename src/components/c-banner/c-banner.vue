@@ -14,6 +14,8 @@
                 @animationfinish="change"
             >
                 <swiper-item 
+                    class="swiper-item"
+                    :style="style"
                     v-for="(item,index) in list" 
                     v-if="item.display == 1"
                     :key="index"
@@ -21,7 +23,6 @@
                     <image 
                         :src="item.img" 
                         @click="handleClick(item)"
-                        mode="aspectFill"
                     ></image>
                 </swiper-item>
             </swiper>
@@ -41,9 +42,9 @@
         
         <template v-else>
             <image 
+                mode="widthFix"
                 :src="list[0].img" 
                 @click="handleClick(list[0])"
-                mode="aspectFill"
                 v-if="list[0].display == 1"
             ></image>
         </template>
@@ -128,6 +129,9 @@ export default {
 <style lang="scss" scoped>
 .c-banner {
     position:relative;
+    .swiper-item {
+        text-align:center;
+    }
     image {
         width:100%;
         height:100%;

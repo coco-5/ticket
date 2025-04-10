@@ -46,7 +46,7 @@
 </template>
 
 <script>
-import { getTicketCardApi } from '@/api/common'
+import { getTicketCardApi } from '@/api/ticket'
 export default {
     props:{
         isShow:{
@@ -64,10 +64,15 @@ export default {
     },
     methods:{
         getList(){
-            let params = {}
+            let list = [
+                this.getTicket()
+            ]
 
+            Promise.all(list)
+        },
+        getTicket(){
             return new Promise((resolve)=>{
-                getTicketCardApi(params).then((res)=>{
+                getTicketCardApi({}).then((res)=>{
                     if(res.data.code == 200){
                         let data = res.data.data || []
 
