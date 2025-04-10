@@ -272,12 +272,19 @@ export default {
             this.isShowDatePop = true
         },
         exChangeDest(){
-            let destinationList = this.destinationList
-            let departureDest = destinationList[0].value
-            let arrivalDest = destinationList[1].value
+            let arrival = this.arrivalList[this.arrivalIndex]
+            let departureList = this.departureList
 
-            destinationList[0].value = arrivalDest
-            destinationList[1].value = departureDest
+            for(let i=0; i<departureList.length; i++){
+                if(arrival.portCode == departureList[i].portCode){
+                    this.departureIndex = i
+                    break
+                }     
+            }
+            
+            this.initArrival().then(()=>{
+                this.arrivalIndex = 0
+            })  
         },
         goBook(){
             let query = {
