@@ -239,14 +239,17 @@ export default {
             this.isShowDeparturePop = false
         },
         cbChooseDeparture(item,index){
-            console.log(9999,'departureDest',item)
-            //this.departureDest = item.value
+            this.departureIndex = index
+
+            this.initArrival().then(()=>{
+                this.arrivalIndex = 0
+            })
         },
         cbCloseArrivalPop(){
             this.isShowArrivalPop = false
         },
         cbChooseArrival(item,index){
-
+            this.arrivalIndex = index
         },
         cbCloseDatePop(){
             this.isShowDatePop = false
