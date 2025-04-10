@@ -20,23 +20,37 @@
                         >
                             <view 
                                 class="item"
+                                :class="item.class"
                                 v-for="(item,index) in list"
                                 :key="index"
-                                @tap="choose(item)"
+                                v-if="item.display == 1"
+                                @click="choose(item)"
                             >
                                 <view class="left">
-                                    <view class="num">20</view>
-                                    <view class="imtes">可用（次）</view>
+                                    <template v-if="item.type == 1">
+                                        <view class="num">{{item.num}}</view>
+                                        <view class="imtes">可用（次）</view>
+                                    </template>
+                                    <template v-else-if="item.type == 3">
+                                        <view class="num">{{item.discountRate / 10}}折</view>
+                                        <view class="imtes">购买享受</view>
+                                    </template>
+                                    <template v-else>
+                                        <view class="num">{{item.faceValueMoney}}</view>
+                                        <view class="imtes">可用（元）</view>
+                                    </template>
                                 </view>
                                 <view class="info">
-                                    <view class="title">珠澳卡</view>
+                                    <view class="title">{{item.name}}</view>
                                     <view class="tags">
                                         <view class="tag">限湾仔-内港航线</view>
                                         <view class="tag">限深圳-内港航线</view>
                                     </view>
-                                    <view class="date">有效期：2024.05.01-2024.05.31</view>
-                                    <view class="detail"></view>
+                                    <view class="date">有效期：{{item.st}}-{{item.et}}</view>
                                 </view>
+                            </view>
+                            <view class="detail">
+                                <rich-text :nodes="item.desc"></rich-text>
                             </view>
                         </view>
                         <view class="ft">
@@ -105,7 +119,25 @@ export default {
             return new Promise((resolve)=>{
                 getTicketCardListApi({}).then((res)=>{
                     if(res.data.code == 200){
-                        let data = res.data.data || []
+                        let data = res.data.rows 
+                        //type 类型 1-次卡；2-现金卡（澳门币）；3-折扣卡；4 - 现金卡(人民币)
+
+                        data.length > 0 && data.forEach((item)=>{
+                            if(item.type == 1){
+                                item.class = 'times'
+                            }else if(item.type == 2){
+                                item.class = 'cash'
+                            }else if(item.type == 3){
+                                item.class = 'discount'
+                            }else if(item.type == 4){
+                                item.class = 'cash'
+                            }
+
+                            item.st = item.validateStartTime.split(' ')[0]
+                            item.st = item.st.replace(/\-/g,'.')
+                            item.et = item.validateEndTime.split(' ')[0]
+                            item.et = item.et.replace(/\-/g,'.')
+                        })
 
                         this.list = data
 
@@ -117,6 +149,9 @@ export default {
         },
         cbClosePop(){
             this.$emit('cbClosePop')
+        },
+        choose(item){
+
         },
         confirm(){
 
@@ -152,11 +187,63 @@ export default {
     .bd {
         margin:0 25rpx;
         height:620rpx;
-        background:#000;
         overflow-y:auto;
         .item {
-            margin-bottom:12rpx;
+            position:relative;
+            margin:0 24rpx 12rpx;
+            padding-left:194rpx;
             height:194rpx;
+            .info {
+                height:100%;
+                background:#FFF3EC;
+                border-radius:12rpx;
+                .title {
+
+                }
+                .tags {
+                    .tag {
+                        display:inline-block;
+                        vertical-align:middle;
+                    }
+                }
+                .date {
+
+                }
+            }
+            .left {
+                position:absolute;
+                top:0;
+                left:0;
+                width:194rpx;
+                height:194rpx;
+                background:#EEE;
+                color:#FFF;
+                text-align:center;
+                overflow:hidden;
+                .num {
+                    margin:50rpx 0 20rpx;
+                    height:62rpx;
+                    line-height:62rpx;
+                    font-weight:500;
+                    font-size:60rpx;
+                }
+                .times {
+                    font-size:24rpx;
+                }
+            }
+            .detail {
+
+            }
+            &.discount {
+                .info {
+                    background:#E0EFEA;
+                }
+            }
+            &.cash {
+                .info {
+                    background:#E3F1FE;
+                }
+            }
         }
     }
     .ft {
