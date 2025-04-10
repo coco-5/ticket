@@ -1,7 +1,7 @@
 import Vue from 'vue'
 
 let _this = Vue.prototype
-export function getTicketCardApi(params){
+export function getTicketCardListApi(params){
     params = Object.assign({}, params)
 
     return new Promise((resolve, reject)=>{

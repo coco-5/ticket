@@ -34,10 +34,10 @@
                     @click="showDestPop(item)"
                 >
                     <template v-if="item.type == 'departureDest'">
-                        {{departureList[departureIndex].name}} 
+                        {{departureList[departureIndex].portName}} 
                     </template>
                     <template v-else>
-                        {{arrivalList[arrivalIndex].name}}
+                        {{arrivalList[arrivalIndex].portName}}
                     </template>
                 </view>
             </view>
@@ -134,6 +134,7 @@
 
 <script>
 import utils from '@/utils/utils'
+import { getPortRouteApi } from '@/api/common'
 export default {
     data(){
         return{
@@ -151,36 +152,10 @@ export default {
             ],
             tabType:'one',
             isShowDeparturePop:false,
-            departureList:[
-                {
-                    name:'北京1',
-                    value:'北京1'
-                },
-                {
-                    name:'北京2',
-                    value:'北京2'
-                },
-                {
-                    name:'北京3',
-                    value:'北京2'
-                },
-            ],
+            departureList:[],
             departureIndex:0,
             isShowArrivalPop:false,
-            arrivalList:[
-                {
-                    name:'上海1',
-                    value:'上海1'
-                },
-                {
-                    name:'上海2',
-                    value:'上海2'
-                },
-                {
-                    name:'上海3',
-                    value:'上海3'
-                },
-            ],
+            arrivalList:[],
             arrivalIndex:0,
             isShowDatePop:false,
             departureDate:'',
@@ -188,11 +163,64 @@ export default {
         }
     },
     mounted(){
+        this.getPortRoute()
         this.initTodayDa()
         this.initArrivalDate()
     },
     methods:{
         timeFormat:utils.timeFormat,
+        getPortRoute(){
+            let params = {
+                isRoundTrip:this.tabType == 'round' ? true : false     
+            }
+
+            getPortRouteApi(params).then((res)=>{
+                if(res.data.code == 200){
+                    let data = res.data.data
+                    let portList = data.portList || []
+                    let departureList = []
+
+                    portList.forEach((item,index)=>{
+                        if(item.fromPort){
+                            departureList.push(item.fromPort)    
+                            if(item.fromPort.portCode == data.defaultFromPort.portCode){
+                                this.departureIndex = index
+                            }
+                        }
+                    })
+
+                    this.portList = portList
+
+                    this.departureList = departureList
+
+                    this.initArrival().then((arrivalList)=>{
+                        for(let i=0; i<arrivalList.length; i++){
+                            if(arrivalList[i].portCode == data.defaultToPort.portCode){
+                                this.arrivalIndex = i
+                                break
+                            }
+                        }
+                    })
+                }
+            })
+        },
+        initArrival(){
+            let portList = this.portList
+            let arrivalList = []
+
+            return new Promise((resolve)=>{
+                for(let i=0; i<portList.length; i++){
+                    if(i == this.departureIndex){
+                        arrivalList = portList[i].toPortList
+                        break
+                    }
+                }
+                this.arrivalList = arrivalList
+
+                resolve(arrivalList)
+            })
+
+        },
         initTodayDa(){
             let today = new Date()
             const year = today.getFullYear()
@@ -210,13 +238,14 @@ export default {
         cbCloseDepartPop(){
             this.isShowDeparturePop = false
         },
-        cbChooseDeparture(item){
-            this.departureDest = item.value
+        cbChooseDeparture(item,index){
+            console.log(9999,'departureDest',item)
+            //this.departureDest = item.value
         },
         cbCloseArrivalPop(){
             this.isShowArrivalPop = false
         },
-        cbChooseArrival(item){
+        cbChooseArrival(item,index){
 
         },
         cbCloseDatePop(){

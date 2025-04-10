@@ -38,3 +38,13 @@ export function getPartnerListApi(params){
         })
     })
 }
+
+export function getPortRouteApi(params){
+    params = Object.assign({}, params)
+
+    return new Promise((resolve, reject)=>{
+        _this.$http.get(`/stage-api/ticketPort/getPortRoute`,params).then((res)=>{
+            resolve(res)
+        })
+    })
+}

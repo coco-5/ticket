@@ -20,11 +20,11 @@
             <view 
                 class="item"
                 :class="{'active':index == current}"
-                @click="choose(item)"
+                @click="choose(item,index)"
                 v-for="(item,index) in list"
                 :key="index"
             >
-                {{item.name}}
+                {{item.portName}}
             </view>
         </view>
     </view>
@@ -64,8 +64,8 @@ export default {
         closePop(){
             this.$emit('cbClosePop')
         },
-        choose(item){
-            this.$emit('cbChoose',item)
+        choose(item,index){
+            this.$emit('cbChoose',item,index)
             this.closePop()
         }
     }
