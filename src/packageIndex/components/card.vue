@@ -26,31 +26,45 @@
                                 v-if="item.display == 1"
                                 @click="choose(item)"
                             >
-                                <view class="left">
-                                    <template v-if="item.type == 1">
-                                        <view class="num">{{item.num}}</view>
-                                        <view class="imtes">可用（次）</view>
-                                    </template>
-                                    <template v-else-if="item.type == 3">
-                                        <view class="num">{{item.discountRate / 10}}折</view>
-                                        <view class="imtes">购买享受</view>
-                                    </template>
-                                    <template v-else>
-                                        <view class="num">{{item.faceValueMoney}}</view>
-                                        <view class="imtes">可用（元）</view>
-                                    </template>
-                                </view>
-                                <view class="info">
-                                    <view class="title">{{item.name}}</view>
-                                    <view class="tags">
-                                        <view class="tag">限湾仔-内港航线</view>
-                                        <view class="tag">限深圳-内港航线</view>
+                                <view class="b">
+                                    <view class="left">
+                                        <template v-if="item.type == 1">
+                                            <view class="num">{{item.num}}</view>
+                                            <view class="imtes">可用（次）</view>
+                                        </template>
+                                        <template v-else-if="item.type == 3">
+                                            <view class="num">{{item.discountRate / 10}}折</view>
+                                            <view class="imtes">购买享受</view>
+                                        </template>
+                                        <template v-else>
+                                            <view class="num">{{item.faceValueMoney}}</view>
+                                            <view class="imtes">可用（元）</view>
+                                        </template>
                                     </view>
-                                    <view class="date">有效期：{{item.st}}-{{item.et}}</view>
+                                    <view class="info">
+                                        <view class="title">{{item.name}}</view>
+                                        <view 
+                                            class="tags"
+                                            v-if="item.ticketCardProtList && item.ticketCardProtList.length"
+                                        >
+                                            <view 
+                                                class="tag"
+                                                v-for="(tag,i) in item.ticketCardProtList"
+                                                :key="i"
+                                            >
+                                                限{{tag.fromPortName}}-{{tag.toPortName}}   
+                                            </view>
+                                        </view>
+                                        <view class="date">有效期：{{item.st}}-{{item.et}}</view>
+                                        <view class="detail">
+                                            详细说明<text class="ico"></text>
+                                        </view>
+                                    </view>
+                                    <view class="actions"></view>
                                 </view>
-                            </view>
-                            <view class="detail">
-                                <rich-text :nodes="item.desc"></rich-text>
+                                <view class="remark">
+                                    <rich-text :nodes="item.desc"></rich-text>
+                                </view>
                             </view>
                         </view>
                         <view class="ft">
@@ -185,29 +199,61 @@ export default {
         }
     }
     .bd {
-        margin:0 25rpx;
+        margin:0 24rpx;
         height:620rpx;
         overflow-y:auto;
         .item {
             position:relative;
-            margin:0 24rpx 12rpx;
-            padding-left:194rpx;
-            height:194rpx;
+            .b {
+                position:relative;
+                margin:0 0 12rpx;
+                padding:0 48rpx 0 194rpx;
+            }
             .info {
+                box-sizing:border-box;
+                padding:0 24rpx;
                 height:100%;
                 background:#FFF3EC;
                 border-radius:12rpx;
+                overflow:hidden;
                 .title {
-
+                    margin:24rpx 0 12rpx;
+                    height:32rpx;
+                    line-height:32rpx;
+                    color:#000;
+                    font-size:30rpx;
                 }
                 .tags {
                     .tag {
                         display:inline-block;
-                        vertical-align:middle;
+                        margin:0 8rpx 8rpx 0;
+                        padding:0 14rpx;
+                        height:30rpx;
+                        line-height:30rpx;
+                        border:1px solid #FE6630;
+                        border-radius:5rpx;
+                        color:#FE6630;
+                        font-size:18rpx;
+                        vertical-align:top;
                     }
                 }
                 .date {
-
+                    color:rgba(#000,0.6);
+                    font-size:20rpx;
+                    white-space:nowrap;
+                }
+                .detail {
+                    margin-top:12rpx;
+                    color:rgba(#000,0.8);
+                    font-size:20rpx;
+                    .ico {
+                        display:inline-block;
+                        width:11rpx;
+                        height:6rpx;
+                        transform:rotate(180deg);
+                        background:url('http://182.254.192.167:6003/vue/upload/static/common/icon.png') no-repeat;
+                        background-size:contain;
+                    }
                 }
             }
             .left {
@@ -221,7 +267,7 @@ export default {
                 text-align:center;
                 overflow:hidden;
                 .num {
-                    margin:50rpx 0 20rpx;
+                    margin:50rpx 0 8rpx;
                     height:62rpx;
                     line-height:62rpx;
                     font-weight:500;
@@ -231,18 +277,39 @@ export default {
                     font-size:24rpx;
                 }
             }
-            .detail {
-
+            .actions {
+                position:absolute;
+                top:50%;
+                right:0x;
+                transform:translateY(-50%);
+                width:34rpx;
+                height:34rpx;
+                background:#EEE;
             }
             &.discount {
                 .info {
                     background:#E0EFEA;
+                    .tags {
+                        .tag {
+                            border-color:#28BB89;
+                            color:#28BB89;
+                        }
+                    }
                 }
             }
             &.cash {
                 .info {
                     background:#E3F1FE;
+                    .tags {
+                        .tag {
+                            border-color:#368EF6;
+                            color:#368EF6;
+                        }
+                    }
                 }
+            }
+            .remark {
+                padding:24rpx;
             }
         }
     }

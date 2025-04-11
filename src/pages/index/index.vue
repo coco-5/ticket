@@ -43,6 +43,7 @@
 import book from '@/packageIndex/components/book'
 import cooperate from '@/packageIndex/components/cooperate'
 import { getBannerListApi, getAdvertiseListApi } from '@/api/common'
+import { getTicketPopupApi } from '@/api/ticket'
 export default {
     components:{
         book,
@@ -66,7 +67,8 @@ export default {
         getList(){
             let list = [
                 this.getBannerList(),
-                this.getAdvertiseList()
+                this.getAdvertiseList(),
+                this.getTicketPopup()
             ]
 
             Promise.all(list).then(()=>{
@@ -93,6 +95,15 @@ export default {
                 if(res.data.code == 200){
                     let data = res.data.data || []
                     this.advertiseList = data
+                }
+            })
+        },
+        getTicketPopup(){
+            getTicketPopupApi({}).then((res)=>{
+                if(res.data.code == 200){
+                    let data = res.data.data || []
+
+                    console.log(9999,'data',data)
                 }
             })
         },
