@@ -32,6 +32,9 @@
             ></c-banner>
         </view>
 
+        <!-- 弹窗 -->
+        <ticketPop></ticketPop>
+
         <c-bottom
             current="0"
             :isShowNav="true"
@@ -42,12 +45,13 @@
 <script>
 import book from '@/packageIndex/components/book'
 import cooperate from '@/packageIndex/components/cooperate'
+import ticketPop from '@/packageIndex/components/ticketPop'
 import { getBannerListApi, getAdvertiseListApi } from '@/api/common'
-import { getTicketPopupApi } from '@/api/ticket'
 export default {
     components:{
         book,
-        cooperate
+        cooperate,
+        ticketPop,
     },
     data(){
         return{
@@ -68,7 +72,6 @@ export default {
             let list = [
                 this.getBannerList(),
                 this.getAdvertiseList(),
-                this.getTicketPopup()
             ]
 
             Promise.all(list).then(()=>{
@@ -95,15 +98,6 @@ export default {
                 if(res.data.code == 200){
                     let data = res.data.data || []
                     this.advertiseList = data
-                }
-            })
-        },
-        getTicketPopup(){
-            getTicketPopupApi({}).then((res)=>{
-                if(res.data.code == 200){
-                    let data = res.data.data || []
-
-                    console.log(9999,'data',data)
                 }
             })
         },

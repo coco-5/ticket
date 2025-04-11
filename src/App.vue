@@ -26,6 +26,11 @@
         },
         methods:{
             smsLogin(){
+                uni.login({
+                    success:res=>{
+                        console.log(999,'login',res)
+                    }
+                })
                 smsLoginApi({}).then((res)=>{
                     if(res.data.code == 200){
                         let data = res.data.data

@@ -15,9 +15,7 @@
         </view>
 
         <view class="notice">
-            <view class="mic"></view> 
-            <view class="text">【重要提示】珠海旅客来深注意事项</view>
-            <view class="ico"></view>
+            <notice></notice>
         </view>
 
         <view class="destination">
@@ -134,8 +132,12 @@
 
 <script>
 import utils from '@/utils/utils'
-import { getPortRouteApi } from '@/api/common'
+import { getPortRouteApi } from '@/api/ticket'
+import notice from '@/packageIndex/components/notice'
 export default {
+    components:{
+        notice,
+    },
     data(){
         return{
             tabList:[
@@ -163,12 +165,19 @@ export default {
         }
     },
     mounted(){
-        this.getPortRoute()
+        this.getList()
         this.initTodayDa()
         this.initArrivalDate()
     },
     methods:{
         timeFormat:utils.timeFormat,
+        getList(){
+            let list = [
+                this.getPortRoute()
+            ]
+
+            Promise.all(list)
+        },
         getPortRoute(){
             let params = {
                 isRoundTrip:this.tabType == 'round' ? true : false     
@@ -281,7 +290,7 @@ export default {
                     break
                 }     
             }
-            
+
             this.initArrival().then(()=>{
                 this.arrivalIndex = 0
             })  
@@ -328,39 +337,6 @@ export default {
             font-weight:500; 
             text-align:center;
             vertical-align:top;
-        }
-    }
-    .notice {
-        position:relative;
-        margin:24rpx 44rpx 0;
-        padding:0 16rpx;
-        height:55rpx;
-        line-height:55rpx;
-        background:#FCF2EC;
-        border-radius:4rpx;
-        color:#EC702E;
-        font-size:25rpx;
-        .mic {
-            display:inline-block;
-            width:24rpx;
-            height:21rpx;
-            background:url('http://182.254.192.167:6003/vue/upload/static/index/volume.png') no-repeat;
-            background-size:contain;
-            vertical-align:middle;
-        }
-        .text {
-            display:inline-block;
-            vertical-align:middle;
-        }
-        .ico {
-            position:absolute;
-            top:50%;
-            right:24rpx;
-            transform:translateY(-50%);
-            width:9rpx;
-            height:14rpx;
-            background:url('http://182.254.192.167:6003/vue/upload/static/index/arrows.png') no-repeat;
-            background-size:contain;
         }
     }
     .destination,

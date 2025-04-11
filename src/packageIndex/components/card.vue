@@ -248,8 +248,9 @@ export default {
                     font-size:20rpx;
                     .ico {
                         display:inline-block;
-                        width:11rpx;
-                        height:6rpx;
+                        margin-left:8rpx;
+                        width:22rpx;
+                        height:12rpx;
                         transform:rotate(180deg);
                         background:url('http://182.254.192.167:6003/vue/upload/static/common/icon.png') no-repeat;
                         background-size:contain;
@@ -280,7 +281,7 @@ export default {
             .actions {
                 position:absolute;
                 top:50%;
-                right:0x;
+                right:0;
                 transform:translateY(-50%);
                 width:34rpx;
                 height:34rpx;
