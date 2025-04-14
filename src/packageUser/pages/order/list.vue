@@ -4,7 +4,7 @@
             <view 
                 class="item"
                 :class="tabIndex == index ? 'on' : ''"
-                @click="tabIndex = index"
+                @click="changeTab(index)"
                 v-for="(item,index) in tabList"
                 :key="index"
             >
@@ -78,6 +78,8 @@
 
 <script>
 import utils from '@/utils/utils'
+import { getAdvertiseListApi } from '@/api/common'
+import { getOrderListApi } from '@/api/order'
 export default{
     data(){
         return{
@@ -85,57 +87,143 @@ export default{
             tabList:[
                 {
                     name:'全部',
-                    type:'0'
+                    status:99
                 },
                 {
                     name:'待支付',
-                    type:'1'
+                    status:0
                 },
                 {
                     name:'已支付',
-                    type:'2'
+                    status:1
                 },
                 {
                     name:'已登船',
-                    type:'3'
+                    status:4
                 }
             ],
             allList:{
                 'type-0':{
+                    status:99,
                     isRequest:false,
                     done:false,
-                    pageNo:1,
-                    list:[{},{},{},{}],
+                    pageNum:1,
+                    list:[],
                 },
                 'type-1':{
+                    status:0,
                     isRequest:false,
                     done:false,
-                    pageNo:1,
-                    list:[{}],
+                    pageNum:1,
+                    list:[],
                 },
                 'type-2':{
+                    status:1,
                     isRequest:false,
                     done:false,
-                    pageNo:1,
-                    list:[{},{}],
+                    pageNum:1,
+                    list:[],
                 },
                 'type-3':{
+                    status:4,
                     isRequest:false,
                     done:false,
-                    pageNo:1,
+                    pageNum:1,
                     list:[],
                 }      
             },
+            pageSize:20,
             tabIndex:0,
-            bannerList:['https://oss-hqwx-edu24ol.hqwx.com/miniapp/takepicture/common/ico-home.png','https://oss-hqwx-edu24ol.hqwx.com/miniapp/takepicture/common/ico-home-on.png','https://oss-hqwx-edu24ol.hqwx.com/miniapp/takepicture/common/ico-user.png'],
+            advertiseList:[],
+            advertiseIndex:0,
         }
     },
     onLoad(e){
         this.options = e
     },
+    onShow(){
+        this.getList()
+    },
     methods:{
-        goDetail(item){
-            let query = {}
+        getList(){
+            let list = [
+                this.getAdvertiseList(),
+                this.getOrderList()
+            ]
+
+            Promise.all(list).then(()=>{
+            })
+        },
+        getOrderList(){
+            let listObj = this.allList[`type-`+this.tabIndex]
+            let params = {
+                channel:1
+            }
+
+            if(listObj.isRequest) return
+
+            if(listObj.done) return
+
+            listObj.isRequest = true
+
+            Object.assign(params, {
+                pageNum:listObj.pageNum,
+                pageSize:this.pageSize      
+            })
+
+            if(listObj.status != 99){
+                params.status = listObj.status
+            }
+
+            return new Promise((resolve)=>{
+                getOrderListApi(params).then((res)=>{
+                    listObj.isRequest = false
+
+                    if(res.data.code == 200){
+                        let data = res.data
+
+                        if(data.rows.length == 0){
+                            listObj.done = true
+                        }
+
+                        if(data.rows.length < this.pageSize){
+                            listObj.done = true
+                        }else{
+                            listObj.pageNum++
+                        }
+
+                        listObj.list = listObj.list.concat(data.rows)
+                    }
+
+                    resolve()
+                })
+            })
+        },
+        getAdvertiseList(){
+            let params = {
+                position:2
+            }
+
+            return new Promise((resolve)=>{
+                getAdvertiseListApi(params).then((res)=>{
+                    if(res.data.code == 200){
+                        let data = res.data.data || []
+                        this.advertiseList = data
+                    }
+                    resolve()
+                })
+            })
+        },
+        changeTab(index){
+            this.tabIndex = index
+
+            this.getOrderList()
+        },
+        goDetail(e){
+            let item = e.currentTarget.dataset.item
+            let query = {
+                orderId:item.id
+            }
 
             let url = `/packageUser/pages/order/detail?${utils.paramsStringify(query)}`
 

@@ -27,6 +27,17 @@
             </view>
         </view>
 
+        <view 
+            class="advertise"
+            v-if="advertiseList.length > 0"
+        >
+            <c-banner
+                style="width:720rpx;height:147rpx;"
+                :list="advertiseList"
+                :current="advertiseIndex"
+            ></c-banner>
+        </view>
+
         <c-bottom
             current="2"
             :isShowNav="true"
@@ -35,6 +46,7 @@
 </template>
 
 <script>
+import { getAdvertiseListApi } from '@/api/common'
 export default {
     data(){
         return{
@@ -46,20 +58,41 @@ export default {
                 {type:'ck',name:'乘客',link:'/packageUser/pages/passenger/list',ico:'icon-ck'},
                 {type:'pk',name:'票卡',link:'/packageUser/pages/card/list',ico:'icon-pk'},
 				{type:'vip',name:'会员信息',link:'/packageUser/pages/member/list',ico:'icon-vip'},
-            ]
+            ],
+            advertiseList:[],
+            advertiseIndex:0,
         }
     },
     onLoad(e) {
         this.options = e
-    },
-    onLoad(){
 
+        this.getList()
     },
     methods:{
+        getList(){
+            let list = [
+                this.getAdvertiseList()
+            ]
+
+            Promise.all(list).then(()=>{
+            })
+        },
+        getAdvertiseList(){
+            let params = {
+                position:3
+            }
+
+            getAdvertiseListApi(params).then((res)=>{
+                if(res.data.code == 200){
+                    let data = res.data.data || []
+                    this.advertiseList = data
+                }
+            })
+        },
         go(item){
             if(!item.link){
                 uni.showToast({
-                    title:'敬请期待',
+                    title:'即将上线，敬请期待',
                     icon:'none'
                 })
                 return

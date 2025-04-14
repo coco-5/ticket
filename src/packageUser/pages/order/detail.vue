@@ -36,11 +36,11 @@
 
         <view 
             class="banner"
-            v-if="bannerList.length > 0"
+            v-if="advertiseList.length > 0"
         >
             <c-banner
                 style="height:189rpx;"
-                :list="bannerList"
+                :list="advertiseList"
             ></c-banner>
         </view>
 
@@ -52,17 +52,56 @@
 </template>
 
 <script>
+import { getAdvertiseListApi } from '@/api/common'
+import { getOrderDetailApi } from '@/api/order'
 export default {
     data(){
         return{
-            bannerList:['','','']
+            advertiseList:[],
+            advertiseIndex:0,
         }
     },
     onLoad(e){
         this.options = e
+
+        this.getList()
     },
     methods:{
+        getList(){
+            let list = [
+                this.getAdvertiseList(),
+                this.getOrderDetail(),
+            ]
 
+            Promise.all(list).then(()=>{
+            })
+        },
+        getOrderDetail(){
+            let params = {
+                orderId:this.options.orderId
+            }
+
+            return new Promise((resolve)=>{
+                getOrderDetailApi(params).then((res)=>{
+                    resolve()
+                })
+            })
+        },
+        getAdvertiseList(){
+            let params = {
+                position:4
+            }
+
+            return new Promise((resolve)=>{
+                getAdvertiseListApi(params).then((res)=>{
+                    if(res.data.code == 200){
+                        let data = res.data.data || []
+                        this.advertiseList = data
+                    }
+                    resolve()
+                })
+            })
+        },
     }
 }
 </script>

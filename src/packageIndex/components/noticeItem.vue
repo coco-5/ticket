@@ -44,7 +44,6 @@ export default {
             uni.navigateTo({
                 url,
             })
-
         }
     }
 }
@@ -62,6 +61,10 @@ export default {
     }
     .text {
         display:inline-block;
+        width:90%;
+        white-space:nowrap;
+        overflow:hidden;
+        text-overflow:ellipsis;
         vertical-align:middle;
     }
     .ico {

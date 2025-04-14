@@ -10,9 +10,11 @@
         </template>
         <swiper 
             class="swiper"
+            :autoplay="true"
             v-else
         >
             <swiper-item
+                class="swiper-item"
                 v-for="(item,index) in noticeList"
                 :key="index"
             >
@@ -65,5 +67,12 @@ export default {
     border-radius:4rpx;
     color:#EC702E;
     font-size:25rpx;
+}
+
+.swiper {
+    height:55rpx;
+    .swiper-item {
+        height:55rpx;
+    }
 }
 </style>

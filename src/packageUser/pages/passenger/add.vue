@@ -22,7 +22,7 @@
                         v-else
                     ></c-picker>
                 </template>
-                <template v-if="item.type == 'cardType'">
+                <template v-else-if="item.type == 'certificateType'">
                     <view 
                         class="placeholder"
                         v-if="!item.value"
@@ -33,7 +33,7 @@
                         v-else
                     ></c-picker>
                 </template>
-                <template v-if="item.type == 'birth'">
+                <template v-else-if="item.type == 'birthday'">
                     <view 
                         class="placeholder"
                         v-if="!item.value"
@@ -50,6 +50,8 @@
                             type="number" 
                             placeholder-style="color:#999;"
                             :placeholder="item.placeholder"
+                            :value="item.value"
+                            @input="input"
                         />
                     </view>
                 </template>
@@ -59,6 +61,8 @@
                             type="text" 
                             placeholder-style="color:#999;"
                             :placeholder="item.placeholder"
+                            :value="item.value"
+                            @input="input"
                         />
                     </view>
                 </template>
@@ -117,6 +121,7 @@
 
 <script>
 import utils from '@/utils/utils'
+import { getPassengerUpdateApi } from '@/api/passenger'
 export default {
     data(){
         return{
@@ -133,7 +138,7 @@ export default {
                 },
                 {
                     title:'姓名',
-                    type:'name',
+                    type:'passengerName',
                     placeholder:'请填写姓名',
                     required:true,
                     value:'',
@@ -151,7 +156,7 @@ export default {
                 },
                 {
                     title:'证件类型',
-                    type:'cardType',
+                    type:'certificateType',
                     placeholder:'请选择证件类型',
                     required:true,
                     value:'',
@@ -160,7 +165,7 @@ export default {
                 },
                 {
                     title:'证件号码',
-                    type:'passport',
+                    type:'certificateNumber',
                     placeholder:'请填写乘船人的证件号码',
                     required:true,
                     value:'',
@@ -169,7 +174,7 @@ export default {
                 },
                 {
                     title:'出生日期',
-                    type:'birth',
+                    type:'birthday',
                     placeholder:'请选择出生日期',
                     required:true,
                     value:'',
@@ -194,8 +199,32 @@ export default {
         this.options = e
 
         this.fixActionsStyle()
+
+        this.getPassenger()
     },
     methods:{
+        getPassenger(){
+            if(!this.options.id){
+                return
+            }
+
+            return new Promise((resolve)=>{
+                this.$http.get(`/stage-api/passenger/${this.options.id}`).then((res)=>{
+                    if(res.data.code == 200){
+                        let data = res.data.data
+                        let list = this.list
+
+                        for(let p in data){
+                            list.forEach((item)=>{
+                                if(p == item.type){
+                                    item.value = data[p]
+                                }
+                            })
+                        }
+                    }
+                })
+            })
+        },
         fixActionsStyle(){
             let height = 0
             this.actionsStyle = `padding-bottom:${utils.fixIPhoneX() ? 68 + height : height}rpx;`
@@ -204,8 +233,21 @@ export default {
         defaultChange(e){
             this.defaultPassenger = !this.defaultPassenger
         },
-        save(){
+        input(e){
 
+        },
+        save(){
+            let list = this.list
+            let params = {}
+
+            getPassengerUpdateApi(params).then((res)=>{
+                if(res.data.code == 200){
+                    uni.showToast({
+                        title:'保存成功',
+                        icon:'none'
+                    })
+                }
+            })
         },
         del(){
 

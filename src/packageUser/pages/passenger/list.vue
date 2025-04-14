@@ -50,17 +50,41 @@
 
 <script>
 import utils from '@/utils/utils'
+import { getPassengerListApi } from '@/api/passenger'
 export default {
     data(){
         return{
             options:{},
-            list:[{},{}]      
+            list:[]      
         }
     },
     onLoad(e){
-        this.options = e;
+        this.options = e
+    },
+    onShow(){
+        this.getList()
     },
     methods:{
+        getList(){
+            let list = [
+                this.getPassengerList(),
+            ]
+
+            Promise.all(list).then(()=>{
+
+            })
+        },
+        getPassengerList(){
+            return new Promise((resolve)=>{
+                getPassengerListApi({}).then((res)=>{
+                    if(res.data.code == 200){
+                        let data = res.data.data || []
+
+                        this.list = data
+                    }
+                })
+            })
+        },
         goAdd(){
             this.go('add')
         },
@@ -195,5 +219,9 @@ export default {
     font-size:34rpx;
     font-weight:500;
     text-align:center;
+}
+
+.no-content {
+    margin:100rpx 0;
 }
 </style>
