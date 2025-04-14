@@ -12,6 +12,10 @@
             </view>
         </view>
 
+        <c-qrcode
+            ref="qrcode"
+        ></c-qrcode>
+
         <view v-if="tabIndex == 0">
             <view class="wrap-code">
                 <view class="dest">
@@ -139,9 +143,14 @@ export default {
         }
     },
     onLoad(e){
-
+        this.setCode()
     },
     methods:{
+        setCode(){
+            this.$nextTick(()=>{
+                this.$refs.qrcode.setCode('https://www.baidu.com')
+            })
+        },
         changeTab(index){
             this.tabIndex = index
         }
