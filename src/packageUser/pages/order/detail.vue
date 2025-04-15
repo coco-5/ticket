@@ -109,7 +109,7 @@ export default {
 <style lang="scss" scoped>
 .page {
     min-height:100vh;
-    background:url('http://182.254.192.167:6003/vue/upload/static/order/bg.png') #F8F8F8 no-repeat;
+    background:url('http://8.138.130.153:6003/vue/upload/static/order/bg.png') #F8F8F8 no-repeat;
     background-size:contain;
 }
 
@@ -131,7 +131,7 @@ export default {
         margin:32rpx 24rpx 0 40rpx;
         width:50rpx;
         height:50rpx;
-        background:url('http://182.254.192.167:6003/vue/upload/static/order/icon-time.png') no-repeat;
+        background:url('http://8.138.130.153:6003/vue/upload/static/order/icon-time.png') no-repeat;
         background-size:contain;
     }
     .text {
@@ -226,7 +226,7 @@ export default {
                     margin:4rpx auto;
                     width:83rpx;
                     height:5rpx;
-                    background:url('http://182.254.192.167:6003/vue/upload/static/order/car2.png') no-repeat;
+                    background:url('http://8.138.130.153:6003/vue/upload/static/order/car2.png') no-repeat;
                     background-size:contain;
                 }
             }
@@ -255,7 +255,7 @@ export default {
             transform:translateY(-50%);
             width:21rpx;
             height:11rpx;
-            background:url('http://182.254.192.167:6003/vue/upload/static/order/icon.png') no-repeat;
+            background:url('http://8.138.130.153:6003/vue/upload/static/order/icon.png') no-repeat;
             background-size:contain;
         }
     }

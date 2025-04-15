@@ -4,9 +4,10 @@ let baseConfig = {
     pageSize : 20,
     appName : 'tiku_pro',
     proxyApi:{
-        main:'https://newxcx.wqcpt.com'
+        //main:'https://newxcx.wqcpt.com'
+        main:'http://8.138.130.153:8082'
     },
-    imgPath:'http://182.254.192.167:6003/vue/upload/static/'
+    imgPath:'http://8.138.130.153:6003/vue/upload/static/'
 }
 
 //wxb44343ae74bf830e 

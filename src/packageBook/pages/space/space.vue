@@ -148,7 +148,7 @@ export default {
 <style lang="scss" scoped>
 .page {
     min-height:100vh;
-    background:url('http://182.254.192.167:6003/vue/upload/static/order/bg.png') #F8F8F8 no-repeat;
+    background:url('http://8.138.130.153:6003/vue/upload/static/order/bg.png') #F8F8F8 no-repeat;
     background-size:contain;
 }
 
@@ -217,7 +217,7 @@ export default {
                 transform:translate(-50%,-50%);
                 width:103rpx;
                 height:5rpx;
-                background:url('http://182.254.192.167:6003/vue/upload/static/order/car2.png') no-repeat;
+                background:url('http://8.138.130.153:6003/vue/upload/static/order/car2.png') no-repeat;
                 background-size:contain;
             }
         }
@@ -362,7 +362,7 @@ export default {
         right:24rpx;
         width:42rpx;
         height:43rpx;
-        background:url('http://182.254.192.167:6003/vue/upload/static/common/icon-colse.png') no-repeat;
+        background:url('http://8.138.130.153:6003/vue/upload/static/common/icon-colse.png') no-repeat;
         background-size:contain;
     }
     .item {

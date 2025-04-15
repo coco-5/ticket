@@ -22,20 +22,11 @@ export default {
         index:{
             type:[Number,String],
             default:0
-        },
-        value:{
-            type:String,
-            default:''
         }
     },
     watch:{
         index:{
             immediate:true,
-            deep:true,
-            handler(n){
-            }   
-        },
-        value:{
             deep:true,
             handler(n){
             }   
@@ -60,12 +51,13 @@ export default {
 }
 
 text {
-    color:#747491;
-    font-weight:500;
+    //color:#747491;
+    //font-weight:500;
 }
 
 .a {
     display:inline-block;
+    font-size:28rpx;
     vertical-align:middle;
 }
 </style>

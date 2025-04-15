@@ -310,7 +310,7 @@ export default{
                 margin:0 8rpx;
                 width:24rpx;
                 height:19rpx;
-                background:url('http://182.254.192.167:6003/vue/upload/static/order/icon-wf.png') no-repeat;
+                background:url('http://8.138.130.153:6003/vue/upload/static/order/icon-wf.png') no-repeat;
                 background-size:contain;
             }
         }

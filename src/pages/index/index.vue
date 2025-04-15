@@ -107,6 +107,12 @@ export default {
         changeAdvertise(index){
             this.advertiseIndex = index
         }
+    },
+    onShareAppMessage(e){
+        return {
+            title: ``,
+            path: ``
+        }
     }
 }
 </script>

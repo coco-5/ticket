@@ -124,24 +124,24 @@ export default {
             font-size:22rpx;
         }
         &.zhuaoka {
-            background-image:url('http://182.254.192.167:6003/vue/upload/static/vip/type-bg1.png');
+            background-image:url('http://8.138.130.153:6003/vue/upload/static/vip/type-bg1.png');
             .name {
                 .ico {
-                    background-image:url('http://182.254.192.167:6003/vue/upload/static/vip/type-id1.png');    
+                    background-image:url('http://8.138.130.153:6003/vue/upload/static/vip/type-id1.png');    
                 }
                 .type {
                     color:#FFF;
                 }
             }
             .line {
-                background-image:url('http://182.254.192.167:6003/vue/upload/static/vip/type-border1.png'); 
+                background-image:url('http://8.138.130.153:6003/vue/upload/static/vip/type-border1.png'); 
             }
         }
         &.zhuaojumen {
-            background-image:url('http://182.254.192.167:6003/vue/upload/static/vip/type-bg2.png');
+            background-image:url('http://8.138.130.153:6003/vue/upload/static/vip/type-bg2.png');
             .name {
                 .ico {
-                    background-image:url('http://182.254.192.167:6003/vue/upload/static/vip/type-id2.png');    
+                    background-image:url('http://8.138.130.153:6003/vue/upload/static/vip/type-id2.png');    
                 }
                 .type {
                     color:#9E6F3D;
@@ -149,21 +149,21 @@ export default {
 
             }
             .line {
-                background-image:url('http://182.254.192.167:6003/vue/upload/static/vip/type-border2.png'); 
+                background-image:url('http://8.138.130.153:6003/vue/upload/static/vip/type-border2.png'); 
             }
         }
         &.disabled {
-            background-image:url('http://182.254.192.167:6003/vue/upload/static/vip/type-bg3.png');
+            background-image:url('http://8.138.130.153:6003/vue/upload/static/vip/type-bg3.png');
             .name {
                 .ico {
-                    background-image:url('http://182.254.192.167:6003/vue/upload/static/vip/type-id3.png');    
+                    background-image:url('http://8.138.130.153:6003/vue/upload/static/vip/type-id3.png');    
                 }
                 .type {
                     color:rgba(0,0,0,.5);
                 }
             }
             .line {
-                background-image:url('http://182.254.192.167:6003/vue/upload/static/vip/type-border3.png'); 
+                background-image:url('http://8.138.130.153:6003/vue/upload/static/vip/type-border3.png'); 
             }
         }
     }

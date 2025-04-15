@@ -142,7 +142,7 @@ export default {
                     width:11rpx;
                     height:6rpx;
                     margin-left:10rpx;
-                    background:url('http://182.254.192.167:6003/vue/upload/static/common/WechatIMG221.png') no-repeat center center;
+                    background:url('http://8.138.130.153:6003/vue/upload/static/common/WechatIMG221.png') no-repeat center center;
                     background-size:contain;
                     vertical-align:4rpx;
                 }
@@ -182,7 +182,7 @@ export default {
             right:0;
             width:99rpx;
             height:99rpx;
-            background:url('http://182.254.192.167:6003/vue/upload/static/ticketCard/invalid.png') no-repeat;
+            background:url('http://8.138.130.153:6003/vue/upload/static/ticketCard/invalid.png') no-repeat;
             background-size:contain;
         }
     }

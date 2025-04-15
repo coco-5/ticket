@@ -19,6 +19,9 @@
                         {{item.placeholder}}
                     </view>
                     <c-picker
+                        :range="passengerTypeRange"
+                        :index="passengerTypeIndex"
+                        @change="changePassengerType"
                         v-else
                     ></c-picker>
                 </template>
@@ -122,6 +125,9 @@
 <script>
 import utils from '@/utils/utils'
 import { getPassengerUpdateApi } from '@/api/passenger'
+import map from '@/utils/map'
+
+console.log(999,'map',map)
 export default {
     data(){
         return{
@@ -191,6 +197,8 @@ export default {
                     arrow:false
                 }
             ],
+            passengerTypeRange:[],
+            passengerTypeIndex:0,
             actionsStyle:'',
             defaultPassenger:false,
         }
@@ -200,9 +208,18 @@ export default {
 
         this.fixActionsStyle()
 
+        this.initPickerRange()
+
         this.getPassenger()
     },
     methods:{
+        initPickerRange(){
+            this.passengerTypeRange = map.passengerTypeRange
+            this.passengerTypeList = map.passengerTypeList
+
+            console.log(9999,'passengerTypeRange',this.passengerTypeRange)
+            console.log(9999,'passengerTypeList',this.passengerTypeList)
+        },
         getPassenger(){
             if(!this.options.id){
                 return
@@ -228,7 +245,6 @@ export default {
         fixActionsStyle(){
             let height = 0
             this.actionsStyle = `padding-bottom:${utils.fixIPhoneX() ? 68 + height : height}rpx;`
-            console.log(999,'actionsStyle',this.actionsStyle)   
         },
         defaultChange(e){
             this.defaultPassenger = !this.defaultPassenger
@@ -238,7 +254,17 @@ export default {
         },
         save(){
             let list = this.list
-            let params = {}
+            let params = {
+                birthday:'',
+                certificateNumber:'',
+                certificateType:2,
+                channel:1,
+                mobile:1,
+                passengerName:'zz',
+                passengerType:1
+            }
+
+            return
 
             getPassengerUpdateApi(params).then((res)=>{
                 if(res.data.code == 200){
@@ -251,6 +277,10 @@ export default {
         },
         del(){
 
+        },
+        changePassengerType(index){
+            this.passengerTypeIndex = index
+            console.log(9999,'index',index)
         }
     }
 }
@@ -294,7 +324,7 @@ export default {
             right:0;
             transform:translateY(-50%);
             width:21rpx;
-            height:11rpx;background:url('http://182.254.192.167:6003/vue/upload/static/order/icon.png') no-repeat;
+            height:11rpx;background:url('http://8.138.130.153:6003/vue/upload/static/order/icon.png') no-repeat;
             background-size:contain;
         }
         .placeholder {

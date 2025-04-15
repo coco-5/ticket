@@ -19,3 +19,13 @@ export function getPassengerUpdateApi(params){
         })
     })
 }
+
+export function getPassengerAddApi(params){
+    params = Object.assign({}, params)
+
+    return new Promise((resolve, reject)=>{
+        _this.$http.post(`/stage-api/passenger/add`,params).then((res)=>{
+            resolve(res)
+        })
+    })
+}

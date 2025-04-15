@@ -27,7 +27,7 @@ export default {
     data(){
         return{
             payList:[
-                {type:'wxpay', name:'微信支付（澳门币支付）',desc:'微信安全支付',ico:'http://182.254.192.167:6003/vue/upload/static/paylist/wxzf.png'},
+                {type:'wxpay', name:'微信支付（澳门币支付）',desc:'微信安全支付',ico:'http://8.138.130.153:6003/vue/upload/static/paylist/wxzf.png'},
             ]
         }
     },

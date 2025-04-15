@@ -33,7 +33,7 @@ export default {
                     sort:0,
                     display:1, 
                     title:'票卡购票',
-                    icon:'http://182.254.192.167:6003/vue/upload/static/index/ad-pkgp.png'
+                    icon:'http://8.138.130.153:6003/vue/upload/static/index/ad-pkgp.png'
                 }
             ],
             isShowCard:false       
