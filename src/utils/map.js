@@ -25,19 +25,23 @@ export default {
     certificateTypeList:[
         {
             value:2,
-            label:'护照'
+            label:'护照',
+            regex:/^[A-Za-z0-9]{7,17}$/
         },
         {
             value:3,
-            label:'港澳通行证'
+            label:'港澳通行证',
+            regex:/^[A-Za-z]\d{8}|[A-Za-z]{2}\d{7}$/
         },
         {
             value:5,
-            label:'回乡证'
+            label:'回乡证',
+            regex:/^[A-Za-z]\d{8,10}$/
         },
         {
             value:7,
-            label:'台胞证'
+            label:'台胞证',
+            regex:/^\d{8,10}|(\d{10}[A-Za-z])$/
         }
     ],
     certificateTypeTips:[
@@ -51,5 +55,5 @@ export default {
         'http://8.138.130.153:6003/vue/upload/static/passenger/type3.jpg',
         'http://8.138.130.153:6003/vue/upload/static/passenger/type5.jpg',
         'http://8.138.130.153:6003/vue/upload/static/passenger/type7.jpg'
-    ]
+    ],
 }

@@ -61,6 +61,10 @@ function request(){
         return _request('DELETE',url,data,config)
     }
 
+    //application/json;charset=UTF-8
+    //application/x-www-form-urlencoded;charset=UTF-8
+
+
     function _request(method,url,data,config){
         let options = {}
         let headerData = {}
@@ -69,6 +73,12 @@ function request(){
 
         headerData = {
             'Authorization': 'Bearer ' + (uni.getStorageSync('token') || '')
+        }
+
+        if(method === 'PUT'){
+            Object.assign(headerData, {
+                'content-type': 'application/json'
+            })
         }
  
         options.method = method

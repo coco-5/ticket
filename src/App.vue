@@ -38,7 +38,7 @@
                     if(res.data.code == 200){
                         let data = res.data.data
 
-                        //uni.setStorageSync('token',data)
+                        uni.setStorageSync('token',data)
                     } 
                 })
             }

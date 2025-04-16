@@ -64,6 +64,13 @@
                         />
                     </view>
                 </template>
+                <template v-else-if="item.type == 'isDefault'">
+                    <switch 
+                        class="switch"
+                        :checked="item.value" 
+                        @change="defaultChange"
+                    />
+                </template>
                 <template v-else>
                     <view class="input">
                         <input 
@@ -71,7 +78,8 @@
                             placeholder-style="color:#999;"
                             :placeholder="item.placeholder"
                             :value="item.value"
-                            @input="input"
+                            :maxLenght="item.maxLenght"
+                            @input="input(item,$event)"
                         />
                     </view>
                 </template>
@@ -91,14 +99,6 @@
                         点击查看图列
                     </text>
                 </view>
-            </view>
-            <view class="default">
-                <view class="label">设置默认乘客</view>
-                <switch 
-                    class="switch"
-                    :checked="defaultPassenger" 
-                    @change="defaultChange"
-                />
             </view>
         </view>
         <view class="tips">
@@ -123,13 +123,14 @@
             >
                 <view 
                     class="btn"
-                    @click="save"
+                    @click="submit"
                 >
                     保存
                 </view>
                 <view 
                     class="btn b1"
-                    @clcik="del"
+                    @click="confirmDelete"
+                    v-if="options.type == 'edit'"
                 >
                     删除
                 </view>
@@ -164,7 +165,7 @@
 
 <script>
 import utils from '@/utils/utils'
-import { getPassengerUpdateApi } from '@/api/passenger'
+import { getPassengerDetailApi, getPassengerUpdateApi, getPassengerDeleteApi } from '@/api/passenger'
 import map from '@/utils/map'
 
 export default {
@@ -188,7 +189,8 @@ export default {
                     required:true,
                     value:'',
                     link:'',
-                    arrow:false
+                    arrow:false,
+                    maxLenght:11,
                 },
                 {
                     title:'手机号',
@@ -197,7 +199,8 @@ export default {
                     required:true,
                     value:'',
                     link:'',
-                    arrow:false
+                    arrow:false,
+                    maxLenght:11,
                 },
                 {
                     title:'证件类型',
@@ -215,7 +218,8 @@ export default {
                     required:true,
                     value:'',
                     link:'',
-                    arrow:false
+                    arrow:false,
+                    maxLenght:20,
                 },
                 {
                     title:'出生日期',
@@ -228,8 +232,17 @@ export default {
                 },
                 {
                     title:'人脸信息',
-                    type:'face',
+                    type:'facePhoto',
                     placeholder:'点此采集',
+                    required:false,
+                    value:'',
+                    link:'',
+                    arrow:false
+                },
+                {
+                    title:'设置默认乘客',
+                    type:'isDefault',
+                    placeholder:'',
                     required:false,
                     value:'',
                     link:'',
@@ -243,7 +256,6 @@ export default {
             certificateTypeTips:map.certificateTypeTips,
             certificateTypeImages:map.certificateTypeImages,
             actionsStyle:'',
-            defaultPassenger:0,
             showWinDialog:false
         }
     },
@@ -270,7 +282,7 @@ export default {
             }
 
             return new Promise((resolve)=>{
-                this.$http.get(`/stage-api/passenger/${this.options.id}`).then((res)=>{
+                getPassengerDetailApi(this.options.id).then((res)=>{
                     if(res.data.code == 200){
                         let data = res.data.data
                         let list = this.list
@@ -281,11 +293,10 @@ export default {
                                     item.value = data[p]
                                 }
                             })
+                            
                         }
 
                         this.passengerDetail = data
-
-                        console.log(999,'data',data)
                     }
                 })
             })
@@ -295,12 +306,16 @@ export default {
             this.actionsStyle = `padding-bottom:${utils.fixIPhoneX() ? 68 + height : height}rpx;`
         },
         defaultChange(e){
-            this.defaultPassenger = !this.defaultPassenger
-        },
-        input(e){
+            let value = e.detail.value ? 1 : 0
 
+            this.setValue('isDefault', value)
         },
-        save(){
+        input(item,e){
+            let value = e.detail.value
+
+            this.setValue(item.type, value)
+        },
+        submit(){
             let list = this.list
             
             for(let i=0; i<list.length; i++){
@@ -311,34 +326,71 @@ export default {
                     })
                     break
                 }
-                console.log(9999,i,list[i])
             }
 
             this.update()
         },
-        update(){
+        returnParams(type){
             let list = this.list
             let passengerDetail = this.passengerDetail
+
             let params = {
                 birthday:'',
                 certificateNumber:'',
                 certificateType:2,
-                delFlag:0,
-                facePhoto:'',
-                facePhotoId:'',
-                isDefault:1,
-                mobile:1,
-                openid:'',
-                passengerName:'zz',
+                channel:1,
+                mobile:'',
+                passengerName:'',
                 passengerType:1
             }
 
-            if(this.options.type == 'edit'){
-                params.id = this.options.id
-                params.createTime = passengerDetail.createTime
+            if(type == 'edit'){
+                Object.assign(params,{
+                    delFlag:0,  
+                    facePhoto:'',
+                    facePhotoId:'',
+                    mobile:1,  
+                    isDefault:0,
+                    id:this.options.id,
+                    createTime:passengerDetail.createTime,
+                    openid:passengerDetail.openid
+                })
             }
 
-            return
+            list.forEach((item)=>{
+                for(let p in params){
+                    if(item.type == p){
+                        params[p] = item.value    
+                    }
+
+                }   
+            })
+
+            return params
+        },
+        add(){
+            let params = this.returnParams('add')
+
+            getPassengerAddApi(params).then((res)=>{
+                if(res.data.code == 200){
+                    uni.showToast({
+                        title:'新建成功',
+                        icon:'none'
+                    })
+
+                    setTimeout(()=>{
+                        this.goList()
+                    },2000)
+                }else{
+                    uni.showToast({
+                        title:res.data.msg,
+                        icon:'none'
+                    })
+                }
+            })
+        },
+        update(){
+            let params = this.returnParams('edit')
 
             getPassengerUpdateApi(params).then((res)=>{
                 if(res.data.code == 200){
@@ -346,28 +398,77 @@ export default {
                         title:'保存成功',
                         icon:'none'
                     })
+
+                    setTimeout(()=>{
+                        this.goList()
+                    },2000)
+                }else{
+                    uni.showToast({
+                        title:res.data.msg,
+                        icon:'none'
+                    })
                 }
             })
         },
-        del(){
+        confirmDelete(){
+            uni.showModal({
+                title:'提示',
+                content:'确定删除该乘客吗？',
+                success:(res)=>{
+                    if(res.confirm){
+                        this.deletePassenger()
+                    }
+                }
+            })
+        },
+        deletePassenger(){
+            getPassengerDeleteApi(this.options.id).then((res)=>{
+                if(res.data.code == 200){
+                    uni.showToast({
+                        title:'删除成功',
+                        icon:'none'
+                    })
 
+                    setTimeout(()=>{
+                        this.goList()
+                    },2000)
+                }else{
+                    uni.showToast({
+                        title:res.data.msg,
+                        icon:'none'
+                    })
+                }
+            })
+        },
+        goList(){
+            let url = `/packageUser/pages/passenger/list`
+
+            uni.redirectTo({
+                url
+            })
         },
         changePassengerType(index){
             this.passengerTypeIndex = index
+
+            this.setValue('passengerType',this.passengerTypeList[index].value)
         },
         changeCertificateType(index){
             this.certificateTypeIndex = index
+            this.setValue('certificateType',this.certificateTypeList[index].value)
         },
         changeBirthday(data){
+            this.setValue('birthday',data)
+        },
+        setValue(name,value){
             let list = this.list
 
             for(let i=0; i<list.length; i++){
-                if(list[i].type == 'birthday'){
-                    list[i].value = data
+                if(list[i].type == name){
+                    list[i].value = value
                     break
                 }
             }
-        },
+        }
     }
 }
 </script>
@@ -437,23 +538,22 @@ export default {
                 }
             }
         }
-    }
-    .default {
-        position:relative;
-        margin:0 40rpx 0 50rpx;
-        padding-bottom:32rpx;
-        height:116rpx;
-        line-height:116rpx;
-        .label {
-            display:inline-block;
-            margin-right:50rpx;
-            width:200rpx;
-            vertical-align:middle;
-        }
-        .switch {
-            display:inline-block;
-            height:30rpx;
-            vertical-align:top;
+        &.item-isDefault {
+            position:relative;
+            margin:0 40rpx 0 50rpx;
+            padding-bottom:32rpx;
+            .label {
+                display:inline-block;
+                margin-right:50rpx;
+                width:200rpx;
+                vertical-align:middle;
+            }
+            .switch {
+                display:inline-block;
+                height:30rpx;
+                vertical-align:top;
+            }
+
         }
     }
 }
