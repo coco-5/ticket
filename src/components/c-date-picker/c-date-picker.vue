@@ -1,13 +1,12 @@
 <template>
     <view class="a">
         <picker
-            class="picker"
-            :range="range"
-            :value="index" 
+            mode="date"
+            :value="date"
             @change="change"
         >
             <text>
-                <template>{{range[index]}}</template>
+                <template>{{date}}</template>
             </text> 
         </picker>
     </view>
@@ -16,17 +15,13 @@
 <script>
 export default {
     props:{
-        range:{
-            type:Array,
-            default:()=>[]
-        },
-        index:{
-            type:[Number,String],
-            default:0
+        date:{
+            type:String,
+            default:''
         }
     },
     watch:{
-        index:{
+        date:{
             immediate:true,
             deep:true,
             handler(n){
@@ -35,10 +30,20 @@ export default {
     },
     data(){
         return {
-            
+            start:'2015-09-01',
+            end:''     
         }
     },
+    mounted(){
+        this.initEnd()
+    },
     methods:{
+        initEnd(){
+            let now = new Date()
+            const year = now.getFullYear()
+
+            this.end = `${year}-12-31`
+        },
         change(e){
             this.$emit('change',e.detail.value)
         }
@@ -58,11 +63,7 @@ text {
 
 .a {
     display:inline-block;
-    width:60%;
     font-size:28rpx;
     vertical-align:middle;
-    .picker {
-        width:100%;
-    }
 }
 </style>

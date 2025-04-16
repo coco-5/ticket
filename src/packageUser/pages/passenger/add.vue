@@ -3,6 +3,7 @@
         <view class="list">
             <view 
                 class="item"
+                :class="'item-' + item.type"
                 v-for="(item,index) in list"
                 :key="index"
             >
@@ -33,6 +34,9 @@
                         {{item.placeholder}}
                     </view>
                     <c-picker
+                        :range="certificateTypeRange"
+                        :index="certificateTypeIndex"
+                        @change="changeCertificateType"
                         v-else
                     ></c-picker>
                 </template>
@@ -43,9 +47,11 @@
                     >
                         {{item.placeholder}}
                     </view>
-                    <c-picker
+                    <c-date-picker
+                        :date="item.value"
+                        @change="changeBirthday"
                         v-else
-                    ></c-picker>
+                    ></c-date-picker>
                 </template>
                 <template v-else-if="item.type == 'mobile'">
                     <view class="input">
@@ -73,6 +79,18 @@
                     class="ico"
                     v-if="item.arrow"
                 ></view>
+                <view 
+                    class="item-tips"
+                    v-if="item.type == 'certificateNumber'"
+                >
+                    {{certificateTypeTips[certificateTypeIndex]}}
+                    <text 
+                        class="span"
+                        @click="showWinDialog = true"
+                    >
+                        点击查看图列
+                    </text>
+                </view>
             </view>
             <view class="default">
                 <view class="label">设置默认乘客</view>
@@ -118,6 +136,28 @@
             </view>
         </view>
 
+        <view 
+            class="win-dialog"
+            v-show="showWinDialog"
+        >
+            <view class="win-bg"></view>
+            <view class="win-main">
+                <view class="hd">{{certificateTypeRange[certificateTypeIndex]}}</view>
+                <view class="bd">
+                    <image 
+                        :src="certificateTypeImages[certificateTypeIndex]" 
+                    ></image>
+                    <view class="tips">证件号码如图所示填写</view>
+                </view>
+                <view 
+                    class="ft"
+                    @click="showWinDialog = false"
+                >   
+                    知道了
+                </view>
+            </view>
+        </view>
+
         <c-birth></c-birth>
     </view>
 </template>
@@ -127,7 +167,6 @@ import utils from '@/utils/utils'
 import { getPassengerUpdateApi } from '@/api/passenger'
 import map from '@/utils/map'
 
-console.log(999,'map',map)
 export default {
     data(){
         return{
@@ -176,7 +215,7 @@ export default {
                     required:true,
                     value:'',
                     link:'',
-                    arrow:true
+                    arrow:false
                 },
                 {
                     title:'出生日期',
@@ -199,8 +238,13 @@ export default {
             ],
             passengerTypeRange:[],
             passengerTypeIndex:0,
+            certificateTypeRange:[],
+            certificateTypeIndex:0,
+            certificateTypeTips:map.certificateTypeTips,
+            certificateTypeImages:map.certificateTypeImages,
             actionsStyle:'',
-            defaultPassenger:false,
+            defaultPassenger:0,
+            showWinDialog:false
         }
     },
     onLoad(e){
@@ -217,8 +261,8 @@ export default {
             this.passengerTypeRange = map.passengerTypeRange
             this.passengerTypeList = map.passengerTypeList
 
-            console.log(9999,'passengerTypeRange',this.passengerTypeRange)
-            console.log(9999,'passengerTypeList',this.passengerTypeList)
+            this.certificateTypeRange = map.certificateTypeRange
+            this.certificateTypeList = map.certificateTypeList
         },
         getPassenger(){
             if(!this.options.id){
@@ -238,6 +282,10 @@ export default {
                                 }
                             })
                         }
+
+                        this.passengerDetail = data
+
+                        console.log(999,'data',data)
                     }
                 })
             })
@@ -254,14 +302,40 @@ export default {
         },
         save(){
             let list = this.list
+            
+            for(let i=0; i<list.length; i++){
+                if(list[i].required && !list[i].value){
+                    uni.showToast({
+                        title:`${list[i].title}不能为空`,
+                        icon:'none'
+                    })
+                    break
+                }
+                console.log(9999,i,list[i])
+            }
+
+            this.update()
+        },
+        update(){
+            let list = this.list
+            let passengerDetail = this.passengerDetail
             let params = {
                 birthday:'',
                 certificateNumber:'',
                 certificateType:2,
-                channel:1,
+                delFlag:0,
+                facePhoto:'',
+                facePhotoId:'',
+                isDefault:1,
                 mobile:1,
+                openid:'',
                 passengerName:'zz',
                 passengerType:1
+            }
+
+            if(this.options.type == 'edit'){
+                params.id = this.options.id
+                params.createTime = passengerDetail.createTime
             }
 
             return
@@ -280,8 +354,20 @@ export default {
         },
         changePassengerType(index){
             this.passengerTypeIndex = index
-            console.log(9999,'index',index)
-        }
+        },
+        changeCertificateType(index){
+            this.certificateTypeIndex = index
+        },
+        changeBirthday(data){
+            let list = this.list
+
+            for(let i=0; i<list.length; i++){
+                if(list[i].type == 'birthday'){
+                    list[i].value = data
+                    break
+                }
+            }
+        },
     }
 }
 </script>
@@ -306,8 +392,7 @@ export default {
         border-bottom:1px solid #F7F7F7;
         .star {
             position:absolute;
-            top:50%;
-            transform:translateY(-50%);
+            top:5rpx;
             left:-20rpx;
             color:#FF0000;
             font-size:20rpx;
@@ -339,6 +424,18 @@ export default {
             width:420rpx;
             font-size:28rpx;
             vertical-align:middle;
+        }
+        &.item-certificateNumber {
+            padding-bottom:30rpx;
+            height:auto;
+            .item-tips {
+                line-height:40rpx;
+                font-size:24rpx;
+                color:#acabab;
+                .span {
+                    color:rgba(59, 109, 148, 1);
+                }
+            }
         }
     }
     .default {
@@ -408,5 +505,63 @@ export default {
     width:100%;
     height:296rpx;
     background:#FFF;
+}
+
+.win-dialog {
+    position:fixed;
+    top:0;
+    left:0;
+    z-index:10;
+    width:100%;
+    height:100vh;
+    .win-bg {
+        position:absolute;
+        top:0;
+        left:0;
+        width:100%;
+        height:100%;
+        background:rgba(0,0,0,.7);
+    }
+    .win-main {
+        position:fixed;
+        z-index:11;
+        top:50%;
+        left:50%;
+        transform:translate(-50%,-50%);
+        width:680rpx;
+        background:#FFF;
+        border-radius:40rpx;
+        text-align:center;
+        overflow:hidden;
+        .hd {
+            height:168rpx;
+            line-height:168rpx;
+            color:#000;
+            font-size:40rpx;
+            font-weight:500;
+        }
+        .bd {
+            padding:0 16rpx;
+            image {
+                width:100%;
+            }
+            .tips {
+                margin:40rpx 0 60rpx;
+                color:#999;
+                font-size:24rpx;
+            }
+        }
+        .ft {
+            margin:0 auto 82rpx;
+            width:486rpx;
+            height:100rpx;
+            line-height:100rpx;
+            background:linear-gradient(87deg, #FFA63F, #EB5628);
+            border-radius:50rpx;
+            color:#FFF;
+            font-size:34rpx;
+            font-weight:500;
+        }
+    }
 }
 </style>

@@ -1,9 +1,5 @@
 export default {
     //乘客类型
-    passengerType:{
-        1:'成人票',
-        2:'儿童票'
-    },
     passengerTypeRange:[
         '成人票',
         '儿童票'
@@ -20,12 +16,6 @@ export default {
         }
     ],
     //证件类型
-    certificateType:{
-        2:'护照',
-        3:'港澳通行证',
-        5:'回乡证',
-        7:'台胞证'
-    },
     certificateTypeRange:[
         '护照',
         '港澳通行证',
@@ -50,4 +40,16 @@ export default {
             label:'台胞证'
         }
     ],
+    certificateTypeTips:[
+        '格式为 “7~17位英文字母或数字”',
+        '格式为“1位英文字母”+“8位数字”或“2位英文字母”+“7位数字”',
+        '格式为“1位英文字母”+“8位或10位数字”',
+        '格式为“8位或10位数字或(10位数字+1位英文字母)”'
+    ],
+    certificateTypeImages:[
+        'http://8.138.130.153:6003/vue/upload/static/passenger/type2.jpg',
+        'http://8.138.130.153:6003/vue/upload/static/passenger/type3.jpg',
+        'http://8.138.130.153:6003/vue/upload/static/passenger/type5.jpg',
+        'http://8.138.130.153:6003/vue/upload/static/passenger/type7.jpg'
+    ]
 }
