@@ -16,11 +16,26 @@
                 v-for="(item,index) in list"
                 :key="index"
             >
-                <view class="name">张三好</view>
-                <view class="tag tag1">成人票</view>
-                <view class="tag tag2">儿童</view>
-                <view class="default">默认</view>
-                <view class="passport">港澳通行证 C10256841</view>
+                <view class="name">{{item.passengerName}}</view>
+                <view 
+                    class="tag tag1"
+                    v-if="item.passengerType == 1"
+                >
+                    成人票
+                </view>
+                <view 
+                    class="tag tag2"
+                    v-else-if="item.passengerType == 2"
+                >
+                    儿童
+                </view>
+                <view 
+                    class="default"
+                    v-if="item.isDefault == 1"
+                >
+                    默认
+                </view>
+                <view class="passport">{{item.certificateTypeName}} {{item.certificateNumber}}</view>
                 <view 
                     class="ico"
                     @click="edit(item)"
@@ -81,6 +96,8 @@ export default {
                         let data = res.data.data || []
 
                         this.list = data
+
+                        console.log(999,'list',this.list)
                     }
                 })
             })

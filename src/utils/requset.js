@@ -75,7 +75,7 @@ function request(){
             'Authorization': 'Bearer ' + (uni.getStorageSync('token') || '')
         }
 
-        if(method === 'PUT'){
+        if(method === 'PUT' || method === 'POST'){
             Object.assign(headerData, {
                 'content-type': 'application/json'
             })

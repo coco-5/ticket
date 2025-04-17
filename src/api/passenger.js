@@ -4,7 +4,7 @@ export function getPassengerListApi(params){
     params = Object.assign({}, params)
 
     return new Promise((resolve, reject)=>{
-        _this.$http.get(`passenger/getPassengerList`,params).then((res)=>{
+        _this.$http.get(`/passenger/getPassengerList`,params).then((res)=>{
             resolve(res)
         })
     })
@@ -20,7 +20,7 @@ export function getPassengerUpdateApi(params){
     })
 }
 
-export function getPassengerAddApi(params){
+export function getPassengerAddApi(id, params){
     params = Object.assign({}, params)
 
     return new Promise((resolve, reject)=>{
@@ -30,9 +30,9 @@ export function getPassengerAddApi(params){
     })
 }
 
-export function getPassengerDeleteApi(id){
+export function getPassengerDeleteApi(id, params){
     return new Promise((resolve, reject)=>{
-        _this.$http.delete(`/passenger/delete/${id}`,{}).then((res)=>{
+        _this.$http.delete(`/passenger/delete/${id}`,params).then((res)=>{
             resolve(res)
         })
     })

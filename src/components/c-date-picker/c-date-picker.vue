@@ -1,8 +1,11 @@
 <template>
     <view class="a">
         <picker
+            class="picker"
             mode="date"
             :value="date"
+            :start="start"
+            :end="end"
             @change="change"
         >
             <text>
@@ -17,7 +20,7 @@ export default {
     props:{
         date:{
             type:String,
-            default:''
+            default:'1980-01-01'
         }
     },
     watch:{
@@ -30,7 +33,7 @@ export default {
     },
     data(){
         return {
-            start:'2015-09-01',
+            start:'1924-01-01',
             end:''     
         }
     },
@@ -45,6 +48,7 @@ export default {
             this.end = `${year}-12-31`
         },
         change(e){
+            console.log(e.detail.value)
             this.$emit('change',e.detail.value)
         }
     }
@@ -63,7 +67,11 @@ text {
 
 .a {
     display:inline-block;
+    width:60%;
     font-size:28rpx;
     vertical-align:middle;
+    .picker {
+        width:100%;
+    }
 }
 </style>

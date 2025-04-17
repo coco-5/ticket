@@ -13,44 +13,23 @@
                 >*</view>
                 <view class="label">{{item.title}}</view>
                 <template v-if="item.type == 'passengerType'">
-                    <view 
-                        class="placeholder"
-                        v-if="!item.value"
-                    >
-                        {{item.placeholder}}
-                    </view>
                     <c-picker
                         :range="passengerTypeRange"
                         :index="passengerTypeIndex"
                         @change="changePassengerType"
-                        v-else
                     ></c-picker>
                 </template>
                 <template v-else-if="item.type == 'certificateType'">
-                    <view 
-                        class="placeholder"
-                        v-if="!item.value"
-                    >
-                        {{item.placeholder}}
-                    </view>
                     <c-picker
                         :range="certificateTypeRange"
                         :index="certificateTypeIndex"
                         @change="changeCertificateType"
-                        v-else
                     ></c-picker>
                 </template>
                 <template v-else-if="item.type == 'birthday'">
-                    <view 
-                        class="placeholder"
-                        v-if="!item.value"
-                    >
-                        {{item.placeholder}}
-                    </view>
                     <c-date-picker
-                        :date="item.value"
+                        :date="item.value || '2018-01-01'"
                         @change="changeBirthday"
-                        v-else
                     ></c-date-picker>
                 </template>
                 <template v-else-if="item.type == 'mobile'">
@@ -60,7 +39,8 @@
                             placeholder-style="color:#999;"
                             :placeholder="item.placeholder"
                             :value="item.value"
-                            @input="input"
+                            :maxlength="item.maxLenght"
+                            @input="input(item,$event)"
                         />
                     </view>
                 </template>
@@ -78,7 +58,7 @@
                             placeholder-style="color:#999;"
                             :placeholder="item.placeholder"
                             :value="item.value"
-                            :maxLenght="item.maxLenght"
+                            :maxlength="item.maxLenght"
                             @input="input(item,$event)"
                         />
                     </view>
@@ -165,7 +145,7 @@
 
 <script>
 import utils from '@/utils/utils'
-import { getPassengerDetailApi, getPassengerUpdateApi, getPassengerDeleteApi } from '@/api/passenger'
+import { getPassengerDetailApi, getPassengerUpdateApi, getPassengerAddApi, getPassengerDeleteApi } from '@/api/passenger'
 import map from '@/utils/map'
 
 export default {
@@ -230,7 +210,7 @@ export default {
                     link:'',
                     arrow:true
                 },
-                {
+                /* {
                     title:'人脸信息',
                     type:'facePhoto',
                     placeholder:'点此采集',
@@ -238,7 +218,7 @@ export default {
                     value:'',
                     link:'',
                     arrow:false
-                },
+                }, */
                 {
                     title:'设置默认乘客',
                     type:'isDefault',
@@ -256,7 +236,8 @@ export default {
             certificateTypeTips:map.certificateTypeTips,
             certificateTypeImages:map.certificateTypeImages,
             actionsStyle:'',
-            showWinDialog:false
+            showWinDialog:false,
+            date:'1980-01-01'
         }
     },
     onLoad(e){
@@ -277,7 +258,8 @@ export default {
             this.certificateTypeList = map.certificateTypeList
         },
         getPassenger(){
-            if(!this.options.id){
+            if(this.options.type == 'add'){
+                this.initPassenger()
                 return
             }
 
@@ -301,6 +283,19 @@ export default {
                 })
             })
         },
+        initPassenger(){
+            let list = this.list
+
+            list.forEach((item)=>{
+                if(item.type == 'passengerType'){
+                    item.value = this.passengerTypeList[this.passengerTypeIndex].value    
+                }else if(item.type == 'certificateType'){
+                    item.value = this.certificateTypeList[this.certificateTypeIndex].value 
+                }else if(item.type == 'birthday'){
+                    item.value = this.date
+                }
+            })
+        },
         fixActionsStyle(){
             let height = 0
             this.actionsStyle = `padding-bottom:${utils.fixIPhoneX() ? 68 + height : height}rpx;`
@@ -311,12 +306,12 @@ export default {
             this.setValue('isDefault', value)
         },
         input(item,e){
-            let value = e.detail.value
-
+            let value = e.detail.value   
             this.setValue(item.type, value)
         },
         submit(){
             let list = this.list
+            let canLoad = true
             
             for(let i=0; i<list.length; i++){
                 if(list[i].required && !list[i].value){
@@ -324,10 +319,45 @@ export default {
                         title:`${list[i].title}不能为空`,
                         icon:'none'
                     })
+                    canLoad = false
                     break
                 }
             }
-            this.update()
+
+            if(!canLoad) return
+
+            if(!this.checkRegex()) return
+
+            if(this.options.type == 'add'){
+                this.add()
+            }else{
+                this.update()
+            }
+        },
+        checkRegex(){
+            //验证各种格式
+            let regexMobile = /^1\d{10}$/
+            let mobile = this.getValue('mobile')
+            if(!regexMobile.test(mobile)){
+                uni.showToast({
+                    title:'手机号格式不正确',
+                    icon:'none'
+                })
+                return false
+            }
+
+            //检查证件号码的格式
+            let regexCer = this.certificateTypeList[this.certificateTypeIndex].regex
+            let certificateNumber = this.getValue('certificateNumber')
+            if(!regexCer.test(certificateNumber)){
+                uni.showToast({
+                    title:'证件号码格式不对',
+                    icon:'none'
+                })
+                return false
+            }
+
+            return true
         },
         returnParams(type){
             let list = this.list
@@ -365,20 +395,12 @@ export default {
                 }   
             })
 
-            //检查证件号码的格式
-            for(let p in params){
-                if(p == 'certificateNumber'){
-                    let regex = this.certificateTypeList[this.certificateTypeIndex].regex
-                    console.log(9999,'certificateNumber',params[p],regex)
-                }
-            }
-
             return params
         },
         add(){
             let params = this.returnParams('add')
 
-            getPassengerAddApi(params).then((res)=>{
+            getPassengerAddApi(this.options.id, params).then((res)=>{
                 if(res.data.code == 200){
                     uni.showToast({
                         title:'新建成功',
@@ -475,6 +497,18 @@ export default {
                     break
                 }
             }
+        },
+        getValue(name){
+            let list = this.list
+            let value = ''
+
+            for(let i=0; i<list.length; i++){
+                if(list[i].type == name){
+                    value = list[i].value
+                    break
+                }
+            }
+            return value
         }
     }
 }
