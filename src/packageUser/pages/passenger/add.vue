@@ -327,7 +327,6 @@ export default {
                     break
                 }
             }
-
             this.update()
         },
         returnParams(type){
@@ -365,6 +364,14 @@ export default {
 
                 }   
             })
+
+            //检查证件号码的格式
+            for(let p in params){
+                if(p == 'certificateNumber'){
+                    let regex = this.certificateTypeList[this.certificateTypeIndex].regex
+                    console.log(9999,'certificateNumber',params[p],regex)
+                }
+            }
 
             return params
         },

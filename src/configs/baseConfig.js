@@ -5,7 +5,7 @@ let baseConfig = {
     appName : 'tiku_pro',
     proxyApi:{
         //main:'https://newxcx.wqcpt.com'
-        main:'http://8.138.130.153:8082'
+        main:'http://8.138.130.153:8082/stage-api'
     },
     imgPath:'http://8.138.130.153:6003/vue/upload/static/'
 }

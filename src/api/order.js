@@ -4,7 +4,7 @@ let _this = Vue.prototype
 export function getOrderListApi(params){
     params = Object.assign({}, params)
     return new Promise((resolve, reject)=>{
-        _this.$http.get(`/stage-api/order/list`,params).then((res)=>{
+        _this.$http.get(`/order/list`,params).then((res)=>{
             resolve(res)
         })
     })
@@ -13,7 +13,7 @@ export function getOrderListApi(params){
 export function getOrderDetailApi(params){
     params = Object.assign({}, params)
     return new Promise((resolve, reject)=>{
-        _this.$http.get(`/stage-api/order/detail`,params).then((res)=>{
+        _this.$http.get(`/order/detail`,params).then((res)=>{
             resolve(res)
         })
     })
