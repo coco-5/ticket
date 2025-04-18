@@ -1,4 +1,4 @@
-<template>
+<template> 
     <view class="page">
         <view class="block"></view>
         <view class="order">

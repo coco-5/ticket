@@ -64,12 +64,6 @@
 					"style": {
 						"navigationBarTitleText":"增值服务选择"
 					}
-				},
-				{
-					"path": "pages/pay/way",
-					"style": {
-						"navigationBarTitleText":"支付方式"
-					}
 				}
 			]
         },
@@ -143,6 +137,12 @@
 					"path": "pages/order/services",
 					"style": { 
 						"navigationBarTitleText":"我的增值服务"
+					}
+				},
+				{
+					"path": "pages/order/way",
+					"style": {
+						"navigationBarTitleText":"支付方式"
 					}
 				},
 				{

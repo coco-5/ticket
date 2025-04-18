@@ -158,7 +158,7 @@ export default {
 
             }
 
-            let url = `/packageBook/pages/pay/way?${utils.paramsStringify(query)}`
+            let url = `/packageUser/pages/order/way?${utils.paramsStringify(query)}`
 
             uni.navigateTo({
                 url

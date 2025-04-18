@@ -11,27 +11,43 @@
             </view>
         </view>
 
-        <view class="list">
-            <card
-                :item="item"
+        <view 
+            class="list"
+            v-if="list.length"
+        >
+            <c-ticket-card
                 class="item"
+                type="buy"
+                :item="item"
                 v-for="(item,index) in list"
                 :key="index"
-            ></card>
+            ></c-ticket-card>
+        </view>
+
+        <view 
+            class="no-content"
+            v-else
+        >
+            <c-no-content
+                type="file"
+                title="暂无可用票卡"
+            ></c-no-content>    
         </view>
 
         <view class="actions">
-            <view class="btn">购买票卡</view>
+            <view 
+                class="btn"
+                @click="goBuy"
+            >
+                购买票卡
+            </view>
         </view>
     </view>
 </template>
 
 <script>
-import card from '@/packageUser/components/card'
+import { getTicketCardMyListApi } from '@/api/ticket'
 export default {
-    components:{
-        card
-    },
     data(){
         return{
             tabs:[
@@ -45,18 +61,42 @@ export default {
                 }
             ],
             tabIndex:0, 
-            list:[
-                {},
-                {},
-                {}
-            ]     
+            list:[]     
         }
     },
     onLoad(e){
         this.options = e
+
+        this.getList()
     },
     methods:{
+        getList(){
+            let list = [
+                this.getTicketCardMyList()
+            ]
 
+            Promise.all(list)
+        },
+        getTicketCardMyList(){
+            let params = {}
+
+            return new Promise((resolve)=>{
+                getTicketCardMyListApi(params).then((res)=>{
+                    if(res.data.code == 200){
+                        let data = res.data.data || []
+
+                        this.list = data
+
+                        console.log(999,111,data)
+                    }
+                })
+            })
+        },
+        goBuy(){
+            uni.navigateTo({
+                url:'/packageUser/pages/card/buy'
+            })
+        }
     }
 }
 </script>
@@ -108,6 +148,10 @@ export default {
     width:710rpx;
     background:#FFF;
     border-radius:20rpx;
+}
+
+.no-content {
+    margin:300rpx auto 0;
 }
 
 .actions {

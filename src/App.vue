@@ -1,5 +1,5 @@
 <script>
-    import { smsLoginApi } from '@/api/user'
+    import { smsLoginApi,wxLoginApi } from '@/api/user'
     /*
     * App.vue在解耦构建的模式种，并不会被执行，这是因为uni项目只是作为一个包被引入到主小程序项目中
     * 主小程序的原生app.js才是入口文件，是否执行uni项目的App.vue是由整个小程序的管理者决定
@@ -29,9 +29,14 @@
                 uni.login({
                     success:res=>{
                         console.log(999,'login',res)
-                        if(res.errMsg == ''){
+                        /* if(res.errMsg == 'login:ok'){
+                            let code = res.code
+                            wxLoginApi({
+                                code,
+                            }).then((res)=>{
 
-                        }
+                            })
+                        } */
                     }
                 })
                 smsLoginApi({}).then((res)=>{

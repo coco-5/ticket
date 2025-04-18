@@ -30,3 +30,23 @@ export function getPortRouteApi(params){
         })
     })
 }
+
+export function getTicketCardMyListApi(params){
+    params = Object.assign({}, params)
+
+    return new Promise((resolve, reject)=>{
+        _this.$http.get(`/ticketCard/my/list`,params).then((res)=>{
+            resolve(res)
+        })
+    })
+}
+
+export function getCreateOrderApi(params){
+    params = Object.assign({}, params)
+
+    return new Promise((resolve, reject)=>{
+        _this.$http.post(`/ticketCard/createOrder`,params).then((res)=>{
+            resolve(res)
+        })
+    })
+}

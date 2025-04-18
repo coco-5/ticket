@@ -18,7 +18,7 @@ export default {
     props:{
         range:{
             type:Array,
-            default:()=>[]
+            default:[]
         },
         index:{
             type:[Number,String],

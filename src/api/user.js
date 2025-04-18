@@ -12,3 +12,13 @@ export function smsLoginApi(params){
         })
     })
 }
+
+export function wxLoginApi(params){
+    params = Object.assign({}, params)
+
+    return new Promise((resolve, reject)=>{
+        _this.$http.get(`/login/wx/smallProgram`,params).then((res)=>{
+            resolve(res)
+        })
+    })
+}
