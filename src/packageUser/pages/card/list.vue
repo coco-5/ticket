@@ -85,9 +85,26 @@ export default {
                     if(res.data.code == 200){
                         let data = res.data.data || []
 
-                        this.list = data
+                        data.forEach((item)=>{
+                            item.ticketCardProtList = item.ticketProtList
+                            if(item.type == 1){
+                                item.class = 'times'
+                            }else if(item.type == 2){
+                                item.class = 'cash'
+                            }else if(item.type == 3){
+                                item.class = 'discount'
+                            }else if(item.type == 4){
+                                item.class = 'cash'
+                            }
 
-                        console.log(999,111,data)
+                            item.st = item.validateStartTime.split(' ')[0]
+                            item.st = item.st.replace(/\-/g,'.')
+                            item.et = item.validateEndTime.split(' ')[0]
+                            item.et = item.et.replace(/\-/g,'.')
+                            item.showMore = false
+                        })
+
+                        this.list = data
                     }
                 })
             })
