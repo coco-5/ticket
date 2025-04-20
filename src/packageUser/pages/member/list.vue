@@ -27,6 +27,7 @@
 </template>
 
 <script>
+import { getMemberCardInfoApi } from '@/api/member'
 export default {
     data(){
         return{
@@ -38,9 +39,44 @@ export default {
         }
     },
     onLoad(e){
+        this.optins = e
 
+        this.getInfo()
     },
     methods:{
+        getInfo(){
+            let params = {}
+            
+            getMemberCardInfoApi(params).then((res)=>{
+                if(res.data.code == 200){
+                    // memberCitizenList  珠澳居民  
+                    // memberCardList 珠澳卡
+                    let data = res.data.data
+                    let list = []
+
+                    if(data.memberCardList && data.memberCardList.length > 0){
+                        data.memberCardList.forEach((item)=>{
+                            item.type = 'zhuaoka'
+                            list.push(item)
+                        })
+                    }
+
+                    if(data.memberCitizenList && data.memberCitizenList.length > 0){
+                        data.memberCitizenList.forEach((item)=>{
+                            item.type = 'zhuaojumen'
+                            list.push(item)
+                        })
+                        
+                    }
+                    //this.list = res.data.data.memberCitizenList || []
+                }else{
+                    uni.showToast({
+                        title:res.data.msg,
+                        icon:'none'
+                    })
+                }
+            })
+        }
     }
 }
 </script>

@@ -21,6 +21,8 @@
                 :item="item"
                 v-for="(item,index) in list"
                 :key="index"
+                @showMore="showMore"
+                @goBuy="goBuy"
             ></c-ticket-card>
         </view>
 
@@ -34,10 +36,14 @@
             ></c-no-content>    
         </view>
 
+        <c-ticket-pop
+            ref="cTicketPop"
+        ></c-ticket-pop>
+
         <view class="actions">
             <view 
                 class="btn"
-                @click="goBuy"
+                @click="go"
             >
                 购买票卡
             </view>
@@ -109,9 +115,25 @@ export default {
                 })
             })
         },
-        goBuy(){
+        showMore(item){
+            let list = this.list
+
+            for(let i=0;i<list.length;i++){
+                if(list[i].id == item.id){
+                    list[i].showMore = !list[i].showMore
+                    break
+                }
+            }
+        },
+        goBuy(item){
+            this.$refs.cTicketPop.show(item)
+        },
+        go(){
+            let query = {}
+            let url = `/packageUser/pages/card/buy`
+
             uni.navigateTo({
-                url:'/packageUser/pages/card/buy'
+                url
             })
         }
     }

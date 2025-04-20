@@ -18,3 +18,13 @@ export function getOrderDetailApi(params){
         })
     })
 }
+
+export function getOrderCalculateApi(params){
+    params = Object.assign({}, params)
+
+    return new Promise((resolve, reject)=>{
+        _this.$http.post(`/order/card/discount/calculate`,params).then((res)=>{
+            resolve(res)
+        })
+    })
+}
