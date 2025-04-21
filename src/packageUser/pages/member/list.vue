@@ -10,32 +10,34 @@
             >
                 <view class="name">
                     <view class="ico"></view>
-                    <view class="type">{{item.name}}</view>
+                    <view class="type">{{item.type == 'zhuaoka' ? '珠澳卡' : '珠澳居民'}}</view>
                 </view>
                 <view class="line"></view>
                 <view class="detail">
-                    <text class="nickname">张先生</text>
-                    <text class="mobile">1363147600</text>
+                    <text class="nickname">{{item.name}}</text>
+                    <text class="mobile">{{item.mobile || ''}}</text>
                 </view>
-                <view class="date">有效期：2020.01.23-2021.02.23</view>
-                <view class="num">LD2191</view>
+                <view class="date">有效期：{{item.validateStartTime ? item.validateStartTime : ''}}-{{item.validateEndTime ? item.validateEndTime : ''}}</view>
+                <view class="num">{{item.idcard}}</view>
             </view>
         </view>
 
-        <view class="btn">申请成为会员</view>
+        <view 
+            class="btn"
+            @click="goBuy"
+        >
+            申请成为会员
+        </view>
     </view>
 </template>
 
 <script>
+import utils from '@/utils/utils'
 import { getMemberCardInfoApi } from '@/api/member'
 export default {
     data(){
         return{
-            list:[
-                {type:'zhuaoka',name:'珠澳卡'},
-                {type:'zhuaojumen',name:'珠澳居民'},
-                {type:'zhuaojumen',name:'珠澳居民',disabled:true}
-            ]
+            list:[]
         }
     },
     onLoad(e){
@@ -68,7 +70,9 @@ export default {
                         })
                         
                     }
-                    //this.list = res.data.data.memberCitizenList || []
+
+                    console.log(999,'list',list)
+                    this.list = list
                 }else{
                     uni.showToast({
                         title:res.data.msg,
