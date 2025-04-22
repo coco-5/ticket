@@ -2,11 +2,26 @@
     <view class="page">
         <div class="list-card">
             <view class="card">
-                <c-trip-detail></c-trip-detail>
-                <c-trip-detail></c-trip-detail>
-                <view class="card-type">
+                <template v-if="tripList.length">
+                    <c-trip-detail
+                        v-for="(item,index) in tripList"
+                        :key="index"
+                        :item="item"
+                        :isShowLong="true"
+                    ></c-trip-detail>
+                </template>
+                <view 
+                    class="card-type"
+                    v-if="detail.ticketType && detail.ticketType.length"
+                >
                     <text class="t">票型</text>
-                    <text class="tag">成人票、儿童票</text>
+                    <text 
+                        class="tag"
+                        v-for="(item,index) in detail.ticketType"
+                        :key="index"
+                    >
+                        {{item}}
+                    </text>
                 </view>
                 <view class="more">
                     <view 
@@ -15,13 +30,16 @@
                         :key="index"
                         @click="chooseRule(item)"
                     >
-                        {{ item.name }}
+                        {{item.label}}
                     </view>
                 </view>
             </view>
         </div>
 
-        <view class="list-space">
+        <view 
+            class="list-space"
+            v-if="listSpace.length"
+        >
             <view 
                 class="item"
                 v-for="(item,index) in listSpace"
@@ -29,23 +47,43 @@
             >
                 <view class="type">
                     <view class="t">
-                        <text class="t1">普通舱</text>
-                        <text class="t2">（49张）</text>
+                        <view class="name">
+                            <text class="t1">{{item.seatRank}}</text>
+                            <text class="t2">{{item.typeName}}</text>
+                        </view>
+                        <view 
+                            class="num"
+                            v-if="detail.tportCode == 'HKM' || detail.fportCode == 'HKM'"
+                        >
+                            {{item.seatNum >= 5 ? '>5' : '<5' }}张
+                        </view>
+                        <view class="num">
+                            {{item.seatNum}}张   
+                        </view>
                     </view>
-                    <view class="a">+</view>
+                    <!-- 
+                    <div v-if="dataInfo.tportCode === 'HKM' || dataInfo.fportCode === 'HKM'" class="num">
+                        {{ item.seatNum >= 5 ? '>5' : '<5' }} 张
+                      </div>
+                      <div v-else class="num">{{ item.seatNum }} 张</div> -->
+
+                    <!-- <view class="a">+</view>
                     <view class="t">
                         <text class="t1">普通舱</text>
                         <text class="t2">（49张）</text>
-                    </view>
+                    </view> -->
                 </view>
                 <view class="price">
                     <view class="item-price mop">
                         <text class="t1">MOP</text>
-                        <text class="t2">65</text>
+                        <text class="t2">{{item.price1}}</text>
                     </view>
-                    <view class="item-price">
+                    <view 
+                        class="item-price"
+                        v-if="item.price5 && Number(item.price5) > 0"
+                    >
                         <text class="t1">RMB</text>
-                        <text class="t2">65</text>
+                        <text class="t2">{{item.price5}}</text>
                     </view>
                 </view>
                 <view 
@@ -55,6 +93,16 @@
                     预定
                 </view>
             </view>
+        </view>
+
+        <view 
+            class="no-content"
+            v-else
+        >
+            <c-no-content
+                type="file"
+                title=""
+            ></c-no-content>  
         </view>
 
         <view class="tips">如需要购买VIP包房请到线下售票厅购买</view>
@@ -98,28 +146,25 @@
 
 <script>
 import utils from '@/utils/utils'
+import ticket from '@/types/ticket'
 import { getOneWayTicketDetailApi,getRuleApi } from '@/api/ticket'
 export default {
     data(){
         return{
             opetions:{},
-            ruleList:[
-                {type:'book',name:'预定须知',content:'预定须知内容'},
-                {type:'ticket',name:'取票说明',content:'取票说明内容'},    
-                {type:'refund',name:'退票说明',content:'退票说明内容'},
-            ],
+            ruleList:ticket.ruleList,
             ruleIndex:0,
-            listSpace:[{},{},{}],
+            listSpace:[],
             isShoPop:false,
-            popType:''
+            popType:'',
+            detail:'',
+            tripList:[]
         }
     },
     onLoad(e){
         this.options = e
 
         this.getList()
-
-        this.iniNavigationBarTitle()
     },
     methods:{
         getList(){
@@ -135,22 +180,58 @@ export default {
             let params = {
                 fromPortCode:options.fromPortCode,
                 toPortCode:options.toPortCode,
-                sailDate:utils.timeFormat(options.sailDate,'yyyy-mm-dd'),
+                sailDate:options.sailDate,
                 voyageId:options.voyageId,
                 isRoundTrip:0,
-                channel:1
+                channel:1,//userStroe.user?.merchantAcitve ? 2 : 1,
             }
-            //http://localhost:5173/api/ticket/oneWayTicketDetail?fromPortCode=MAO&toPortCode=WZ&sailDate=2025-04-22&voyageId=YTAPI1_285353842&isRoundTrip=0
 
             return new Promise((resolve)=>{
                 getOneWayTicketDetailApi(params).then((res)=>{
+                    if(res.data.code == 200){
+                        let data = res.data.data || {}
+                        let tripList = []
+
+                        tripList.push({
+                            formattedSetoffDate:data.formattedSetoffDate,
+                            setoffTime:data.setoffTime,
+                            fromPort:data.fromPort,
+                            arriveTime:data.arriveTime,
+                            toPort:data.toPort,
+                            ticketType:data.ticketType,
+                            duration:data.duration,
+                            isRoundTrip:0
+                        })
+
+                        data.dtseatrankPrice.forEach((item)=>{
+                            item.typeName = utils.getValue(ticket.typeMap,item.type)
+                        })
+
+                        this.detail = data
+
+                        this.tripList = tripList
+
+                        this.listSpace = data.dtseatrankPrice || []
+
+                        console.log(9999,'listSpace',this.listSpace)
+
+                        this.iniNavigationBarTitle(data)
+                    }
                     resolve()
 
                 })
             })
         },
         getRule(){
-            let params = {}
+            //获取购票退票规则
+            let options = this.options
+            let params = {
+                fromPortCode:options.fromPortCode,
+                toPortCode:options.toPortCode,
+                sailDate:options.sailDate,
+                voyageId:options.voyageId,
+                isRoundTrip:0,
+            }
 
             return new Promise((resolve)=>{
                 getRuleApi(params).then((res)=>{
@@ -158,14 +239,20 @@ export default {
                 })
             })
         },
-        iniNavigationBarTitle(){
+        iniNavigationBarTitle(data){
 
             uni.setNavigationBarTitle({
-                title:'111'
+                title:`${data.fromPort}-${data.toPort}`
             })
         },
         book(item){
-            let query = {}
+            let query = {
+                seatRankId:item.seatRankId,
+                type:item.type
+            }
+
+            Object.assign(query, this.options)
+
             let url = `/packageBook/pages/order/order?${utils.paramsStringify(query)}`
 
             uni.navigateTo({
@@ -275,11 +362,14 @@ export default {
                 color:rgba(0,0,0,.6);
             }
             .tag {
+                margin-right:8rpx;
                 color:#000;
             }
         }
         .more {
-            margin-top:8rpx;
+            margin-top:40rpx;
+            padding-top:40rpx;
+            border-top:1px solid rgba(0,0,0,0.08);
             text-align:right;
             .item {
                 display:inline-block;
@@ -304,13 +394,13 @@ export default {
         background:#FFF;
         border-radius:20rpx;
         .type {
-            line-height:136rpx;
             .t,
             .a {
                 display:inline-block;
                 vertical-align:middle;
             }
             .t {
+                margin-top:28rpx;
                 .t1,
                 .t2 {
                     display:inline-block;
@@ -322,8 +412,11 @@ export default {
                     font-weight:500;
                 }
                 .t2 {
-                    color:#EC702E;
+                    color:#999;
                     font-size:18rpx;
+                }
+                .num {
+                    color:#EC702E;
                 }
             }
             .a {
@@ -434,5 +527,9 @@ export default {
             }
         }
     }
+}
+
+.no-content {
+    margin:300rpx auto 0;
 }
 </style>

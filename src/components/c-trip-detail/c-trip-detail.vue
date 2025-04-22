@@ -1,25 +1,30 @@
 <template>
     <view class="c-desc">
         <view class="detail">
-            <view class="tag">去程</view>
-            <view class="date">10月23日 周五</view>
+            <view class="tag">{{item.isRoundTrip}}去程</view>
+            <view class="date">{{item.formattedSetoffDate}}</view>
         </view>
         <view class="dates">
             <view class="date-item">
-                <view class="d">08:00</view>
-                <view class="t">蛇口港口</view>
+                <view class="d">{{item.setoffTime}}</view>
+                <view class="t">{{item.fromPort}}</view>
             </view>
             <view 
                 class="long"
                 v-if="isShowLong"
             >
-                <view class="time">耗时5分</view>
+                <view class="time">耗时{{item.duration}}</view>
                 <view class="ico"></view>
-                <view class="type">普通位</view>
+                <view 
+                    class="type"
+                    v-if="isShowType"
+                >
+                    普通位
+                </view>
             </view>
             <view class="date-item">
-                <view class="d">08:00</view>
-                <view class="t">蛇口港口</view>
+                <view class="d">{{item.arriveTime}}</view>
+                <view class="t">{{item.toPort}}</view>
             </view>
         </view>
     </view>
@@ -31,6 +36,14 @@ export default {
         isShowLong:{
             type:Boolean,
             default:false
+        },
+        isShowType:{
+            type:Boolean,
+            default:false
+        },
+        item:{
+            type:Object,
+            default:{}
         }
     },
     data(){
@@ -80,7 +93,7 @@ export default {
     .dates {
         position:relative;
         padding-bottom:32rpx;
-        border-bottom:1px solid rgba(0,0,0,0.08);
+        //border-bottom:1px solid rgba(0,0,0,0.08);
         .date-item {
             display:inline-block;
             width:48%;
@@ -108,7 +121,7 @@ export default {
             top:35%;
             left:50%;
             transform:translate(-50%,-50%);
-            width:110rpx;
+            width:170rpx;
             color:rgba(0,0,0,.7);
             font-size:22rpx;
             text-align:center;

@@ -163,11 +163,10 @@ export default {
             this.getDetail(date)
         },
         go(item){
-            let date = utils.initDate(item.setoffDate)
             let query = {
                 fromPortCode:item.fportCode,
                 toPortCode:item.tportCode,  
-                sailDate:date, 
+                sailDate:item.setoffDate, 
                 voyageId:item.voyageRouteId,
                 isRoundTrip:0
             }
@@ -292,7 +291,6 @@ export default {
         }
     }
 }
-
 
 .no-content {
     margin:300rpx auto 0;
