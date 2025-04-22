@@ -7,7 +7,7 @@
         >
             <view 
                 class="item"
-                :class="item.time == onDate ? 'on' : ''"
+                :class="item.setoffDate == onDate ? 'on' : ''"
                 :id="'item'+index"
                 @click="choose(item)"
                 v-for="(item,index) in daysList"
@@ -99,7 +99,7 @@ export default{
                     day.getMonth() === today.getMonth() &&
                     day.getDate() === today.getDate()
                 
-                //定位在哪一天
+                
                 //定位在哪一天
                 if(this.options.sailDate){
                     let isSameDate =
@@ -112,11 +112,13 @@ export default{
                 }
 
                 daysList.push({
+                    year:utils.formatNumber(day.getFullYear()),
                     month:utils.formatNumber(day.getMonth()+1),
                     date:utils.formatNumber(day.getDate()),
                     weekDayText:weekDayText[day.getDay()],
                     time:new Date(day.getFullYear(),day.getMonth(),day.getDate()).getTime(),
-                    isToday:isToday
+                    isToday:isToday,
+                    setoffDate:`${utils.formatNumber(day.getFullYear())}-${utils.formatNumber(day.getMonth()+1)}-${utils.formatNumber(day.getDate())}`
                 })
             }
 
@@ -124,13 +126,13 @@ export default{
 
             this.current = current
 
-            console.log(99999,'current',current)
+            this.onDate = this.daysList[this.current].setoffDate
         },
         checkIndex(){
             let daysList = this.daysList
 
             for(let i=0; i<daysList.length; i++){
-                if(daysList[i].time == this.onDate){
+                if(daysList[i].setoffDate == this.onDate){
                     this.current = i
                     break
                 }
@@ -138,7 +140,9 @@ export default{
         },
         choose(item){
             this.fixed = false
-            this.initOndate(item.time)
+            this.initOndate(item.setoffDate)
+
+            this.$emit('chooseDate', item.setoffDate)
         },
         cbCloseDatePop(){
             this.isShowDatePop = false

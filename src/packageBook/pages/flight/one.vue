@@ -8,6 +8,7 @@
         <view class="dates">
             <date
                 :options="options"
+                @chooseDate="chooseDate"
             ></date>
         </view>
 
@@ -113,26 +114,39 @@ export default {
         return{
             options:{},
             list:[],
-            dest:{}
+            dest:{},
+            isRequest:false,
         }
     },
     onLoad(e){
         this.options = e
 
-        this.getDetail()
+        this.getDetail(this.options.sailDate)
     },
     methods:{
-        getDetail(){
+        getDetail(sailDate){
             let options = this.options
             let params = {
                 fromPortCode:options.fromPortCode,
                 toPortCode:options.toPortCode,
-                sailDate:utils.timeFormat(options.sailDate,'yyyy-mm-dd'),
-                sailDateReturn:utils.timeFormat(options.sailDateReturn,'yyyy-mm-dd'),
+                sailDate:sailDate,
+                sailDateReturn:options.sailDateReturn,
                 isRoundTrip:0
             }
 
+            if(this.isRequest) return
+
+            uni.showLoading({
+                title:'加载中'
+            })
+
+            this.isRequest = true
+
+            this.list = []
+
             getOneWayTicketListApi(params).then((res)=>{
+                this.isRequest = false
+                uni.hideLoading()
                 if(res.data.code == 200){
                     let data = res.data.data || []
 
@@ -145,10 +159,11 @@ export default {
                 }
             })
         },
+        chooseDate(date){
+            this.getDetail(date)
+        },
         go(item){
             let date = utils.initDate(item.setoffDate)
-            console.log(9999,'item.setoffDat',item.setoffDate)
-            //return
             let query = {
                 fromPortCode:item.fportCode,
                 toPortCode:item.tportCode,  

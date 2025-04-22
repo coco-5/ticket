@@ -299,8 +299,8 @@ export default {
             let query = {
                 fromPortCode:this.departureList[this.departureIndex].portCode || '',
                 toPortCode:this.arrivalList[this.arrivalIndex].portCode || '',
-                sailDate:this.departureDate || '',
-                sailDateReturn:this.tabType == 'round' ? this.arrivalDate : this.departureDate,
+                sailDate:this.timeFormat(this.departureDate) || '',
+                sailDateReturn:this.tabType == 'round' ? this.timeFormat(this.arrivalDate) : this.timeFormat(this.departureDate),
                 isRoundTrip:this.tabType == 'round' ? 1 : 0  
             }
 
