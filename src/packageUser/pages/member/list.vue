@@ -80,6 +80,13 @@ export default {
                     })
                 }
             })
+        },
+        goBuy(){
+            let url = `/packageUser/pages/member/apply`
+
+            uni.navigateTo({
+                url,
+            })
         }
     }
 }

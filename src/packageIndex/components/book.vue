@@ -297,18 +297,14 @@ export default {
         },
         goBook(){
             let query = {
-                departureDest:encodeURIComponent(this.departureList[this.departureIndex].value),
-                arrivalDest:encodeURIComponent(this.arrivalList[this.arrivalIndex].value),
-                departureDate:this.departureDate
+                fromPortCode:this.departureList[this.departureIndex].portCode || '',
+                toPortCode:this.arrivalList[this.arrivalIndex].portCode || '',
+                sailDate:this.departureDate || '',
+                sailDateReturn:this.tabType == 'round' ? this.arrivalDate : this.departureDate,
+                isRoundTrip:this.tabType == 'round' ? 1 : 0  
             }
 
             let url = this.tabType == 'one' ? `/packageBook/pages/flight/one` : `/packageBook/pages/flight/round`
-
-            if(this.tabType == 'round'){
-                Object.assign(query,{
-                    arrivalDate:this.arrivalDate
-                })
-            }
 
             url += `?${utils.paramsStringify(query)}`
 

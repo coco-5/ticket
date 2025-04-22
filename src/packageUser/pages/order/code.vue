@@ -12,16 +12,16 @@
             </view>
         </view>
 
-        <c-qrcode
+        <!-- <c-qrcode
             ref="qrcode"
-        ></c-qrcode>
+        ></c-qrcode> -->
 
         <view v-if="tabIndex == 0">
             <view class="wrap-code">
                 <view class="dest">
-                    <text class="t">内港码头</text>
+                    <text class="t">{{detail.fromPort}}</text>
                     <text class="i"></text>
-                    <text class="t">内港码头</text>
+                    <text class="t">{{detail.toPort}}</text>
                 </view>
                 <view class="tips-nodes">
                     <rich-text :nodes="nodes"></rich-text>
@@ -53,33 +53,42 @@
                         ></view>
                     </view>
                 </view>
-                <view class="btn-refresh">刷新二维码</view>
+                <view class="btn-refresh">{{passengerList[passengerIndex].status}}</view>
                 <view class="btn-line"></view>
-                <view class="item-passenger">
-                    <view class="user">
-                        <view class="name">
-                            <text class="n">童嘉颖</text>
-                            <text class="t">成人</text>
+                <view 
+                    class="item-passenger"
+                    v-if="passengerList.length"
+                >
+                    <template 
+                        v-for="(item,index) in passengerList"
+                        :key="index"
+                        v-if="passengerIndex == index"
+                    >
+                        <view class="user">
+                            <view class="name">
+                                <text class="n">{{item.passengerName}}</text>
+                                <text class="t">{{item.passengerTypeName}}</text>
+                            </view>
+                            <view class="cheng">去程</view>
                         </view>
-                        <view class="cheng">去程</view>
-                    </view>
-                    <view class="item">
-                        <text class="label">港澳通行证</text>
-                        <text class="right">C10****41</text>
-                    </view>
-                    <view class="item">
-                        <text class="label">票号</text>
-                        <text class="right">1180747363</text>
-                    </view>
-                    <view class="item">
-                        <text class="label">座位</text>
-                        <text class="right">55号</text>
-                        <view class="tips">*座位号以当天入闸后的实际座位号为准</view>
-                    </view>
-                    <view class="item">
-                        <text class="label">出发时间</text>
-                        <text class="right">2024-04-01  10:40</text>
-                    </view>
+                        <view class="item">
+                            <text class="label">港澳通行证</text>
+                            <text class="right">C10****41</text>
+                        </view>
+                        <view class="item">
+                            <text class="label">票号</text>
+                            <text class="right">1180747363</text>
+                        </view>
+                        <view class="item">
+                            <text class="label">座位</text>
+                            <text class="right">55号</text>
+                            <view class="tips">*座位号以当天入闸后的实际座位号为准</view>
+                        </view>
+                        <view class="item">
+                            <text class="label">出发时间</text>
+                            <text class="right">2024-04-01  10:40</text>
+                        </view>
+                    </template>
                 </view>
             </view>
 
@@ -128,6 +137,10 @@
 </template>
 
 <script>
+import utils from '@/utils/utils'
+import passenger from '@/types/passenger'
+import { getOrderDetailApi } from '@/api/order'
+
 export default {
     data(){
         return{
@@ -139,13 +152,42 @@ export default {
             nodes:'<p>请在发船当天提前半小时</p><p>携带所有乘船人的有效出境证件</p>',
             bannerList:['','',''],
             codeList:['','',''],
-            codeIndex:0
+            codeIndex:0,
+            passengerList:[],
+            passengerIndex:0,
+            detail:{},
+            passenger,
         }
     },
     onLoad(e){
-        this.setCode()
+        this.options = e
+
+        this.getOrderDetail()
+
+        //this.setCode()
     },
     methods:{
+        getOrderDetail(){
+            let params = {
+                orderId:this.options.orderId
+            }
+
+            getOrderDetailApi(params).then((res)=>{
+                if(res.data.code == 200){
+                    let data = res.data.data || {}
+                    
+                    let passengerTypeList = this.passenger.passengerTypeList
+
+                    data.passengerList.length && data.passengerList.forEach((item)=>{
+                        item.passengerTypeName = utils.getValue(passengerTypeList,item.passengerType, 'label')
+                    })
+
+                    this.detail = data
+
+                    this.passengerList = data.passengerList || []
+                }
+            })
+        },
         setCode(){
             this.$nextTick(()=>{
                 this.$refs.qrcode.setCode('https://www.baidu.com')

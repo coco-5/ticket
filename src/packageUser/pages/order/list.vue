@@ -33,28 +33,62 @@
                 v-for="(item,index) in allList[`type-`+tabIndex].list"
                 :key="index"
             >
-                <view class="state">代支付</view>
+                <view class="state">{{getValue(order.orderStatus,item.status)}}</view>
                 <view class="name">
-                    <text class="t">澳门内港</text>
+                    <text class="t">{{item.fromPort}}</text>
                     <text class="i"></text>
-                    <text class="t">澳门内港</text>
+                    <text class="t">{{item.toPort}} {{item.isRoundTrip ? '双程' : '单程'}}</text>
                 </view>
-                <view class="desc">普通舱1位</view>
-                <view class="date">去程时间：2024-05-31  08:00</view>
-                <view class="date">去程时间：2024-05-31  08:00</view>
+                <view class="desc">{{item.seatRank}}{{item.passengerCount}}位</view>
+                <view class="date">去程时间：{{item.departDate}} {{item.departTime}}</view>
+                <view 
+                    class="date"
+                    v-if="item.isRoundTrip == 1"
+                >
+                    去程时间：{{item.returnDate}} {{item.returnDepartTime}}
+                </view>
                 <view class="price">
-                    <text class="t">MOP</text>
-                    <text class="p">120.00</text>
+                    <text class="t">{{item.currencyType == 1 ? 'MOP' : 'RMB'}}</text>
+                    <text class="p">{{item.currencyType === 1 ? item.price : item.rmbPrice}}</text>
                 </view>
                 <view class="actions">
-                    <view class="btn">取消订单</view>
-                    <view 
-                        class="btn orange"
-                        :data-item="item"
-                        @click.stop="goCode"
-                    >
-                        验票二维码
-                    </view>
+                    <template v-if="item.status === 0">
+                        <view 
+                            class="btn" 
+                            @click.stop="cancelOrder"
+                        >
+                            取消订单
+                        </view>
+                        <view 
+                            class="btn orange" 
+                            @click.stop="payOrder"
+                        >
+                            <!-- {{userStroe.user?.merchantAcitve ? '付款二维码' : '去支付' }} -->
+                        </view>
+                    </template>
+                    <template v-if="item.status === 1">
+                        <view 
+                            class="btn" 
+                            @click.stop="refundOrder"
+                            >
+                            退票
+                        </view>
+                        <view 
+                            :data-item="item"
+                            class="btn orange" 
+                            @click.stop="handleCode"
+                        >
+                            验票二维码
+                        </view>
+                    </template>
+                    <template v-if="item.status === -1">
+                        <view 
+                            class="btn" 
+                            @click.stop="delOrder"
+                        >
+                            删除
+                        </view>
+                    </template>
                 </view>
             </view>
         </view>
@@ -78,6 +112,7 @@
 
 <script>
 import utils from '@/utils/utils'
+import order from '@/types/order'
 import { getAdvertiseListApi } from '@/api/common'
 import { getOrderListApi } from '@/api/order'
 export default{
@@ -136,6 +171,7 @@ export default{
             tabIndex:0,
             advertiseList:[],
             advertiseIndex:0,
+            order,
         }
     },
     onLoad(e){
@@ -145,6 +181,7 @@ export default{
         this.getList()
     },
     methods:{
+        getValue:utils.getValue,
         getList(){
             let list = [
                 this.getAdvertiseList(),
@@ -174,6 +211,13 @@ export default{
             if(listObj.status != 99){
                 params.status = listObj.status
             }
+
+            /*FULL_DEDUCT(0, "全额抵扣"),
+                UE_PAY(1, "极易付"),
+                WECHAT_PAY(2, "微信支付(人民币)"),
+                M_PAY(3, "澳门通支付"),
+                LUSO_PAY(4, "澳门国际银行"),
+                JETCO_PAY(5, "JETCO信用卡"); */
 
             return new Promise((resolve)=>{
                 getOrderListApi(params).then((res)=>{
@@ -232,7 +276,10 @@ export default{
             })
 
         },
-        goCode(item){
+        cancelOrder(e){
+            console.log(99999,'cancelOrder',e)
+        },
+        payOrder(item){
             let query = {}
 
             let url = `/packageUser/pages/order/code?${utils.paramsStringify(query)}`
@@ -240,6 +287,30 @@ export default{
             uni.navigateTo({
                 url
             })
+        },
+        refundOrder(e){
+
+        },
+        handleCode(e){
+            let item = e.currentTarget.dataset.item
+            let query = {
+                orderId:item.id,
+                orderSn:item.orderSn
+            }
+            let url = `/packageUser/pages/order/code?${utils.paramsStringify(query)}`
+            
+            uni.navigateTo({
+                url,
+            })
+
+    /* path: '/order',
+    query: {
+      orderId: props.item.id,
+      orderSn: props.item.orderSn,
+    }, */
+        },
+        delOrder(e){
+
         }
     }
 }
@@ -354,7 +425,7 @@ export default{
                 line-height:60rpx;
                 border-radius:30rpx;
                 border:1px solid rgba(0,0,0,.2);
-                color:rgba(0,0,0,.2);
+                color:rgba(0,0,0,.75);
                 font-size:26rpx;
                 text-align:center;
                 vertical-align:middle;

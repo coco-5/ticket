@@ -146,7 +146,7 @@
 <script>
 import utils from '@/utils/utils'
 import { getPassengerDetailApi, getPassengerUpdateApi, getPassengerAddApi, getPassengerDeleteApi } from '@/api/passenger'
-import map from '@/utils/map'
+import map from '@/types/passenger'
 
 export default {
     data(){

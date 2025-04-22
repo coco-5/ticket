@@ -178,6 +178,14 @@ let utils = {
         }
         return arr.join('&')
     },
+    getValue(list, name, value = 'label'){
+        for(let i=0; i<list.length; i++){
+            if(list[i].value == name){
+                return list[i][value]
+            }
+        }
+    },
+
 }
 
 export default utils

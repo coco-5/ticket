@@ -5,6 +5,7 @@
         <view class="list">
             <view 
                 class="item"
+                @click="goBinding(item)"
                 v-for="(item,index) in list"
                 :key="index"
             >
@@ -22,6 +23,7 @@
 </template>
 
 <script>
+import utils from '@/utils/utils'
 export default {
     data(){
         return{
@@ -36,6 +38,16 @@ export default {
 
     },
     methods:{
+        goBinding(item){
+            let query = {
+                type:item.type
+            }
+            let url = `/packageUser/pages/member/binding?${utils.paramsStringify(query)}`
+
+            uni.navigateTo({
+                url,
+            })
+        }
     }
 }
 </script>

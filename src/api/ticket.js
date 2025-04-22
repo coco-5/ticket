@@ -50,3 +50,13 @@ export function getCreateOrderApi(params){
         })
     })
 }
+
+export function getOneWayTicketListApi(params){
+    params = Object.assign({}, params)
+
+    return new Promise((resolve, reject)=>{
+        _this.$http.get(`/ticket/oneWayTicketList`,params).then((res)=>{
+            resolve(res)
+        })
+    })
+}

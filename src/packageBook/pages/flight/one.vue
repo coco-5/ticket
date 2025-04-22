@@ -10,7 +10,10 @@
             ></date>
         </view>
 
-        <view class="list">
+        <view 
+            class="list"
+            v-if="list.length"
+        >
             <view 
                 class="item"
                 v-for="(item,index) in list"
@@ -19,35 +22,56 @@
             >
                 <view class="date">
                     <view class="date-item">
-                        <view class="d">08:00</view>
-                        <view class="t">蛇口港口</view>
+                        <view class="d">{{item.setoffTime}}</view>
+                        <view class="t">{{item.fromPort}}</view>
                     </view>
                     <view class="long">
-                        <view class="t">1小时40分</view>
+                        <view class="t">{{item.duration}}</view>
                         <view class="ico"></view>
                     </view>
                     <view class="date-item">
-                        <view class="d">08:00</view>
-                        <view class="t">蛇口港口</view>
+                        <view class="d">{{item.arriveTime}}</view>
+                        <view class="t">{{item.toPort}}</view>
                     </view>
                 </view>
-                <view class="grade">
-                    <view class="i">
-                        普通舱<text>（49张）</text>
-                    </view>
-                    <view class="i">
-                        头等舱<text>（49张）</text>
+                <view 
+                    class="grade"
+                        v-if="item.dtseatrankPrice && item.dtseatrankPrice.length"
+                >
+                    <view 
+                        class="i"
+                        v-for="(d,i) in item.dtseatrankPrice"
+                        :key="i"
+                    >
+                        {{d.seatRank}}<text>（{{d.seatNum}}张）</text>
                     </view>
                 </view>
                 <div class="price">
-                    <view class="price-item mop">
+                    <view 
+                        class="price-item mop"
+                        v-if="item.minPrice"
+                    >
                         <text>MOP</text>
-                        <text class="p">65</text>
-                        <text class="t">起</text>
+                        <text class="p">{{item.minPrice}}</text>
+                        <text 
+                            class="t"
+                            v-if="item.dtseatrankPrice.length > 1"
+                        >
+                            起
+                        </text>
                     </view>
-                    <view class="price-item">
+                    <view 
+                        class="price-item"
+                        v-if="item.fportCode === 'MAO' || item.tportCode === 'MAO'"
+                    >
                         <text>RMB</text>
-                        <text class="p">65</text>
+                        <text class="p">{{item.minPrice5 || 0 }}</text>
+                        <text 
+                            class="t"
+                            v-if="item.dtseatrankPrice.length > 1"
+                        >
+                            起
+                        </text>
                     </view>
                 </div>
             </view>
@@ -59,6 +83,7 @@
 import utils from '@/utils/utils'
 import date from '@/packageBook/components/date'
 import destination from '@/packageBook/components/destination'
+import { getOneWayTicketListApi } from '@/api/ticket'
 export default {
     components:{
         date,
@@ -67,16 +92,51 @@ export default {
     data(){
         return{
             options:{},
-            list:[{},{},{}]
+            list:[]
         }
     },
     onLoad(e){
         this.options = e
+
+        this.getDetail()
     },
     methods:{
-        go(item){
+        getDetail(){
+            let options = this.options
+            let params = {
+                fromPortCode:options.fromPortCode,
+                toPortCode:options.toPortCode,
+                sailDate:utils.timeFormat(options.sailDate,'yyyy-mm-dd'),
+                sailDateReturn:utils.timeFormat(options.sailDateReturn,'yyyy-mm-dd'),
+                isRoundTrip:0
+            }
+
+            getOneWayTicketListApi(params).then((res)=>{
+                if(res.data.code == 200){
+                    let data = res.data.data.voyage || []
+
+                    this.list = data
+                }
+            })
+        },
+        go1(item){
             let query = {
                 type:'one',
+            }
+
+            let url = `/packageBook/pages/space/space?${utils.paramsStringify(query)}`
+
+            uni.navigateTo({
+                url
+            })
+        },
+        go(item){
+            let query = {
+                fromPortCode:item.fportCode,
+                toPortCode:item.tportCode,  
+                sailDate:item.setoffDate, 
+                voyageId:item.voyageRouteId,
+                isRoundTrip:0
             }
 
             let url = `/packageBook/pages/space/space?${utils.paramsStringify(query)}`
