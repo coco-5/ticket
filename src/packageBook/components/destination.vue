@@ -1,36 +1,37 @@
 <template>
     <view 
         class="destination"
-        v-if="options.departureDest"
     >
-        <view class="text">{{decode(options.departureDest)}}</view>
+        <view class="text">{{dest.fromPort}}</view>
         <view class="ico"></view>
-        <view class="text">{{decode(options.arrivalDest)}}</view>
+        <view class="text">{{dest.toPort}}</view>
     </view>
 </template>
 
 <script>
 export default {
     props:{
-        options:{
+        dest:{
             type:Object,
             default:{}
         }
     },
     watch:{
-        options:{
+        immediate:true,
+        dest:{
             deep:true,
-            handler(n){}
+            handler(n){
+                
+            }
         }
+    },
+    mounted(){
     },
     data(){
         return{
         }
     },
     methods:{
-        decode(txt){
-            return decodeURIComponent(txt)
-        }
     }
 }
 </script>

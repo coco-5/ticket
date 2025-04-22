@@ -60,3 +60,23 @@ export function getOneWayTicketListApi(params){
         })
     })
 }
+
+export function getOneWayTicketDetailApi(params){
+    params = Object.assign({}, params)
+
+    return new Promise((resolve, reject)=>{
+        _this.$http.get(`/ticket/oneWayTicketDetail`,params).then((res)=>{
+            resolve(res)
+        })
+    })
+}
+
+export function getRuleApi(params){
+    params = Object.assign({}, params)
+
+    return new Promise((resolve, reject)=>{
+        _this.$http.get(`/ticket/getRule`,params).then((res)=>{
+            resolve(res)
+        })
+    })
+}

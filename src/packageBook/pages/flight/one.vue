@@ -1,7 +1,8 @@
 <template>
     <view class="page">
         <destination
-            :options="options"
+            :dest="dest"
+            v-if="dest"
         ></destination>
 
         <view class="dates">
@@ -76,6 +77,25 @@
                 </div>
             </view>
         </view>
+
+        <view 
+            class="no-content"
+            v-else
+        >
+            <c-no-content
+                type="file"
+                title="抱歉～当前没有符合条件的航班"
+            ></c-no-content>   
+
+            <view 
+                class="btn"
+                @click="goHome"
+            >
+                去首页看看吧
+            </view> 
+        </view>
+
+        <c-bottom></c-bottom>
     </view>
 </template>
 
@@ -92,7 +112,8 @@ export default {
     data(){
         return{
             options:{},
-            list:[]
+            list:[],
+            dest:{}
         }
     },
     onLoad(e){
@@ -113,28 +134,23 @@ export default {
 
             getOneWayTicketListApi(params).then((res)=>{
                 if(res.data.code == 200){
-                    let data = res.data.data.voyage || []
+                    let data = res.data.data || []
 
-                    this.list = data
+                    this.dest = {
+                        fromPort:data.fromPort,
+                        toPort:data.toPort
+                    }
+
+                    this.list = data.voyage || []
                 }
             })
         },
-        go1(item){
-            let query = {
-                type:'one',
-            }
-
-            let url = `/packageBook/pages/space/space?${utils.paramsStringify(query)}`
-
-            uni.navigateTo({
-                url
-            })
-        },
         go(item){
+            let date = utils.initDate(item.setoffDate)
             let query = {
                 fromPortCode:item.fportCode,
                 toPortCode:item.tportCode,  
-                sailDate:item.setoffDate, 
+                sailDate:date, 
                 voyageId:item.voyageRouteId,
                 isRoundTrip:0
             }
@@ -143,6 +159,11 @@ export default {
 
             uni.navigateTo({
                 url
+            })
+        },
+        goHome(){
+            uni.redirectTo({
+                url:`/pages/index/index`
             })
         }
     }
@@ -252,6 +273,23 @@ export default {
                 color:#FE6630;
             }
         }
+    }
+}
+
+
+.no-content {
+    margin:300rpx auto 0;
+    .btn {
+        margin:50rpx auto 0;
+        width:664rpx;
+        height:100rpx;
+        line-height:100rpx;
+        background:linear-gradient(87deg, #FFA63F, #EB5628);
+        border-radius:50rpx;
+        color:#FFF;
+        font-size:34rpx;
+        font-weight:500;
+        text-align:center;
     }
 }
 </style>

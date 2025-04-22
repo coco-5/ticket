@@ -68,8 +68,8 @@ export default{
     mounted(){
         this.initDate()
 
-        if(this.options.departureDate){
-            this.initOndate(this.options.departureDate)
+        if(this.options.sailDate){
+            this.initOndate(this.options.sailDate)
         }
     },
     methods:{
@@ -89,6 +89,7 @@ export default{
             let timeDifference = nextMonth.getTime() - today.getTime()
             let daysDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24))
             let current = 0
+            let sailDate = new Date(this.options.sailDate)
 
             for(let i=0; i<=daysDifference; i++){
                 let day = new Date(today.getTime() + i * 24 * 60 * 60 * 1000)
@@ -99,12 +100,12 @@ export default{
                     day.getDate() === today.getDate()
                 
                 //定位在哪一天
-                if(this.options.departureDate){
-                    let departureDate = new Date(Number(this.options.departureDate))
+                //定位在哪一天
+                if(this.options.sailDate){
                     let isSameDate =
-                        departureDate.getFullYear() === day.getFullYear() &&
-                        departureDate.getMonth() === day.getMonth() &&
-                        departureDate.getDate() === day.getDate()
+                        sailDate.getFullYear() === day.getFullYear() &&
+                        sailDate.getMonth() === day.getMonth() &&
+                        sailDate.getDate() === day.getDate()
                     if(isSameDate){
                         current = i
                     }
@@ -122,6 +123,8 @@ export default{
             this.daysList = daysList
 
             this.current = current
+
+            console.log(99999,'current',current)
         },
         checkIndex(){
             let daysList = this.daysList

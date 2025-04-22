@@ -166,7 +166,7 @@ export default {
     },
     mounted(){
         this.getList()
-        this.initTodayDa()
+        this.initTodayDate()
         this.initArrivalDate()
     },
     methods:{
@@ -230,7 +230,7 @@ export default {
             })
 
         },
-        initTodayDa(){
+        initTodayDate(){
             let today = new Date()
             const year = today.getFullYear()
             const month = today.getMonth()

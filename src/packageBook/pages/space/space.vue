@@ -98,6 +98,7 @@
 
 <script>
 import utils from '@/utils/utils'
+import { getOneWayTicketDetailApi,getRuleApi } from '@/api/ticket'
 export default {
     data(){
         return{
@@ -119,6 +120,35 @@ export default {
         this.iniNavigationBarTitle()
     },
     methods:{
+        getList(){
+            let list = [
+                this.getOneWayTicketDetail(),
+                this.getRule()
+            ]
+
+            Promise.all(list)
+        },
+        getOneWayTicketDetail(){
+            let params = {
+
+            }
+
+            return new Promise((resolve)=>{
+                getOneWayTicketDetailApi(params).then((res)=>{
+                    resolve()
+
+                })
+            })
+        },
+        getRule(){
+            let params = {}
+
+            return new Promise((resolve)=>{
+                getRuleApi(params).then((res)=>{
+                    resolve()
+                })
+            })
+        },
         iniNavigationBarTitle(){
             uni.setNavigationBarTitle({
                 title:'111'
