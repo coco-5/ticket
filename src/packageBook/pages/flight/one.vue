@@ -147,6 +147,8 @@ export default {
         },
         go(item){
             let date = utils.initDate(item.setoffDate)
+            console.log(9999,'item.setoffDat',item.setoffDate)
+            //return
             let query = {
                 fromPortCode:item.fportCode,
                 toPortCode:item.tportCode,  

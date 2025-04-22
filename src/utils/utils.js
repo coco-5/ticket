@@ -191,7 +191,7 @@ let utils = {
 
         if(matches){
             const year = Number(matches[1])
-            const month = Number(matches[2])
+            const month = Number(matches[2]) - 1
             const day = Number(matches[3])   
 
             return new Date(year, month, day).getTime()
