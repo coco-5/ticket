@@ -2,15 +2,16 @@
     <view 
         class="c-passenger"
         :class="needAction ? 'action' : ''"
+        @click="choose"
     >
         <view class="ico"></view>
         <view class="name">
-            <text class="n">童嘉颖</text>
-            <text class="t">成人</text>
+            <text class="n">{{item.passengerName}}</text>
+            <text class="t">{{item.passengerTypeName}}</text>
         </view>
         <view class="passport">
-            <text class="n">港澳通行证</text>
-            <text class="t">C10****41</text>
+            <text class="n">{{item.certificateTypeName}}</text>
+            <text class="t">{{item.certificateNumber}}</text>
         </view>
     </view>
 </template>
@@ -22,6 +23,10 @@ export default {
             type:Boolean,
             default:false
         },
+        item:{
+            type:Object,
+            default:{}
+        }
     },
     data(){
         return{
@@ -32,7 +37,9 @@ export default {
 
     },
     methods:{
-
+        choose(){
+            this.$emit('cbChoosePassenger',this.item)
+        }
     }
 }
 </script>

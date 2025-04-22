@@ -19,7 +19,7 @@
                     class="type"
                     v-if="isShowType"
                 >
-                    普通位
+                    {{item.seatRank}}
                 </view>
             </view>
             <view class="date-item">

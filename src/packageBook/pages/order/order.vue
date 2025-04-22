@@ -2,12 +2,15 @@
     <view class="page">
         <view class="wrap-top">
             <view class="top">
-                <c-trip-detail
-                    :isShowLong="true"
-                ></c-trip-detail>
-                <c-trip-detail
-                    :isShowLong="true"
-                ></c-trip-detail>
+                <template v-if="tripList.length">
+                    <c-trip-detail
+                        v-for="(item,index) in tripList"
+                        :key="index"
+                        :item="item"
+                        :isShowType="true"
+                        :isShowLong="true"
+                    ></c-trip-detail>
+                </template>
                 <view class="more">
                     <view class="item">
                         <view class="label">退票</view>
@@ -20,7 +23,13 @@
                     </view>
                     <view class="item">
                         <view class="label">票价</view>
-                        <view class="text">MOP30/RMB25/成人 MOP0/儿童 免费/携童</view>
+                        {{ tripList[0].price5 }}
+                        <view class="text">
+                            MOP30{{tripList[0].price1}} / <text v-if="tripList[0].price5">RMB{{tripList[0].price5}}/</text>成人 
+                            <text v-if="!(detail.tportCode == 'HKM' || detail.fportCode == 'HKM')">
+                                MOP{{tripList[0].price2}}/儿童 免费/携童
+                            </text>
+                        </view>
                     </view>
                 </view>
             </view>
@@ -32,11 +41,16 @@
                 class="bd"
                 v-if="listPassenger.length"
             >
-                <c-passenger-item
-                    :needAction="true"
+                <template
                     v-for="(item,index) in listPassenger"
                     :key="index"
-                ></c-passenger-item>
+                >
+                    <c-passenger-item
+                        :needAction="true"
+                        :item="item"
+                        v-if="item.isDefault == 1"
+                    ></c-passenger-item>
+                </template>
             </view>
             <view class="ft">
                 <view 
@@ -124,7 +138,11 @@
 
 <script>
 import utils from '@/utils/utils'
+import ticket from '@/types/ticket'
 import popPassenger from '@/packageBook/components/pop-passenger'
+import { getOneWayTicketDetailApi, getRuleApi } from '@/api/ticket'
+import { getPassengerListApi } from '@/api/passenger'
+import { getVipListApi } from '@/api/vip'
 export default {
     components:{
         popPassenger
@@ -137,14 +155,129 @@ export default {
             actionsStyle:'',
             isShowPassengerPop:false,
             popHeight:45,
+            detail:'',
+            tripList:[]
         }
     },
     onLoad(e){
         this.options = e
 
+        this.getList()
+
         this.fixedBottom()
     },
     methods:{
+        getList(){
+            uni.showLoading()
+            
+            let list = [
+                this.getOneWayTicketDetail(),
+                this.getRule(),
+                this.getPassengerList()
+            ]
+
+            Promise.all(list).then((res)=>{
+                uni.hideLoading()
+            })
+        },
+        getOneWayTicketDetail(){
+            let options = this.options
+            let params = {
+                fromPortCode:options.fromPortCode,
+                toPortCode:options.toPortCode,
+                sailDate:options.sailDate,
+                voyageId:options.voyageId,
+                isRoundTrip:0,
+                channel:1,//userStroe.user?.merchantAcitve ? 2 : 1,
+            }
+
+            return new Promise((resolve)=>{
+                getOneWayTicketDetailApi(params).then((res)=>{
+                    if(res.data.code == 200){
+                        let data = res.data.data || {}
+                        let tripList = []
+                        let dtseatrank = ''
+
+                        data.dtseatrankPrice.forEach((item)=>{
+                            item.typeName = utils.getValue(ticket.typeMap,item.type)
+                            if(item.type == this.options.type){
+                                dtseatrank = item
+                            }
+                        })
+
+                        tripList.push({
+                            formattedSetoffDate:data.formattedSetoffDate,
+                            setoffTime:data.setoffTime,
+                            fromPort:data.fromPort,
+                            arriveTime:data.arriveTime,
+                            toPort:data.toPort,
+                            ticketType:data.ticketType,
+                            duration:data.duration,
+                            isRoundTrip:0,
+                            seatRank:dtseatrank.seatRank,
+                            price1:dtseatrank.price1,
+                            price5:dtseatrank.price5,
+                            price2:dtseatrank.price2
+                        })
+
+                        this.detail = data
+
+                        this.tripList = tripList
+
+                        this.listSpace = data.dtseatrankPrice || []
+                    }
+                    resolve()
+
+                })
+            })
+        },
+        getRule(){
+            //获取购票退票规则
+            let options = this.options
+            let params = {
+                fromPortCode:options.fromPortCode,
+                toPortCode:options.toPortCode,
+                sailDate:options.sailDate,
+                voyageId:options.voyageId,
+                isRoundTrip:0,
+            }
+
+            return new Promise((resolve)=>{
+                getRuleApi(params).then((res)=>{
+                    resolve()
+                })
+            })
+        },
+        getPassengerList(){
+            return new Promise((resolve)=>{
+                getPassengerListApi({}).then((res)=>{
+                    if(res.data.code == 200){
+                        let data = res.data.data || []
+
+                        this.listPassenger = data
+                    }
+                    resolve()
+                })
+            })
+        },
+        getVipList(){
+            let options = this.fromPortCode
+            let params = {
+                fromPortCode:options.fromPortCode,
+                toPortCode:options.toPortCode,
+            }
+
+            return new Promise((resolve)=>{
+                getVipListApi(params).then((res)=>{
+                    if(res.data.code == 200){
+                        let data = res.data.data || []
+
+                        this.listPassenger = data
+                    }
+                    resolve()
+                })
+            })
+        },
         fixedBottom(){
             this.actionsStyle = `padding-bottom:${utils.fixIPhoneX() ? 48 : 0}rpx;`
             this.bottomStyle = `padding-bottom:${utils.fixIPhoneX() ? 48 : 0}rpx; height:200rpx;`

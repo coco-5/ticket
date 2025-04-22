@@ -147,7 +147,7 @@
 <script>
 import utils from '@/utils/utils'
 import ticket from '@/types/ticket'
-import { getOneWayTicketDetailApi,getRuleApi } from '@/api/ticket'
+import { getOneWayTicketDetailApi, getRuleApi } from '@/api/ticket'
 export default {
     data(){
         return{
