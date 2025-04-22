@@ -115,7 +115,9 @@ export default {
         }
     },
     onLoad(e){
-        this.opetions = e
+        this.options = e
+
+        this.getList()
 
         this.iniNavigationBarTitle()
     },
@@ -129,9 +131,16 @@ export default {
             Promise.all(list)
         },
         getOneWayTicketDetail(){
+            let options = this.options
             let params = {
-
+                fromPortCode:options.fromPortCode,
+                toPortCode:options.toPortCode,
+                sailDate:utils.timeFormat(options.sailDate,'yyyy-mm-dd'),
+                voyageId:options.voyageId,
+                isRoundTrip:0,
+                channel:1
             }
+            //http://localhost:5173/api/ticket/oneWayTicketDetail?fromPortCode=MAO&toPortCode=WZ&sailDate=2025-04-22&voyageId=YTAPI1_285353842&isRoundTrip=0
 
             return new Promise((resolve)=>{
                 getOneWayTicketDetailApi(params).then((res)=>{
@@ -150,6 +159,7 @@ export default {
             })
         },
         iniNavigationBarTitle(){
+
             uni.setNavigationBarTitle({
                 title:'111'
             })
