@@ -240,7 +240,6 @@ export default {
             })
         },
         iniNavigationBarTitle(data){
-
             uni.setNavigationBarTitle({
                 title:`${data.fromPort}-${data.toPort}`
             })

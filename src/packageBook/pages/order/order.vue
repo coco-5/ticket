@@ -23,7 +23,6 @@
                     </view>
                     <view class="item">
                         <view class="label">票价</view>
-                        {{ tripList[0].price5 }}
                         <view class="text">
                             MOP30{{tripList[0].price1}} / <text v-if="tripList[0].price5">RMB{{tripList[0].price5}}/</text>成人 
                             <text v-if="!(detail.tportCode == 'HKM' || detail.fportCode == 'HKM')">
@@ -41,21 +40,21 @@
                 class="bd"
                 v-if="listPassenger.length"
             >
-                <template
-                    v-for="(item,index) in listPassenger"
+                <view
+                    v-for="(item,index) in selectPassengerList"
                     :key="index"
                 >
                     <c-passenger-item
                         :needAction="true"
                         :item="item"
-                        v-if="item.isDefault == 1"
+                        @cbDelPassenger="cbDelPassenger"
                     ></c-passenger-item>
-                </template>
+                </view>
             </view>
             <view class="ft">
                 <view 
                     class="btn"
-                    @click="isShowPassengerPop = true"
+                    @click="showPassengerPop"
                 >
                     添加/删减乘客
                 </view>
@@ -156,7 +155,8 @@ export default {
             isShowPassengerPop:false,
             popHeight:45,
             detail:'',
-            tripList:[]
+            tripList:[],
+            selectPassengerList:[]
         }
     },
     onLoad(e){
@@ -169,11 +169,12 @@ export default {
     methods:{
         getList(){
             uni.showLoading()
-            
+
             let list = [
                 this.getOneWayTicketDetail(),
                 this.getRule(),
-                this.getPassengerList()
+                this.getPassengerList(),
+                this.getVipList()
             ]
 
             Promise.all(list).then((res)=>{
@@ -253,15 +254,25 @@ export default {
                 getPassengerListApi({}).then((res)=>{
                     if(res.data.code == 200){
                         let data = res.data.data || []
+                        let selectPassengerList = []
+
+                        data.forEach((item)=>{
+                            if(item.isDefault){
+                                item.isChoose = true
+                                selectPassengerList.push(item)
+                            }
+                        })
 
                         this.listPassenger = data
+
+                        this.selectPassengerList = selectPassengerList
                     }
                     resolve()
                 })
             })
         },
         getVipList(){
-            let options = this.fromPortCode
+            let options = this.options
             let params = {
                 fromPortCode:options.fromPortCode,
                 toPortCode:options.toPortCode,
@@ -296,6 +307,12 @@ export default {
             uni.navigateTo({
                 url
             })
+        },
+        showPassengerPop(){
+            this.isShowPassengerPop = true
+        },
+        cbDelPassenger(item){
+
         }
     }
 }

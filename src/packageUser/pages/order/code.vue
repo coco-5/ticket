@@ -59,7 +59,7 @@
                     class="item-passenger"
                     v-if="passengerList.length"
                 >
-                    <template 
+                    <view 
                         v-for="(item,index) in passengerList"
                         :key="index"
                         v-if="passengerIndex == index"
@@ -88,7 +88,7 @@
                             <text class="label">出发时间</text>
                             <text class="right">2024-04-01  10:40</text>
                         </view>
-                    </template>
+                    </view>
                 </view>
             </view>
 

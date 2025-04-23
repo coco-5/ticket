@@ -2,9 +2,12 @@
     <view 
         class="c-passenger"
         :class="needAction ? 'action' : ''"
-        @click="choose"
     >
-        <view class="ico"></view>
+        <view 
+            class="ico"
+            :class="item.isChoose ? 'ico-on' : ''"
+            @click="del"
+        ></view>
         <view class="name">
             <text class="n">{{item.passengerName}}</text>
             <text class="t">{{item.passengerTypeName}}</text>
@@ -37,8 +40,8 @@ export default {
 
     },
     methods:{
-        choose(){
-            this.$emit('cbChoosePassenger',this.item)
+        del(){
+            this.$emit('cbDelPassenger',this.item)
         }
     }
 }
@@ -112,8 +115,31 @@ export default {
             left:-72rpx;
             width:38rpx;
             height:38rpx;
-            background:#000;
+            border:1px solid #FD5A26;
             border-radius:50%;
+            &::after {
+                content:' ';
+                position:absolute;
+                top:49%;
+                left:50%;
+                transform:translate(-50%,-50%);
+                width:70%;
+                height:4rpx;
+                background:#FD5A26;
+                overflow:hidden;
+            }
+            &::before {
+                display:none;
+                content:' ';
+                position:absolute;
+                top:50%;
+                left:50%;
+                transform:translate(-50%,-50%);
+                width:4rpx;
+                height:70%;
+                background:#FD5A26;
+                overflow:hidden;
+            }
         }
         .name {
             margin-bottom:16rpx;
