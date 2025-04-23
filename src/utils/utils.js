@@ -185,19 +185,8 @@ let utils = {
             }
         }
     },
-    initDate(str){
-        const regex = /^(\d{4})-(\d{2})-(\d{2})$/
-        const matches = str.match(regex)
-
-        if(matches){
-            const year = Number(matches[1])
-            const month = Number(matches[2]) - 1
-            const day = Number(matches[3])   
-
-            return new Date(year, month, day).getTime()
-        }else {
-            return ''
-        }
+    deepCloneArray(arr){
+        return JSON.parse(JSON.stringify(arr))
     }
 
 }

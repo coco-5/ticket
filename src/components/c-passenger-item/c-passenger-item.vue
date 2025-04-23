@@ -5,8 +5,8 @@
     >
         <view 
             class="ico"
-            :class="item.isChoose ? 'ico-on' : ''"
-            @click="del"
+            :class="item.class"
+            @click="handler"
         ></view>
         <view class="name">
             <text class="n">{{item.passengerName}}</text>
@@ -16,6 +16,7 @@
             <text class="n">{{item.certificateTypeName}}</text>
             <text class="t">{{item.certificateNumber}}</text>
         </view>
+        <view class="edit"></view>
     </view>
 </template>
 
@@ -23,6 +24,10 @@
 export default {
     props:{
         needAction:{
+            type:Boolean,
+            default:false
+        },
+        isShowEdit:{
             type:Boolean,
             default:false
         },
@@ -37,11 +42,10 @@ export default {
         }
     },
     mounted(){
-
     },
     methods:{
-        del(){
-            this.$emit('cbDelPassenger',this.item)
+        handler(){
+            this.$emit('handler',this.item)
         }
     }
 }
@@ -117,28 +121,62 @@ export default {
             height:38rpx;
             border:1px solid #FD5A26;
             border-radius:50%;
-            &::after {
-                content:' ';
-                position:absolute;
-                top:49%;
-                left:50%;
-                transform:translate(-50%,-50%);
-                width:70%;
-                height:4rpx;
-                background:#FD5A26;
-                overflow:hidden;
+            &.add {
+                &::before {
+                    content:' ';
+                    position:absolute;
+                    top:50%;
+                    left:50%;
+                    transform:translate(-50%,-50%);
+                    width:4rpx;
+                    height:70%;
+                    background:#FD5A26;
+                    overflow:hidden;
+                }
+                &::after {
+                    content:' ';
+                    position:absolute;
+                    top:49%;
+                    left:50%;
+                    transform:translate(-50%,-50%);
+                    width:70%;
+                    height:4rpx;
+                    background:#FD5A26;
+                    overflow:hidden;
+                }
             }
-            &::before {
-                display:none;
-                content:' ';
-                position:absolute;
-                top:50%;
-                left:50%;
-                transform:translate(-50%,-50%);
-                width:4rpx;
-                height:70%;
+            &.del {
+                &::after {
+                    content:' ';
+                    position:absolute;
+                    top:49%;
+                    left:50%;
+                    transform:translate(-50%,-50%);
+                    width:70%;
+                    height:4rpx;
+                    background:#FD5A26;
+                    overflow:hidden;
+                }
+            }
+            &.check-box {
+                width:30rpx;
+                height:30rpx;
+            }
+            &.checked-box {
+                width:30rpx;
+                height:30rpx;
                 background:#FD5A26;
-                overflow:hidden;
+                border-color:#FD5A26;
+                border-radius:50%;
+                &::after {
+                    content:'\e728';
+                    position:absolute;
+                    top:50%;
+                    left:50%;
+                    transform:translate(-50%,-50%);
+                    color:#FFF;
+                    overflow:hidden;
+                }
             }
         }
         .name {
@@ -159,6 +197,17 @@ export default {
             .n {
                 margin-right:12rpx;
             }
+        }
+        .edit {
+            position:absolute;
+            top:50%;
+            right:0;
+            transform:translate(-50%,-50%);
+            width:28rpx;
+            height:28rpx;
+            background:url('http://8.138.130.153:6003/vue/upload/static/passenger/icon-edit.png') no-repeat;
+            background-size:contain;
+            //icon-edit
         }
     }
 }

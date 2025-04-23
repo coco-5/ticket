@@ -4,7 +4,7 @@
         :style="popStyle"
     >
         <view class="hd">
-            选择乘客
+            选择乘客 
             <view 
                 class="close"
                 @click="closePop"
@@ -14,26 +14,20 @@
             class="bd"
             :style="bdStyle"
         >
-            <view class="list">
+            <view 
+                class="list"
+                v-if="list.length"
+            >
                 <view 
                     class="item"
                     v-for="(item,index) in list"
                     :key="index"
-                    @click="choose(item)"
                 >
-                    <view class="action"></view>
-                    <view class="name">
-                        <text class="n">张三好</text>
-                        <text class="t">成人票</text>
-                    </view>
-                    <view class="passport">
-                        <text class="n">港澳通行证</text>
-                        <text class="t">G123456789</text>
-                    </view>
-                    <view 
-                        class="edit"
-                        @click="edit(item)"
-                    ></view>
+                    <c-passenger-item
+                        :needAction="true"
+                        :item="item"
+                        @handler="choose"
+                    ></c-passenger-item>
                 </view>
             </view>
         </view>
@@ -50,7 +44,7 @@
             </view>
             <view 
                 class="btn"
-                @click="closePop"
+                @click="confirm"
             >
                 确定
             </view>
@@ -77,8 +71,10 @@ export default {
             handler(nv){}
         },
         list:{
+            immdeiate:true,
             deep:true,
-            handler(nv){}
+            handler(nv){
+            }
         }
     },
     data(){
@@ -101,6 +97,9 @@ export default {
         },
         closePop(){
             this.$emit('cbClosePop')
+        },
+        confirm(){
+            this.$emit('cbConfirm')
         },
         choose(item){
             this.$emit('cbChoose',item)
@@ -127,7 +126,7 @@ export default {
             uni.navigateTo({
                 url
             })
-        }
+        },
     }
 }
 </script>
@@ -161,61 +160,8 @@ export default {
         .item {
             position:relative;
             margin:0 45rpx;
-            padding:12rpx 60rpx 24rpx;
-            height:100rpx;
-            border-bottom:1px solid rgba(#000,.1);
+            padding:12rpx 0 24rpx;
             overflow:hidden;
-            .action {
-                position:absolute;
-                top:50%;
-                left:0;
-                transform:translateY(-50%);
-                width:34rpx;
-                height:34rpx;
-                background:#000;
-            }
-            .name {
-                margin:16rpx 0 8rpx;
-                height:32rpx;
-                line-height:32rpx;
-                .t,
-                .n {
-                    display:inline-block;
-                    vertical-align:middle;
-                }
-                .n {
-                    margin-right:16rpx;
-                    color:rgba(#000,.9);
-                    font-size:28rpx;
-                    font-weight:500;
-                }
-                .t {
-                    padding:0 8rpx;
-                    height:30rpx;
-                    line-height:30rpx;
-                    border:1px solid #F47B33;
-                    border-radius:5rpx;
-                    color:#F47B33;
-                    font-size:18rpx;
-                }
-            }
-            .passport {
-                color:rgba(#000,.5);
-                font-size:18rpx;
-                .n {
-                    margin-right:8rpx;
-                }
-            }
-            .edit {
-                position:absolute;
-                top:50%;
-                right:0;
-                transform:translateY(-50%);
-                width:28rpx;
-                height:28rpx;
-                background:url('http://8.138.130.153:6003/vue/upload/static/passenger/icon-edit.png') no-repeat;
-                background-size:contain;
-            }
             &:last-child {
                 border-bottom:none;
             }
@@ -254,5 +200,10 @@ export default {
             font-weight:500;
         }
     }
+}
+
+::v-deep .c-pop .list .item {
+    height:auto;
+    border-bottom:0 none;
 }
 </style>

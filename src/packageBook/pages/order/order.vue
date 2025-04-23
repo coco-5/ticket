@@ -47,7 +47,7 @@
                     <c-passenger-item
                         :needAction="true"
                         :item="item"
-                        @cbDelPassenger="cbDelPassenger"
+                        @handler="cbDelPassenger"
                     ></c-passenger-item>
                 </view>
             </view>
@@ -124,6 +124,8 @@
                 <popPassenger
                     :height="popHeight"
                     :list="listPassenger"
+                    @cbChoose="cbChoose"
+                    @cbConfirm="cbConfirm"
                     @cbClosePop="cbClosePassengerPop"
                 ></popPassenger>
             </template>
@@ -149,14 +151,14 @@ export default {
     data(){
         return{
             options:'',
-            listPassenger:[{},{}],   
+            listPassenger:[],   
             bottomStyle:'',
             actionsStyle:'',
             isShowPassengerPop:false,
-            popHeight:45,
+            popHeight:60,
             detail:'',
             tripList:[],
-            selectPassengerList:[]
+            selectPassengerList:[],
         }
     },
     onLoad(e){
@@ -254,22 +256,89 @@ export default {
                 getPassengerListApi({}).then((res)=>{
                     if(res.data.code == 200){
                         let data = res.data.data || []
-                        let selectPassengerList = []
 
                         data.forEach((item)=>{
+                            item.class = 'check-box'
                             if(item.isDefault){
-                                item.isChoose = true
-                                selectPassengerList.push(item)
+                                item.class = 'checked-box'
                             }
                         })
 
                         this.listPassenger = data
 
-                        this.selectPassengerList = selectPassengerList
+                        this.initSelectPassengerList(data, true)
                     }
                     resolve()
                 })
             })
+        },
+        initSelectPassengerList(data, needDefault = false){
+            let array = utils.deepCloneArray(data)
+            let selectPassengerList = []
+
+            array.forEach((item)=>{
+                if(item.passengerType == 1 && item.isDefault == 1){ 
+                    item.class = 'del'
+                    selectPassengerList.push(item)
+                }else{
+                    item.class = ''
+                }
+            })
+            this.selectPassengerList = selectPassengerList
+        },
+        cbChoose(item){
+            let list = this.listPassenger
+
+            if(item.passengerType == 2){
+                uni.showToast({
+                    title:'如需购买儿童票,请携带儿童证件到售票窗口购买',
+                    icon:'none'
+                })
+                return
+            }
+
+            for(let i=0; i<list.length; i++){
+                if(list[i].id == item.id){
+                    if(list[i].class == 'check-box'){
+                        list[i].class = 'checked-box'
+                    }else if(list[i].class == 'checked-box'){
+                        list[i].class = 'check-box'
+                    }
+                    break
+                }
+            }
+        },
+        cbConfirm(){
+            let list = this.listPassenger
+            let selectPassengerList = []
+
+            list.forEach((item)=>{
+                if(item.class == 'checked-box'){
+                    selectPassengerList.push(item)
+                }
+            })
+
+            this.selectPassengerList = selectPassengerList
+
+            this.cbClosePassengerPop()
+        },
+        cbDelPassenger(item){
+            let list1 = this.selectPassengerList
+            let list2 = this.listPassenger
+            
+            for(let i=0; i<list1.length; i++){
+                if(item.id == list1[i].id){
+                    list1.splice(i,1)
+                    break
+                }
+            }
+
+            for(let i=0; i<list2.length; i++){
+                if(item.id == list2[i].id){
+                    list2[i].class = 'check-box'
+                    break
+                }
+            }
         },
         getVipList(){
             let options = this.options
@@ -283,7 +352,7 @@ export default {
                     if(res.data.code == 200){
                         let data = res.data.data || []
 
-                        this.listPassenger = data
+                        this.listService = data
                     }
                     resolve()
                 })
@@ -292,7 +361,7 @@ export default {
         fixedBottom(){
             this.actionsStyle = `padding-bottom:${utils.fixIPhoneX() ? 48 : 0}rpx;`
             this.bottomStyle = `padding-bottom:${utils.fixIPhoneX() ? 48 : 0}rpx; height:200rpx;`
-            this.popHeight = utils.fixIPhoneX() ? 50 : 45
+            this.popHeight = utils.fixIPhoneX() ? 60 : 55
         },  
         cbClosePassengerPop(){
             this.isShowPassengerPop = false
@@ -311,9 +380,6 @@ export default {
         showPassengerPop(){
             this.isShowPassengerPop = true
         },
-        cbDelPassenger(item){
-
-        }
     }
 }
 </script>
