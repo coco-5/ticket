@@ -213,8 +213,6 @@ export default {
 
                         this.listSpace = data.dtseatrankPrice || []
 
-                        console.log(9999,'listSpace',this.listSpace)
-
                         this.iniNavigationBarTitle(data)
                     }
                     resolve()
@@ -250,9 +248,9 @@ export default {
                 type:item.type
             }
 
-            Object.assign(query, this.options)
+            query = Object.assign(query, this.options)
 
-            let url = `/packageBook/pages/order/order?${utils.paramsStringify(query)}`
+            let url = `/packageTicket/pages/inputInfo/inputInfo?${utils.paramsStringify(query)}`
 
             uni.navigateTo({
                 url

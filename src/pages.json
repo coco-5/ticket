@@ -23,6 +23,21 @@
 					"path": "pages/passenger/passenger"
 				},
 				{
+					"path": "pages/coupon/coupon"
+				},
+				{
+					"path": "pages/seatType/seatType"
+				},
+				{
+					"path": "pages/addedValue/addedValue"
+				},
+				{
+					"path": "pages/inputInfo/inputInfo",
+					"style": {
+						"navigationBarTitleText":"填写信息"
+					}
+				},
+				{
 					"path": "pages/cut/cut",
 					"style": {
 						"disableScroll":true,
@@ -45,24 +60,6 @@
 					"path": "pages/flight/round",
 					"style": {
 						"navigationBarTitleText":"航班"
-					}
-				},
-				{
-					"path": "pages/space/space",
-					"style": {
-						"navigationBarTitleText":"航班"
-					}
-				},
-				{
-					"path": "pages/order/order",
-					"style": {
-						"navigationBarTitleText":"填写信息"
-					}
-				},
-				{
-					"path": "pages/order/services",
-					"style": {
-						"navigationBarTitleText":"增值服务选择"
 					}
 				}
 			]

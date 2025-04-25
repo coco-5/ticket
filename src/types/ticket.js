@@ -49,5 +49,22 @@ export default {
             value:8,
             label:'港口贵宾卡'
         }
+    ],
+    addValueList:[
+        {
+            value:1,
+            label:'酒店',
+            desc:''
+        },
+        {
+            value:2,
+            label:'接车服务',
+            desc:''
+        },
+        {
+            value:99,
+            label:'其他',
+            desc:''
+        }  
     ]
 }

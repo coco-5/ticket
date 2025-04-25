@@ -61,17 +61,32 @@
             </view>
         </view>
 
-        <view class="wrap-coupon">
+        <view 
+            class="wrap-coupon"
+            @click="goCoupon"
+        >
             <view class="name">优惠</view>
-            <view class="tag">粤通珠澳次数卡 </view>
+            <view 
+                class="tag"
+                v-if="selectdData"
+            >
+                {{selectdData.name}}
+            </view>
             <view class="price">
-                <text class="type">-MOP</text>
-                <text class="text">$30</text>
+                <text 
+                    class="text"
+                    v-if="selectdData"
+                >
+                    -{{selectdData.type == 4 ? '¥' : '$'}}
+                    {{selectdData.type == 4 ? selectdData.discountRmbPrice : selectdData.discountPrice}}</text>
                 <text class="ico"></text>
             </view>
         </view>
 
-        <view class="wrap-added">
+        <view 
+            class="wrap-added"
+            @click="goAddedValue"
+        >
             <view class="name">增值服务</view>
             <view class="price">
                 <text class="more">已选珠海大酒店 +接车服务</text>
@@ -100,15 +115,16 @@
                     <view 
                         class="item"
                         @click="goPay"
+                        v-if="options.fromPortCode == 'MAO' || options.toPortCode == 'MAO'"
                     >
-                        <view class="price">RMB<text>0</text></view>
+                        <view class="price">RMB<text>{{rmb}}</text></view>
                         <view class="t">提交订单</view>
                     </view>
                     <view 
-                        class="item rmb"
+                        class="item mop"
                         @click="goPay"
                     >
-                        <view class="price">MOP<text>0</text></view>
+                        <view class="price">MOP<text>{{mop}}</text></view>
                         <view class="t">提交订单</view>
                     </view>
                 </view>
@@ -140,7 +156,7 @@
 <script>
 import utils from '@/utils/utils'
 import ticket from '@/types/ticket'
-import popPassenger from '@/packageBook/components/pop-passenger'
+import popPassenger from '@/packageTicket/components/pop-passenger'
 import { getOneWayTicketDetailApi, getRuleApi } from '@/api/ticket'
 import { getPassengerListApi } from '@/api/passenger'
 import { getVipListApi } from '@/api/vip'
@@ -159,6 +175,9 @@ export default {
             detail:'',
             tripList:[],
             selectPassengerList:[],
+            selectdData:'',
+            rmb:0,
+            mop:0
         }
     },
     onLoad(e){
@@ -167,6 +186,10 @@ export default {
         this.getList()
 
         this.fixedBottom()
+    },
+    onShow(){
+
+        this.checkSelectdData()
     },
     methods:{
         getList(){
@@ -201,7 +224,7 @@ export default {
                         let tripList = []
                         let dtseatrank = ''
 
-                        data.dtseatrankPrice.forEach((item)=>{
+                        data.dtseatrankPrice && data.dtseatrankPrice.length && data.dtseatrankPrice.forEach((item)=>{
                             item.typeName = utils.getValue(ticket.typeMap,item.type)
                             if(item.type == this.options.type){
                                 dtseatrank = item
@@ -228,6 +251,8 @@ export default {
                         this.tripList = tripList
 
                         this.listSpace = data.dtseatrankPrice || []
+
+                        this.getPrice()
                     }
                     resolve()
 
@@ -271,6 +296,14 @@ export default {
                     resolve()
                 })
             })
+        },
+        checkSelectdData(){
+            if(uni.getStorageSync('coupon')){
+                this.selectdData = uni.getStorageSync('coupon')
+                uni.removeStorageSync('coupon')
+
+                this.getPrice()
+            }
         },
         initSelectPassengerList(data, needDefault = false){
             let array = utils.deepCloneArray(data)
@@ -380,6 +413,48 @@ export default {
         showPassengerPop(){
             this.isShowPassengerPop = true
         },
+        goCoupon(){
+            if(this.selectPassengerList.length == 0){
+                uni.showToast({
+                    title:'乘客信息不能为空',
+                    icon:'none'
+                })
+                return
+            }
+
+            let query = {}
+
+            query = Object.assign(query, this.options)
+
+            let url = `/packageTicket/pages/coupon/coupon?${utils.paramsStringify(query)}`
+
+            uni.navigateTo({
+                url:url
+            })
+        },
+        goAddedValue(){
+            let query = {}
+
+            query = Object.assign(query, this.options)
+
+            let url = `/packageTicket/pages/addedValue/addedValue?${utils.paramsStringify(query)}`
+
+            uni.navigateTo({
+                url:url
+            })
+        },
+        getPrice(){
+            let num = this.selectPassengerList.length
+            let double = Number(this.options.isRoundTrip) ? 2 : 1
+            let tripList = this.tripList[0]
+            let getAddedValue = 0
+            let discountPrice = this.selectdData ? this.selectdData.discountPrice : 0
+            let discountRmbPrice = this.selectdData ? this.selectdData.discountRmbPrice : 0
+
+            this.mop = Number(tripList.price1) * double * num + getAddedValue - discountPrice
+
+            this.rmb = Number(tripList.price5) * double * num + getAddedValue -  (this.selectdData ? this.selectdData.discountRmbPrice : 0)
+        }
     }
 }
 </script>
@@ -671,7 +746,7 @@ export default {
                 .t {
                     margin-top:-4rpx;
                 }
-                &.rmb {
+                &.mop {
                     background:linear-gradient(87deg, #FFA63F, #EB5628);
                     border-radius:0 45rpx 45rpx 0;
                     color:#FFF;

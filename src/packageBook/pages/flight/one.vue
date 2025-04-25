@@ -171,7 +171,7 @@ export default {
                 isRoundTrip:0
             }
 
-            let url = `/packageBook/pages/space/space?${utils.paramsStringify(query)}`
+            let url = `/packageTicket/pages/seatType/seatType?${utils.paramsStringify(query)}`
 
             uni.navigateTo({
                 url

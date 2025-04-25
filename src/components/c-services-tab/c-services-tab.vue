@@ -7,12 +7,13 @@
             v-for="(item,index) in tabs"
             :key="index"
         >
-            <text>{{item.name}}</text>
+            <text>{{item.label}}</text>
         </view>
     </view>
 </template>
 
 <script>
+import ticket from '@/types/ticket'
 export default {
     props:{
         tabIndex:{
@@ -28,20 +29,7 @@ export default {
     },
     data(){
         return{
-            tabs:[
-                {
-                    name:'酒店',
-                    value:0
-                },
-                {
-                    name:'接车服务',
-                    value:1
-                },
-                {
-                    name:'其他',
-                    value:2
-                }
-            ],
+            tabs:ticket.addValueList,
         }
     },
     methods:{
