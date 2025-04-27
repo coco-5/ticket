@@ -14,8 +14,8 @@
             >查看详情</view>
         </view>
         <view class="content-box">
-            <view class="name ellipsis">{{item.name}}</view>
-            <view class="desc ellipsis">{{item.remark}}</view>
+            <view class="name ellipsis">{{item.name || ''}}</view>
+            <view class="desc ellipsis">{{item.remark || ''}}</view>
             <view class="stepper-box">
                 <view class="group">
                     <view 
@@ -89,13 +89,13 @@ export default {
 <style lang="scss" scoped>
 .c-item {
     position:relative;
+    margin-bottom:20rpx;
     padding:25rpx 160rpx 0 260rpx;
-    height:250rpx;
     background:#FFF;
     border-radius:20rpx;
     .left {
         position:absolute;
-        top:0;
+        top:25rpx;
         left:25rpx;
         width:200rpx;
         .img {
@@ -129,7 +129,7 @@ export default {
             color:rgba(0,0,0,.7);
         }
         .stepper-box {
-            margin:32rpx 0 16rpx;
+            margin:32rpx 0 24rpx;
             .group {
                 position:relative;
                 display:inline-block;
@@ -203,6 +203,7 @@ export default {
             }
         }
         .price-box {
+            padding-bottom:24rpx;
             display:flex;
             align-items:center;
             justify-content:flex-end;

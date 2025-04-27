@@ -88,17 +88,43 @@
             @click="goAddedValue"
         >
             <view class="name">增值服务</view>
+            <text 
+                class="more"
+                v-if="addedData.name"
+            >
+                {{addedData.name}}
+            </text>
             <view class="price">
-                <text class="more">已选珠海大酒店 +接车服务</text>
-                <text class="type">MOP</text>
-                <text class="text">-$30</text>
+                <template v-if="addedData.name">
+                    <text class="type">$</text>
+                    <text class="text">{{addedData.mop}}</text>
+                </template>
                 <text class="ico"></text>
             </view>
         </view>
 
+        <view 
+            class="wrap-vip"
+            v-if="vipList.length"
+        >
+            <c-added-card
+                v-for="(item,index) in vipList"
+                :key="index"
+                :item="item"
+                @cbDetail="handleDetail"
+                @cbeMinus="handleMinus"
+                @cbAdd="handleAdd"
+                @cbBlur="handleBlur"
+                @cbChecked="hanlderChecked"
+                v-if="item.display == 1"
+            ></c-added-card>
+        </view>
+
         <view class="wrap-tips">
             <view class="hd">儿童身高说明</view>
-            <view class="bd">儿童身高超过1.2米，需要购票成人票。1.2米及以下的儿童需要携带儿童到售票处领取免费的儿童票，才可以验票通过检票闸机。</view>
+            <view class="bd">
+                <rich-text :nodes="ruleInfo.children"></rich-text>    
+            </view>
         </view>
 
         <view 
@@ -177,8 +203,11 @@ export default {
             selectPassengerList:[],
             couponData:'',
             addedData:'',
+            vipData:'',
             rmb:0,
-            mop:0
+            mop:0,
+            ruleInfo:{},
+            vipList:[]
         }
     },
     onLoad(e){
@@ -269,11 +298,15 @@ export default {
                 toPortCode:options.toPortCode,
                 sailDate:options.sailDate,
                 voyageId:options.voyageId,
-                isRoundTrip:0,
+                isRoundTrip:options.isRoundTrip,
             }
 
             return new Promise((resolve)=>{
                 getRuleApi(params).then((res)=>{
+                    if(res.data.code == 200){
+                        let data = res.data.data || {}
+                        this.ruleInfo = data
+                    }
                     resolve()
                 })
             })
@@ -304,8 +337,20 @@ export default {
                 this.couponData = uni.getStorageSync('coupon')
 
                 let addedData = uni.getStorageSync('addedValue')
+                let name = []
+                let mop = 0
+                let rmb = 0
+                for(let p in addedData){
+                    name.push(addedData[p].name)     
+                    mop += addedData[p].price * addedData[p].value    
+                    rmb += addedData[p].rmbPrice * addedData[p].value
+                }
 
-                console.log(9999,'addedData',addedData)
+                this.addedData = {
+                    name:name.join(','),
+                    mop,
+                    rmb
+                }
 
                 this.tripList.length && this.getPrice()
             }
@@ -390,7 +435,12 @@ export default {
                     if(res.data.code == 200){
                         let data = res.data.data || []
 
-                        this.listService = data
+                        data.forEach((item)=>{
+                            item.value = 1
+                            item.checked = false
+                        })
+
+                        this.vipList = data
                     }
                     resolve()
                 })
@@ -452,13 +502,97 @@ export default {
             let num = this.selectPassengerList.length
             let double = Number(this.options.isRoundTrip) ? 2 : 1
             let tripList = this.tripList[0]
-            let getAddedValue = 0
+            let addedPrice = this.addedData ? this.addedData.mop : 0
+            let addedRmbPrice = this.addedData ? this.addedData.rmb : 0
             let discountPrice = this.couponData ? this.couponData.discountPrice : 0
             let discountRmbPrice = this.couponData ? this.couponData.discountRmbPrice : 0
+            let vipPrice = this.vipData ? this.vipData.mop : 0
+            let vipRmbPrice = this.vipData ? this.vipData.rmb : 0
 
-            this.mop = Number(tripList.price1) * double * num + getAddedValue - discountPrice
+            this.mop = Number(tripList.price1) * double * num + addedPrice + vipPrice - discountPrice
 
-            this.rmb = Number(tripList.price5) * double * num + getAddedValue - discountRmbPrice
+            this.rmb = Number(tripList.price5) * double * num + addedRmbPrice + vipRmbPrice - discountRmbPrice
+        },
+        handleDetail(item){
+
+        },
+        handleMinus(item){
+            if(item.value == 1) return
+
+            item.value--
+            
+            let list = this.vipList
+
+            for(let i=0; i<list.length; i++){
+                if(list[i].id == item.id){
+                    list[i].value = item.value
+                    break
+                }
+            }
+            this.checkVipPrice()
+        },
+        handleAdd(item){
+            if(item.value == item.num) return
+
+            item.value++
+            
+            let list = this.vipList
+
+            for(let i=0; i<list.length; i++){
+                if(list[i].id == item.id){
+                    list[i].value = item.value
+                    break
+                }
+            }
+
+            this.checkVipPrice()
+        },
+        handleBlur(item,e){
+            let value = e.detail.value
+            let v = 1
+
+            if(value < 1){
+                v = 1
+            }else if(value > item.num){
+                v = item.num
+            }else{
+                v = value
+            }
+
+            item.value = Number(v)
+
+            this.checkVipPrice()
+        },
+        hanlderChecked(item){
+            let list = this.vipList
+
+            for(let i=0; i<list.length; i++){
+                if(list[i].id == item.id){
+                    list[i].checked = !list[i].checked
+                    break
+                }
+            }
+            this.checkVipPrice()
+        },
+        checkVipPrice(){
+            let list = this.vipList
+            let mop = 0
+            let rmb = 0
+
+            list.forEach((item)=>{
+                if(item.checked){
+                    console.log(1111,'item',item.value)
+                    mop += Number(item.value) * Number(item.price)
+                    rmb += Number(item.value) * Number(item.rmbPrice)
+                }
+            })
+
+            this.vipData = {
+                mop,
+                rmb
+            }
+
+            this.getPrice()
         }
     }
 }
@@ -594,7 +728,8 @@ export default {
     background:#FFF;
     border-radius:20rpx;
     .name,
-    .tag {
+    .tag,
+    .more {
         display:inline-block;
     }
     .name {
@@ -612,6 +747,11 @@ export default {
         font-size:22rpx;
         color:#FD5A26;
     }
+    .more {
+        color:rgba(#000,.6);
+        font-size:28rpx;
+        white-space:nowrap;
+    }
     .price {
         position:absolute;
         top:50%;
@@ -627,11 +767,6 @@ export default {
         }
         .text {
             font-size:30rpx;
-        }
-        .more {
-            color:rgba(#000,.7);
-            font-size:28rpx;
-            white-space:nowrap;
         }
         .ico {
             margin-left:16rpx;
@@ -664,6 +799,9 @@ export default {
     line-height:90rpx;
     background:#FFF;
     border-radius:20rpx;
+    .name {
+        margin-right:24rpx;
+    }
 }
 
 .wrap-tips {
@@ -681,10 +819,15 @@ export default {
     }
 }
 
+.wrap-vip {
+    margin:0 20rpx;
+}
+
 .wrap-actions {
     position:fixed;
     bottom:0;
     left:0;
+    z-index:2;
     width:100%;
     height:180rpx;
     background:#FFF;

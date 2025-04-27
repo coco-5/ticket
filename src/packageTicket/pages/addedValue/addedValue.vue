@@ -3,7 +3,7 @@
         <view class="tabs">
             <c-services-tab
                 :tabIndex="tabIndex"
-                @change="tabIndex = $event"
+                @change="changeTab"
             ></c-services-tab>
         </view>
 
@@ -229,8 +229,26 @@ export default {
                         target.list = target.list.concat(rows)
                     }
 
+                    this.checkAddedData()
                     resolve()
                 })    
+            })
+        },
+        checkAddedData(){
+            let addedValue = uni.getStorageSync('addedValue') || {}
+            let allList = this.allList
+
+            allList.forEach((item)=>{
+                let list = item.list
+
+                list.length && list.forEach((v)=>{
+                    for(let p in addedValue){
+                        if(p == v.id){
+                            v.checked = true
+                            v.value = addedValue[p].value
+                        }
+                    }    
+                })
             })
         },
         handleDetail(item){
@@ -240,12 +258,31 @@ export default {
             if(item.value == 1) return
 
             item.value--
+            
+            let list = this.allList[this.tabIndex].list
+
+            for(let i=0; i<list.length; i++){
+                if(list[i].id == item.id){
+                    list[i].value = item.value
+                    break
+                }
+            }
+            this.checkSelectdData()
         },
         handleAdd(item){
             if(item.value == item.num) return
+
             item.value++
-        },
-        handleInput(item,e){
+            
+            let list = this.allList[this.tabIndex].list
+
+            for(let i=0; i<list.length; i++){
+                if(list[i].id == item.id){
+                    list[i].value = item.value
+                    break
+                }
+            }
+            this.checkSelectdData()
         },
         handleBlur(item,e){
             let value = e.detail.value
@@ -260,47 +297,55 @@ export default {
             }
 
             item.value = Number(v)
+
+            this.checkSelectdData()
         },
         hanlderChecked(item){
             let allList = this.allList
             let tabIndex = this.tabIndex
             let list = allList[tabIndex].list
-            let type = allList[tabIndex].type
-            let selectdData = this.selectdData
-            let name = []
-            let mop = 0
-
-            if(selectdData[type]){
-                selectdData[type] = {}
-            }
 
             list.forEach((v)=>{
                 if(v.id == item.id){
-                    v.checked = true
-                    selectdData[type] = v
-                }else{
-                    v.checked = false
+                    v.checked = !v.checked
                 }
             })
 
-            for(let p in selectdData){
-                name.push(selectdData[p].name)
-                mop += item.price * item.value
-            }
+            this.checkSelectdData()
+        },
+        checkSelectdData(){
+            let allList = this.allList
+            let name = []
+            let mop = 0
+            let selectdData = {}
 
-            this.name = name.join('、')
+            allList.forEach((item)=>{
+                let list = item.list
+
+                list.forEach((v)=>{
+                    if(v.checked){
+                        name.push(v.name)
+                        mop += v.price * v.value
+                        selectdData[v.id] = v
+                    }
+                })
+            })
+
+            this.selectdData = selectdData
+            this.name = name.join(',')
             this.mop = mop
-
-            console.log(9999,'name',name)
-            console.log(9999,'mop',mop)
         },
         confirm(){
-            //addedValue
-            uni.setStorageSync('addedValue', this.selectdData)     
+            uni.setStorageSync('addedValue', this.selectdData)    
 
             uni.navigateBack({
                 delta:1
             })
+        },
+        changeTab(index){
+            this.tabIndex = index
+
+            this.getAddedValuePage()
         }
     }
 }
@@ -318,165 +363,6 @@ export default {
 
 .list {
     margin:0 20rpx;
-    .item {
-        position:relative;
-        padding:25rpx 160rpx 0 260rpx;
-        height:250rpx;
-        background:#FFF;
-        border-radius:20rpx;
-        .left {
-            position:absolute;
-            top:0;
-            left:25rpx;
-            width:200rpx;
-            .img {
-                width:100%;
-                height:200rpx;
-                border-radius:20rpx;
-                overflow:hidden;
-            }
-            .left-desc {
-                margin-top:4rpx;
-                color:#989595;
-                font-size:24px;
-                text-align:center;
-            }
-        }
-        .content-box {
-            overflow:hidden;
-            .ellipsis {
-                white-space:nowrap;
-                overflow:hidden;
-                text-overflow:ellipsis;
-            }
-            .name {
-                margin-bottom:16rpx;
-                font-weight:500;
-                font-size:24rpx;
-                color:#222;
-            }
-            .desc {
-                font-size:24rpx;
-                color:rgba(0,0,0,.7);
-            }
-            .stepper-box {
-                margin:32rpx 0 16rpx;
-                .group {
-                    position:relative;
-                    display:inline-block;
-                    height:56rpx;
-                    .add,
-                    .minus,
-                    .input {
-                        display:inline-block;
-                        vertical-align:top;
-                    }
-                    .add,
-                    .minus {
-                        position:relative;
-                        width:56rpx;
-                        height:56rpx;
-                        line-height:56rpx;
-                        border:1px solid #e6e6e6;
-                        &::before {
-                            content:' ';
-                            position:absolute;
-                            top:50%;
-                            left:50%;
-                            transform:translate(-50%,-50%);
-                            width:50%;
-                            height:2rpx;
-                            background:rgba(0,0,0);
-                        }
-                        &::after {
-                            content:' ';
-                            position:absolute;
-                            top:50%;
-                            left:50%;
-                            transform:translate(-50%,-50%);
-                            width:2rpx;
-                            height:50%;
-                            background:rgba(0,0,0);
-                        }
-                        &.disabled {
-                            &::before {
-                                background:rgba(204,204,204);    
-                            }
-                            &::after {
-                                background:rgba(204,204,204);        
-                            }
-                        }
-                    }
-                    .minus {
-                        border-radius:8rpx 0 0 8rpx;
-                        &::after {
-                            display:none;
-                        }
-                    }
-                    .add {
-                        border-radius:0 8rpx 8rpx 0;
-                    }
-                    .input {
-                        padding:0 8rpx;
-                        width:50rpx;
-                        height:56rpx;
-                        border:1px solid #e6e6e6;
-                        border-left:0;
-                        border-right:0;
-                        text-align:center;
-                        input {
-                            display:inline-block;
-                            width:100%;
-                            height:100%;   
-                            vertical-align:top;
-                        }
-                    }
-                }
-            }
-            .price-box {
-                display:flex;
-                align-items:center;
-                justify-content:flex-end;
-                .price-item {
-                    display:flex;
-                    align-items:flex-end;
-                    margin-left:38rpx;
-                    color:#fd5a26;
-                    font-weight:500;
-                    &.rmb {
-                        color:#000;
-                    }
-                    .unit {
-                        font-size:22rpx;
-                        margin-right:6rpx;
-                    }
-                }
-                .num {
-                    font-size:34rpx;
-                }
-            }
-        }
-        .checkbox {
-            position:absolute;
-            right:36rpx;
-            top:184rpx;
-            .icon {
-                position:absolute;
-                display:inline-block;
-                bottom:24rpx;
-                right:0;  
-                width:34rpx;
-                height:34rpx;
-                border-radius:50%;
-                border:1px solid rgba(0, 0, 0, 0.4);
-                &.on {
-                    border:0 none;
-                    background:url('http://8.138.130.153:6003/vue/upload/static/common/ico-checked.png') no-repeat;
-                    background-size:contain;
-                }
-            } 
-        }
-    }
 }
 
 .no-content {
@@ -515,10 +401,14 @@ export default {
         vertical-align:middle;
         .name {
             margin:34rpx 0 8rpx;
+            max-width:400rpx;
             height:34rpx;
             line-height:34rpx;
             color:rgba(0,0,0,.55);
             font-size:30rpx;
+            white-space:nowrap;
+            overflow:hidden;
+            text-overflow:ellipsis;
         }
         .price {
             color:#FE6630;
