@@ -68,17 +68,17 @@
             <view class="name">优惠</view>
             <view 
                 class="tag"
-                v-if="selectdData"
+                v-if="couponData"
             >
-                {{selectdData.name}}
+                {{couponData.name}}
             </view>
             <view class="price">
                 <text 
                     class="text"
-                    v-if="selectdData"
+                    v-if="couponData"
                 >
-                    -{{selectdData.type == 4 ? '¥' : '$'}}
-                    {{selectdData.type == 4 ? selectdData.discountRmbPrice : selectdData.discountPrice}}</text>
+                    -{{couponData.type == 4 ? '¥' : '$'}}{{couponData.type == 4 ? couponData.discountRmbPrice : couponData.discountPrice}}
+                </text>
                 <text class="ico"></text>
             </view>
         </view>
@@ -175,7 +175,8 @@ export default {
             detail:'',
             tripList:[],
             selectPassengerList:[],
-            selectdData:'',
+            couponData:'',
+            addedData:'',
             rmb:0,
             mop:0
         }
@@ -188,8 +189,7 @@ export default {
         this.fixedBottom()
     },
     onShow(){
-
-        this.checkSelectdData()
+        this.checkData()
     },
     methods:{
         getList(){
@@ -250,6 +250,8 @@ export default {
 
                         this.tripList = tripList
 
+                        console.log(9999,'111 tripList',this.tripList)
+
                         this.listSpace = data.dtseatrankPrice || []
 
                         this.getPrice()
@@ -297,12 +299,15 @@ export default {
                 })
             })
         },
-        checkSelectdData(){
-            if(uni.getStorageSync('coupon')){
-                this.selectdData = uni.getStorageSync('coupon')
-                uni.removeStorageSync('coupon')
+        checkData(){
+            if(uni.getStorageSync('coupon') || uni.getStorageSync('addedValue')){
+                this.couponData = uni.getStorageSync('coupon')
 
-                this.getPrice()
+                let addedData = uni.getStorageSync('addedValue')
+
+                console.log(9999,'addedData',addedData)
+
+                this.tripList.length && this.getPrice()
             }
         },
         initSelectPassengerList(data, needDefault = false){
@@ -448,12 +453,12 @@ export default {
             let double = Number(this.options.isRoundTrip) ? 2 : 1
             let tripList = this.tripList[0]
             let getAddedValue = 0
-            let discountPrice = this.selectdData ? this.selectdData.discountPrice : 0
-            let discountRmbPrice = this.selectdData ? this.selectdData.discountRmbPrice : 0
+            let discountPrice = this.couponData ? this.couponData.discountPrice : 0
+            let discountRmbPrice = this.couponData ? this.couponData.discountRmbPrice : 0
 
             this.mop = Number(tripList.price1) * double * num + getAddedValue - discountPrice
 
-            this.rmb = Number(tripList.price5) * double * num + getAddedValue -  (this.selectdData ? this.selectdData.discountRmbPrice : 0)
+            this.rmb = Number(tripList.price5) * double * num + getAddedValue - discountRmbPrice
         }
     }
 }

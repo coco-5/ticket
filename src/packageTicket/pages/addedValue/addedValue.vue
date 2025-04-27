@@ -11,55 +11,18 @@
             class="list"
             v-if="allList[tabIndex].list.length"
         >
-            <view 
+            <c-added-card
                 class="item"
                 v-for="(item,index) in allList[tabIndex].list"
                 :key="index"
+                :item="item"
+                @cbDetail="handleDetail"
+                @cbeMinus="handleMinus"
+                @cbAdd="handleAdd"
+                @cbBlur="handleBlur"
+                @cbChecked="hanlderChecked"
                 v-if="item.display == 1"
-            >
-                <view 
-                    class="left"
-                    @click="handleDetail(item)"
-                >
-                    <image 
-                        class="img"
-                        :src="item.imageUrl" 
-                    ></image>
-                    <view 
-                        class="left-desc"
-                        v-if="item.detailsImg.length" 
-                    >查看详情</view>
-                </view>
-                <view class="content-box">
-                    <view class="name ellipsis">{{item.name}}</view>
-                    <view class="desc ellipsis">{{item.remark}}</view>
-                    <view class="stepper-box">
-                        <view class="group">
-                            <view 
-                                class="minus"
-                                @click="handleMinus(item)"
-                            ></view>
-                            <view class="input">
-                                <input type="number" />
-                            </view>
-                            <view class="add"></view>
-                        </view>
-                    </view>
-                    <view class="price-box">
-                        <view class="price-item">
-                            <text class="unit">MOP</text>
-                            <text class="text">{{item.price}}</text>
-                        </view>
-                        <view class="price-item rmb">
-                            <text class="unit">RMB</text>
-                            <text class="text">{{item.rmbPrice}}</text>
-                        </view>
-                    </view>
-                </view>
-                <view class="checkbox">
-                    <view class="icon"></view>
-                </view>
-            </view>
+            ></c-added-card>
         </view>
 
         <view 
@@ -80,11 +43,11 @@
                 class="desc"
                 v-if="selectdData"
             >
-                <view class="name">已选{{selectdData.name || ''}}</view>
+                <view class="name">已选{{name}}</view>
                 <view class="price">
                     总价
                     <text class="unit">MOP</text>
-                    <text>{{selectdData.mopPrice}}</text>
+                    <text>{{mop}}</text>
                 </view>
             </view>
             <view 
@@ -111,7 +74,9 @@ export default {
             allList:[],
             addValueList:ticket.addValueList,
             actionsStyle:'',
-            selectdData:''
+            selectdData:{},
+            name:'',
+            mop:0
         }
     },
     onLoad(e){
@@ -272,13 +237,70 @@ export default {
 
         },
         handleMinus(item){
+            if(item.value == 1) return
 
+            item.value--
         },
         handleAdd(item){
+            if(item.value == item.num) return
+            item.value++
+        },
+        handleInput(item,e){
+        },
+        handleBlur(item,e){
+            let value = e.detail.value
+            let v = 1
 
+            if(value < 1){
+                v = 1
+            }else if(value > item.num){
+                v = item.num
+            }else{
+                v = value
+            }
+
+            item.value = Number(v)
+        },
+        hanlderChecked(item){
+            let allList = this.allList
+            let tabIndex = this.tabIndex
+            let list = allList[tabIndex].list
+            let type = allList[tabIndex].type
+            let selectdData = this.selectdData
+            let name = []
+            let mop = 0
+
+            if(selectdData[type]){
+                selectdData[type] = {}
+            }
+
+            list.forEach((v)=>{
+                if(v.id == item.id){
+                    v.checked = true
+                    selectdData[type] = v
+                }else{
+                    v.checked = false
+                }
+            })
+
+            for(let p in selectdData){
+                name.push(selectdData[p].name)
+                mop += item.price * item.value
+            }
+
+            this.name = name.join('、')
+            this.mop = mop
+
+            console.log(9999,'name',name)
+            console.log(9999,'mop',mop)
         },
         confirm(){
+            //addedValue
+            uni.setStorageSync('addedValue', this.selectdData)     
 
+            uni.navigateBack({
+                delta:1
+            })
         }
     }
 }
@@ -376,7 +398,7 @@ export default {
                             height:50%;
                             background:rgba(0,0,0);
                         }
-                        &.disable {
+                        &.disabled {
                             &::before {
                                 background:rgba(204,204,204);    
                             }
@@ -396,11 +418,12 @@ export default {
                     }
                     .input {
                         padding:0 8rpx;
-                        width:40rpx;
+                        width:50rpx;
                         height:56rpx;
                         border:1px solid #e6e6e6;
                         border-left:0;
                         border-right:0;
+                        text-align:center;
                         input {
                             display:inline-block;
                             width:100%;
