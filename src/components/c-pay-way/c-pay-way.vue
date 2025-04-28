@@ -2,6 +2,8 @@
     <view class="list">
         <view 
             class="item"
+            @click="pay(item)"
+            v-if="item.currencyType == options.currencyType"
             v-for="(item,index) in payList"
             :key="index"
         >
@@ -23,11 +25,28 @@
 <script>
 export default {
     props:{
+        options:{
+            type:Object,
+            default:{}
+        }
     },
     data(){
         return{
             payList:[
-                {type:'wxpay', name:'微信支付（澳门币支付）',desc:'微信安全支付',ico:'http://8.138.130.153:6003/vue/upload/static/paylist/wxzf.png'},
+                {
+                    currencyType:1,
+                    type:'wxpay', 
+                    name:'微信支付（澳门币支付）'
+                    ,desc:'微信安全支付',
+                    ico:'http://8.138.130.153:6003/vue/upload/static/paylist/wxzf.png'
+                },
+                {
+                    currencyType:2,
+                    type:'wxpay', 
+                    name:'微信支付（澳门币支付）',
+                    desc:'微信安全支付',
+                    ico:'http://8.138.130.153:6003/vue/upload/static/paylist/wxzf.png'
+                },
             ]
         }
     },
@@ -35,7 +54,10 @@ export default {
 
     },
     methods:{
-
+        pay(item){
+            console.log(9999,222,item)
+            this.$emit('pay',item)
+        }
     }
 }
 </script>

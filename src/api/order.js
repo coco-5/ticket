@@ -38,4 +38,14 @@ export function getOrderCalculateApi(params){
     })
 }
 
+export function getOrderSubmitApi(params){
+    params = Object.assign({}, params)
+
+    return new Promise((resolve, reject)=>{
+        _this.$http.post(`/order/submit`,params).then((res)=>{
+            resolve(res)
+        })
+    })
+}
+
 //

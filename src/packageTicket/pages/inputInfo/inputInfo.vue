@@ -132,7 +132,11 @@
             :style="actionsStyle"
         >
             <view class="notice">
-                <text class="ico"></text>
+                <text 
+                    class="ico"
+                    :class="agreementChecked ? 'on' : ''"
+                    @click="agreementChecked = !agreementChecked"
+                ></text>
                 <text class="text">勾选表示已阅读并同意 购取票/退订须知</text>
             </view>
             <view class="actions">
@@ -140,7 +144,7 @@
                 <view class="btn">
                     <view 
                         class="item"
-                        @click="goPay"
+                        @click="submitPay(2)"
                         v-if="options.fromPortCode == 'MAO' || options.toPortCode == 'MAO'"
                     >
                         <view class="price">RMB<text>{{rmb}}</text></view>
@@ -148,7 +152,7 @@
                     </view>
                     <view 
                         class="item mop"
-                        @click="goPay"
+                        @click="submitPay(1)"
                     >
                         <view class="price">MOP<text>{{mop}}</text></view>
                         <view class="t">提交订单</view>
@@ -185,6 +189,7 @@ import ticket from '@/types/ticket'
 import popPassenger from '@/packageTicket/components/pop-passenger'
 import { getOneWayTicketDetailApi, getRuleApi } from '@/api/ticket'
 import { getPassengerListApi } from '@/api/passenger'
+import { getOrderSubmitApi } from '@/api/order'
 import { getVipListApi } from '@/api/vip'
 export default {
     components:{
@@ -207,7 +212,8 @@ export default {
             rmb:0,
             mop:0,
             ruleInfo:{},
-            vipList:[]
+            vipList:[],
+            agreementChecked:false
         }
     },
     onLoad(e){
@@ -454,11 +460,98 @@ export default {
         cbClosePassengerPop(){
             this.isShowPassengerPop = false
         },
-        goPay(){
-            let query = {
-
+        submitPay(currencyType){
+            if(this.selectPassengerList.length == 0){
+                uni.showToast({
+                    title:'乘客信息不能为空',
+                    icon:'none'
+                })
+                return
+            }
+            
+            if(this.selectPassengerList.some((item) => item.passengerType == 2)){
+                uni.showToast({
+                    title:'如需购买儿童票,请携带儿童证件到售票窗口购买',
+                    icon:'none'
+                })
+                return
             }
 
+            if(!this.agreementChecked){
+                uni.showToast({
+                    title:'需要先勾选已阅读并同意购取票/退订须知',
+                    icon:'none'
+                })
+                return
+            }
+
+            let options = this.options
+            let addedValueList = []
+            let addedValue = uni.getStorageSync('addedValue') || {}
+            let coupon = uni.getStorageSync('coupon') || {}
+            let cardCode = ''
+            let cardSourceType = 0
+
+            if(addedValue){
+                for(let p in addedValue){
+                    addedValueList.push({
+                        addedValueId:addedValue[p].id,
+                        num:addedValue[p].value,
+                    })
+                }
+            }
+
+            if(coupon){
+                cardCode = coupon.code
+                cardSourceType = coupon.sourceType
+            }
+
+            let params = {
+                type:options.type,
+                addedValueList,
+                channel:1,//userStroe.user?.merchantAcitve ? 2 : 1,
+                currencyType,
+                fromPortCode:options.fromPortCode,
+                isRoundTrip:options.isRoundTrip,
+                orderVoyage:{
+                    departDate:options.sailDate,
+                    seatRankId:options.seatRankId,
+                    voyageId:options.voyageId,
+                },
+                orderVoyageReturn:{
+                    seatRankId:options.seatRankId    
+                },
+                passengerList:this.selectPassengerList,
+                toPortCode:options.toPortCode,
+            }
+
+            if(cardCode){
+                params.cardCode = cardCode
+                params.cardSourceType = cardSourceType
+            }
+            getOrderSubmitApi(params).then((res)=>{
+                if(res.data.code == 200){
+                    this.goPay(res.data.data,params)    
+                }
+            })
+
+            return
+        },
+        goPay(data, params){
+            let query = {
+                orderId:data.orderId,
+                orderSn:data.orderSn,
+                currencyType:params.currencyType,
+                price:data.price,
+                rmbPrice:data.rmbPrice,
+                ticketPrice:data.ticketPrice,
+                rmbTicketPrice:data.rmbTicketPrice,
+                discountPrice:data.discountPrice,
+                discountRmbPrice:data.discountRmbPrice,
+                addedValuePrice:data.addedValuePrice,
+                addedValueRmbPrice:data.addedValueRmbPrice,
+                orderType:'ticket',
+            }
             let url = `/packageUser/pages/order/way?${utils.paramsStringify(query)}`
 
             uni.navigateTo({
@@ -843,10 +936,17 @@ export default {
             vertical-align:middle;
         }
         .ico {
+            position:relative;
             margin-right:12rpx;
-            width:30rpx;
-            height:30rpx;
-            background:#000;
+            width:24rpx;
+            height:24rpx;
+            border-radius:50%;
+            border:1px solid rgba(0, 0, 0, 0.4);
+            &.on {
+                border-color:#FF7143;
+                background:url('http://8.138.130.153:6003/vue/upload/static/common/ico-checked.png') no-repeat;
+                background-size:contain;
+            }
         }
     } 
     .actions {
