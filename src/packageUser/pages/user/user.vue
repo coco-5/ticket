@@ -135,13 +135,32 @@ export default {
             uni.showLoading()
 
 			uni.uploadFile({
-				url:`${this.$hq.baseConfig.proxyApi.main}/common/upload`,
+				url:`https://japi.hqwx.com/api/upload/form/images`,
                 fileType:'image',
                 name:'pics',
-                file:filePath,/* 
+                filePath:filePath,
                 formData:{
-					passport:uni.getStorageSync('hq_token')
-                }, */
+					passport:'345bd63e96bd01e015bddd06cfdf44f04ab81349f6c2450473d0eebb0486f3481d660b3153df70e743797ecbe98ccc6ea05cf78e8d30796fe63c470c512eda687ac1a4c58e641d1f4c2c3ab34673f9235e'
+                },
+                success: (res) => {
+                    uni.hideLoading()
+                    res = JSON.parse(res.data)
+                },
+                fail: (res) => {
+                    uni.hideLoading()
+                }
+			})
+
+            return
+
+			uni.uploadFile({
+				url:`${this.$hq.baseConfig.proxyApi.main}/api/common/upload`,
+                header:{
+                    token:uni.getStorageSync('token')
+                },
+                fileType:'image',
+                name:'file',
+                filePath:filePath,
                 success:(res)=>{
                     uni.hideLoading()
                 },

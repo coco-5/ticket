@@ -143,11 +143,11 @@
         </c-pop>
     </view>
 </template>
-
+ 
 <script>
 import utils from '@/utils/utils'
 import ticket from '@/types/ticket'
-import { getOneWayTicketDetailApi, getRuleApi } from '@/api/ticket'
+import { getOneWayTicketDetailApi, getRuleApi, getRoundTicketDetailApi } from '@/api/ticket'
 export default {
     data(){
         return{
@@ -169,9 +169,14 @@ export default {
     methods:{
         getList(){
             let list = [
-                this.getOneWayTicketDetail(),
                 this.getRule()
             ]
+
+            if(this.options.isRoundTrip == 1){
+                list.push(this.getRoundTicketDetail())
+            }else{
+                this.getOneWayTicketDetail()
+            }
 
             Promise.all(list)
         },
@@ -192,16 +197,7 @@ export default {
                         let data = res.data.data || {}
                         let tripList = []
 
-                        tripList.push({
-                            formattedSetoffDate:data.formattedSetoffDate,
-                            setoffTime:data.setoffTime,
-                            fromPort:data.fromPort,
-                            arriveTime:data.arriveTime,
-                            toPort:data.toPort,
-                            ticketType:data.ticketType,
-                            duration:data.duration,
-                            isRoundTrip:0
-                        })
+                        tripList.push(this.returnTripData(data,0))
 
                         data.dtseatrankPrice.forEach((item)=>{
                             item.typeName = utils.getValue(ticket.typeMap,item.type)
@@ -219,6 +215,59 @@ export default {
 
                 })
             })
+        },
+        getRoundTicketDetail(){
+            let options = this.options
+            let params = {
+                sailDate:options.sailDate,
+                sailDateReturn:options.sailDateReturn,
+                fromPortCode:options.fromPortCode,
+                toPortCode:options.toPortCode,
+                isRoundTrip:1,
+                returnVoyageId:options.returnVoyageId,
+                voyageId:options.voyageId,
+            }
+
+            getRoundTicketDetailApi(params).then((res)=>{
+                if(res.data.code == 200){
+                    let data = res.data.data || {}
+                    let tripList = []
+                    let voyage = data.voyage || {}
+                    let voyageReturn = data.voyageReturn || {}
+
+                    console.log(9999,'data',data)
+
+                    tripList.push(this.returnTripData(voyage,1))
+
+                    tripList.push(this.returnTripData(voyageReturn,1))
+
+                    voyage.dtseatrankPrice.forEach((item)=>{
+                        item.typeName = utils.getValue(ticket.typeMap,item.type)
+                    })
+
+                    this.listSpace = voyage.dtseatrankPrice || []
+
+                    this.detail = data
+
+                    this.tripList = tripList
+
+                    console.log(9999,'tripList',tripList)
+
+                    this.iniNavigationBarTitle(data)
+                }
+            })
+        },
+        returnTripData(data, isRoundTrip = 0){
+            return {
+                formattedSetoffDate:data.formattedSetoffDate,
+                setoffTime:data.setoffTime,
+                fromPort:data.fromPort,
+                arriveTime:data.arriveTime,
+                toPort:data.toPort,
+                ticketType:data.ticketType,
+                duration:data.duration,
+                isRoundTrip:isRoundTrip
+            }
         },
         getRule(){
             //获取购票退票规则

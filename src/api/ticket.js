@@ -81,6 +81,16 @@ export function getRoundTicketListApi(params){
     })
 }
 
+export function getRoundTicketDetailApi(params){
+    params = Object.assign({}, params)
+
+    return new Promise((resolve, reject)=>{
+        _this.$http.get(`/ticket/roundTripTicketDetail`,params).then((res)=>{
+            resolve(res)
+        })
+    })
+}
+
 export function getRuleApi(params){
     params = Object.assign({}, params)
 
