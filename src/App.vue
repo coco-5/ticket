@@ -28,24 +28,29 @@
             smsLogin(){
                 uni.login({
                     success:res=>{
-                        console.log(999,'login',res)
-                        /* if(res.errMsg == 'login:ok'){
+                        if(res.errMsg == 'login:ok'){
                             let code = res.code
                             wxLoginApi({
                                 code,
                             }).then((res)=>{
+                                if(res.data.code == 200){
+                                    let data = res.data.data
 
+                                    uni.setStorageSync('token',data.token)
+
+                                    uni.setStorageSync('ticketMember',data.ticketMember)
+                                }
                             })
-                        } */
+                        }
                     }
                 })
-                smsLoginApi({}).then((res)=>{
+                /* smsLoginApi({}).then((res)=>{
                     if(res.data.code == 200){
                         let data = res.data.data
 
                         uni.setStorageSync('token',data)
                     } 
-                })
+                }) */
             }
         }
     }

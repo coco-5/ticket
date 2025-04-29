@@ -39,3 +39,13 @@ export function getPartnerListApi(params){
     })
 }
 
+export function uploadApi(params){
+    params = Object.assign({}, params)
+
+    return new Promise((resolve, reject)=>{
+        _this.$http.post(`/common/upload`,params).then((res)=>{
+            resolve(res)
+        })
+    })
+}
+

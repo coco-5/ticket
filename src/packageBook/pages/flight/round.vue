@@ -1,40 +1,45 @@
 <template>
     <view class="page">
         <destination
-            :options="options"
+            :dest="dest"
+            v-if="dest"
         ></destination>
 
         <div class="list">
-            <div 
-                class="item-list"
-                v-if="listDeparture.length"
-            >
+            <div class="item-list">
                 <view class="hd">
-                    <view class="text">去程 {{departureDate}}</view>
+                    <view class="text">去程 {{options.sailDate}}</view>
                     <view class="ico"></view>
                 </view>
-                <view class="bd">
+                <view 
+                    class="bd"
+                    :style="listStyle"
+                    v-if="listDeparture.length"
+                >
                     <card
                         :item="item"
+                        type="departure"
                         v-for="(item,index) in listDeparture"
-                        @cbChoose="choose(item,'departure')"
+                        @cbChoose="choose"
                         :key="index"
                     ></card>
                 </view>
             </div>
-            <div 
-                class="item-list arrival"
-                v-if="listArrival.length"
-            >
+            <div class="item-list arrival">
                 <view class="hd">
-                    <view class="text">返程 {{arrivalDate}}</view>
+                    <view class="text">返程 {{options.sailDateReturn}}</view>
                     <view class="ico"></view>
                 </view>
-                <view class="bd">
+                <view 
+                    class="bd"
+                    :style="listStyle"
+                    v-if="listArrival.length"
+                >
                     <card
                         :item="item"
+                        type="arrival"
                         v-for="(item,index) in listArrival"
-                        @cbChoose="choose(item,'arrival')"
+                        @cbChoose="choose"
                         :key="index"
                     ></card>
                 </view>
@@ -58,6 +63,7 @@
 import utils from '@/utils/utils'
 import destination from '@/packageBook/components/destination'
 import card from '@/packageBook/components/card'
+import { getRoundTicketListApi } from '@/api/ticket'
 export default {
     components:{
         destination,
@@ -66,39 +72,111 @@ export default {
     data(){
         return{
             options:{},
-            departureDate:0,
-            arrivalDate:0,
-            listDeparture:[{id:1,isChoose:false},{id:2,isChoose:false},{id:3,isChoose:false},{id:4,isChoose:false},{id:5,isChoose:false}],
-            listArrival:[{id:6,isChoose:false},{id:7,isChoose:false},{id:8,isChoose:false},{id:9,isChoose:false},{id:10,isChoose:false}],
+            dest:{},
+            listDeparture:[],
+            listArrival:[],
+            listStyle:''
         }
     },
     onLoad(e){
         this.options = e
 
-        this.initDate()
+        this.fixedListStyle()
+
+        this.getList()
     },
     methods:{
-        initDate(){
-            this.departureDate = utils.timeFormat(this.options.departureDate,'yyyy-mm-dd')
-            this.arrivalDate = utils.timeFormat(this.options.arrivalDate,'yyyy-mm-dd')
+        fixedListStyle(){
+            let a = utils.fixIPhoneX() ? 48 : 0
+
+            this.listStyle = `height:calc(100vh - 124rpx - 100rpx - 83rpx - ${a}px);`
+        },
+        getList(){
+            let list = [
+                this.getRoundTicketList()
+            ]
+
+            Promise.all(list)
+        },
+        getRoundTicketList(){
+            let options = this.options
+            let params = {
+                sailDate:options.sailDate,
+                sailDateReturn:options.sailDateReturn,
+                fromPortCode:options.fromPortCode,
+                toPortCode:options.toPortCode,
+                isRoundTrip:1,
+                returnVoyageId:'',
+                voyageId:'',
+            }
+
+            getRoundTicketListApi(params).then((res)=>{
+                if(res.data.code == 200){
+                    let data = res.data.data
+
+                    this.dest = {
+                        fromPort:data.fromPort,
+                        toPort:data.toPort
+                    }
+
+                    data.voyage && data.voyage.length && data.voyage.forEach((item)=>{
+                        item.isChoose = false
+                    })
+
+                    data.voyageReturn && data.voyageReturn.length && data.voyageReturn.forEach((item)=>{
+                        item.isChoose = false
+                    })                 
+
+                    this.listDeparture = data.voyage || []
+                    this.listArrival = data.voyageReturn || []
+                }
+            })
         },
         choose(item,type){
-            let id = item.id
             let list = type == 'departure' ? this.listDeparture : this.listArrival
-            console.log(item,type)
+            let id = ''
 
-            for(let i=0;i<list.length;i++){
-                if(list[i].id == id){
-                    list[i].isChoose = !list[i].isChoose
+            list.forEach((val)=>{
+                if(val.voyageRouteId == item.voyageRouteId){
+                    val.isChoose = true
+                    id = item.voyageRouteId
                 }else{
-                    list[i].isChoose = false
+                    val.isChoose = false
                 }
+            })
+
+            if(type == 'departure'){
+                this.voyageId = id
+            }else{
+                this.returnVoyageId = id
             }
         },
         go(){
+            let options = this.options
             let query = {
-                type:'round',
-                
+                sailDate:options.sailDate,
+                sailDateReturn:options.sailDateReturn,
+                fromPortCode:options.fromPortCode,
+                toPortCode:options.toPortCode,
+                isRoundTrip:1,
+                returnVoyageId:this.returnVoyageId || '',
+                voyageId:this.voyageId || '',
+            }
+
+            if(!this.voyageId){
+                uni.showToast({
+                    title:'请选择去程航班',
+                    icon:'none'
+                })
+                return
+            }
+
+            if(!this.returnVoyageId){
+                uni.showToast({
+                    title:'请选择返程航班',
+                    icon:'none'
+                })
+                return
             }
 
             let url = `/packageTicket/pages/seatType/seatType?${utils.paramsStringify(query)}`
@@ -155,6 +233,7 @@ export default {
         .bd {
             background:#FFF;
             border-radius:0 0 20rpx 20rpx;
+            overflow:auto;
         }
     }
 }

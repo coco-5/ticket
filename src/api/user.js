@@ -22,3 +22,13 @@ export function wxLoginApi(params){
         })
     })
 }
+
+export function memberUpdateApi(params){
+    params = Object.assign({}, params)
+
+    return new Promise((resolve, reject)=>{
+        _this.$http.post(`/ticketMember/update`,params).then((res)=>{
+            resolve(res)
+        })
+    })
+}

@@ -1,5 +1,5 @@
 <template>
-    <view class="page">
+    <view class="page"> 
         <destination
             :dest="dest"
             v-if="dest"
@@ -38,7 +38,7 @@
                 </view>
                 <view 
                     class="grade"
-                        v-if="item.dtseatrankPrice && item.dtseatrankPrice.length"
+                    v-if="item.dtseatrankPrice && item.dtseatrankPrice.length"
                 >
                     <view 
                         class="i"

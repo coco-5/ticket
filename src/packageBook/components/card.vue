@@ -6,35 +6,56 @@
     >
         <view class="date">
             <view class="date-item">
-                <view class="d">08:00</view>
-                <view class="t">蛇口港口</view>
+                <view class="d">{{item.setoffTime}}</view>
+                <view class="t">{{item.fromPort}}</view>
             </view>
             <view class="long">
-                <view class="t">1小时40分</view>
+                <view class="t">{{item.duration}}</view>
                 <view class="ico"></view>
             </view>
             <view class="date-item">
-                <view class="d">08:00</view>
-                <view class="t">蛇口港口</view>
+                <view class="d">{{item.arriveTime}}</view>
+                <view class="t">{{item.toPort}}</view>
             </view>
         </view>
-        <view class="grade">
-            <view class="i">
-                普通舱<text>（49张）</text>
-            </view>
-            <view class="i">
-                头等舱<text>（49张）</text>
+        <view 
+            class="grade"
+            v-if="item.dtseatrankPrice && item.dtseatrankPrice.length"
+        >
+            <view 
+                class="i"
+                v-for="(d,i) in item.dtseatrankPrice"
+                :key="i"
+            >
+                {{d.seatRank}}<text>（{{d.seatNum}}张）</text>
             </view>
         </view>
         <div class="price">
-            <view class="price-item mop">
+            <view 
+                class="price-item mop"
+                v-if="item.minPrice"
+            >
                 <text class="t">MOP</text>
-                <text class="p">65</text>
-                <text class="q">起</text>
+                <text class="p">{{item.minPrice}}</text>
+                <text 
+                    class="q"
+                    v-if="item.dtseatrankPrice.length > 1"
+                >
+                    起
+                </text>
             </view>
-            <view class="price-item">
+            <view 
+                class="price-item"
+                v-if="item.fportCode === 'MAO' || item.tportCode === 'MAO'"
+            >
                 <text class="t">RMB</text>
-                <text class="p">65</text>
+                <text class="p">{{item.minPrice5 || 0 }}</text>
+                <text 
+                    class="q"
+                    v-if="item.dtseatrankPrice.length > 1"
+                >
+                    起
+                </text>
             </view>
         </div>
     </view>
@@ -45,7 +66,11 @@ export default {
     props:{
         item:{
             type:Object,
-            default:[]
+            default:{}
+        },
+        type:{
+            type:String,
+            default:''
         }
     },
     data(){
@@ -54,7 +79,7 @@ export default {
     },
     methods:{
         choose(item){
-            this.$emit('cbChoose',item)
+            this.$emit('cbChoose',item, this.type)
         }
     }
 }

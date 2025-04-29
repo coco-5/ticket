@@ -1,10 +1,22 @@
 <template>
     <view class="page">
         <view class="user-info">
+            
             <view class="avatar">
-                <image />
+                <block v-if="isCompare">
+                    <button 
+                        class="avatar-btn"
+                        open-type="chooseAvatar" 
+                        @chooseavatar="chooseavatar" 
+                        plain="true"
+                    >
+                        <image :src="ticketMember.avatar"></image>
+                    </button>
+                </block>
             </view>
-            <view class="name">1111</view>
+            <view 
+                class="name">{{ticketMember.nickName || '用户'}}
+            </view>
             <view class="tags">
                 <view class="tag tag-jm">珠澳居民</view>
                 <view class="tag tag-card">珠澳卡</view>
@@ -46,6 +58,7 @@
 </template>
 
 <script>
+import utils from '@/utils/utils'
 import { getAdvertiseListApi } from '@/api/common'
 export default {
     data(){
@@ -61,14 +74,23 @@ export default {
             ],
             advertiseList:[],
             advertiseIndex:0,
+            ticketMember:{},
+            isCompare:false,
         }
     },
     onLoad(e) {
         this.options = e
 
+        this.isCompare = utils.compareBaseSDKVersion('2.21.2')
+
+        this.getMemberInfo()
+
         this.getList()
     },
     methods:{
+        getMemberInfo(){
+            this.ticketMember = uni.getStorageSync('ticketMember') || {}
+        },
         getList(){
             let list = [
                 this.getAdvertiseList()
@@ -101,7 +123,33 @@ export default {
             uni.navigateTo({
                 url:item.link
             })
-        }
+        },
+
+        chooseavatar(e){
+            console.log(e.detail.avatarUrl)
+            if(e.detail.avatarUrl){
+                this.uploadFile(e.detail.avatarUrl)
+            }
+        },
+        uploadFile(filePath){
+            uni.showLoading()
+
+			uni.uploadFile({
+				url:`${this.$hq.baseConfig.proxyApi.main}/common/upload`,
+                fileType:'image',
+                name:'pics',
+                file:filePath,/* 
+                formData:{
+					passport:uni.getStorageSync('hq_token')
+                }, */
+                success:(res)=>{
+                    uni.hideLoading()
+                },
+                fail: (res) => {
+                    uni.hideLoading()
+                }
+			})
+        },
     }
 }
 </script>
@@ -126,6 +174,13 @@ export default {
         transform:translateY(-50%);
         width:133rpx;
         height:133rpx;
+        .avatar-btn {
+            margin:0;
+            padding:0;
+            width:133rpx;
+            height:133rpx;
+            border:0 none;
+        }
         image {
             width:100%;
             height:100%;
