@@ -1,5 +1,21 @@
 <template>
-    <view class="c-date">
+    <view 
+        class="c-date"
+        :style="{
+            height:height
+        }"
+    >
+        <view class="top">
+            <view class="title">
+                日期选择
+            </view>        
+            <view 
+                class="close" 
+                @click="closePop"
+            >
+            </view> 
+        </view>
+        <view class="on-month">2025年5月</view>
         <view class="hd">
             <view 
                 class="item"
@@ -9,38 +25,70 @@
                 {{item}}
             </view>
         </view>
-        <view class="bd">
+        <scroll-view 
+            class="bd"
+            :style="bdStyle"
+            scroll-y
+        >
             <view 
                 class="month"
                 v-for="(month,index) in months"
                 :key="index"
             >
                 <view 
-                    class="item"
-                    :class="{'disabled':date.disabled, 'today':date.today, 'current':date.time == onDate}"
-                    @click="choose(date)"
-                    v-for="(date,i) in month"
-                    :key="i"
+                    class="month-hd"
+                    v-if="index == 1"
                 >
-                    {{date.date.getDate()}}
+                    2025年6月
+                </view>
+                <view class="month-bd">
+                    <view 
+                        class="item"
+                        :class="{
+                            'disabled':date.disabled, 
+                            'today':date.showDate && date.today, 
+                            'current':date.showDate && date.time == on
+                        }"
+                        @click="choose(date)"
+                        v-for="(date,i) in month"
+                        :key="i"
+                    >
+                        <block v-if="date.showDate">
+                            {{date.date.getDate()}}
+                        </block>
+                    </view>
                 </view>
             </view> 
+        </scroll-view>
+        <view 
+            class="ft"
+            :style="bottomStyle"
+            @click="confirm"
+        >
+            确定
         </view>
     </view>
 </template>
 
 <script>
+import utils from '@/utils/utils'
 export default {
     props:{
         onDate:{
             type:[String,Number],
             default:0
+        },
+        height:{
+            type:String,
+            default:'100%'
         }
     },
     watch:{
         onDate:{
             deep:true,
             handler(n){
+                this.on = n
+                //console.log('onDate',n)
             }
         }  
     },
@@ -48,13 +96,28 @@ export default {
         return {
             currentDate:new Date(),
             weekList:['日','一','二','三','四','五','六'],
-            months:[]
+            months:[],
+            bottomStyle:'',
+            bdStyle:'',
+            current:'',
+            on:'',//当前选中日期
         }
     },
     mounted(){
+        this.initBottom()
+
+        this.on = this.onDate
+
         this.ininDate()
     },
     methods:{
+        initBottom(){
+            let bottom = utils.fixIPhoneX() ? 48 : 0
+
+            this.bottomStyle = `margin-bottom:${bottom}rpx;`
+
+            this.bdStyle = `height:calc(100% - 60rpx - 58rpx - 142rpx - 100rpx - ${bottom}rpx - 12rpx);`
+        },
         ininDate(){
             const year = this.currentDate.getFullYear()
             const month = this.currentDate.getMonth()
@@ -81,14 +144,16 @@ export default {
             const startDayOfWeek = firstDay.getDay()
             const dates = []
             const today = new Date(this.nowYear, this.nowMonth, this.nowDate)
-            const last = new Date(this.nowYear, this.nowMonth, this.nowDate+10)
+            //const last = new Date(this.nowYear, this.nowMonth, this.nowDate+10)
+            const last = new Date(year, month, daysInMonth)
 
             for(let i = 0; i < startDayOfWeek; i++){
                 let date = new Date(year, month, 1 - startDayOfWeek + i)
                 dates.push({
                     time:date.getTime(),
                     date,
-                    disabled:date < today || date > last
+                    disabled:date < today || date > last,
+                    showDate:false
                 })
             }
 
@@ -98,6 +163,7 @@ export default {
                     time:date.getTime(),
                     date,
                     disabled:date < today || date > last,
+                    showDate:true,
                     today:date.getTime() == today.getTime()
                 })
             }
@@ -110,7 +176,8 @@ export default {
                     dates.push({
                         time:date.getTime(),
                         date,
-                        disabled:date < today || date > last
+                        disabled:date < today || date > last,
+                        showDate:false,
                     })
                     j++
                 }
@@ -119,8 +186,13 @@ export default {
             return [dates]
         },
         choose(item){
-            let date = (item.date).getTime()
-            this.$emit('cbChoose',date)
+            this.on = (item.date).getTime()
+        },
+        confirm(){
+            this.$emit('cbConfirm',this.on)
+        },
+        closePop(){
+            this.$emit('cbClose')
         }
     }
 }
@@ -128,33 +200,87 @@ export default {
 
 <style lang="scss" scoped>
 .c-date {
+    position:relative;
     height:100%;
+    .top {
+        position:relative;
+        padding:60rpx 0 40rpx;
+        height:42rpx;
+        line-height:42rpx;
+        color:#000;
+        font-size:40rp;
+        font-weight:500;
+        text-align:center;
+        .close {
+            position:absolute;
+            top:30rpx;
+            right:24rpx;
+            width:42rpx;
+            height:43rpx;
+            background:url('http://8.138.130.153:6003/vue/upload/static/common/icon-colse.png') no-repeat;
+            background-size:contain;
+        }
+    }
+    .on-month {
+        margin-bottom:8px;
+        height:50rpx;
+        line-height:50rpx;
+        font-size:30rpx;
+        font-weight:500;
+        text-align:center;    
+    }
     .hd {
         display:flex;
         height:60rpx;
         line-height:60rpx;
+        border-bottom:1px solid #eee;
         .item {
             flex:1;
             text-align:center;
         }
     }
     .bd {
-        height:calc(100% - 60rpx);
+        height:calc(100% - 60rpx - 58rpx - 142rpx);
         overflow-y:auto;
-        .month {
+        .month-hd {
+            height:100rpx;
+            line-height:100rpx;
+            font-size:30rpx;
+            font-weight:500;
+            text-align:center;    
+        }
+        .month-bd {
             .item {
                 display:inline-block;
                 width:calc(100% / 7);  
+                height:110rpx;
+                line-height:110rpx;
                 text-align:center;
                 vertical-align:top; 
                 &.disabled {
                     color:#999;
                 }
                 &.current {
-                    color:#f00;
+                    color:#FFF;
+                    background:linear-gradient(87deg, rgb(255, 166, 63), rgb(235, 86, 40));
+                    border-radius:8rpx;
                 }
             }
         }
+    }
+    .ft {
+        position:fixed;
+        bottom:0;
+        left:50%;
+        transform:translate(-50%,0);
+        width:664rpx;
+        line-height:100rpx;
+        background:linear-gradient(87deg, #FFA63F, #EB5628);
+        border-radius:50rpx;
+        color:#FFF;
+        font-size:34rpx;
+        font-weight:500;
+        text-align:center;
     }
 }
 </style>

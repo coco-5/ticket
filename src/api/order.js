@@ -48,4 +48,23 @@ export function getOrderSubmitApi(params){
     })
 }
 
+export function getOrderDeleteApi(id, params){
+    params = Object.assign({}, params)
+
+    return new Promise((resolve, reject)=>{
+        _this.$http.delete(`/order/delete/${id}`,params).then((res)=>{
+            resolve(res)
+        })
+    })
+}
+
+export function getOrderCancelApi(id,params){
+    params = Object.assign({}, params)
+
+    return new Promise((resolve, reject)=>{
+        _this.$http.post(`/order/cancel/{id}`,params).then((res)=>{
+            resolve(res)
+        })
+    })
+}
 //

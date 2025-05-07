@@ -90,12 +90,12 @@ export default {
     position:relative;
     margin-top:-1px;
     padding:0 24rpx;
-    height:200rpx;
+    min-height:200rpx;
     border-top:1px solid #E5E5E5;
     overflow:hidden;
     .date {
         margin:20rpx 0 8rpx 0;
-        white-space:nowrap;
+        //white-space:nowrap;
         text-align:center;
         .date-item,
         .long {
@@ -147,6 +147,7 @@ export default {
         }
     }
     .price {
+        padding-bottom:24rpx;
         height:36rpx;
         text-align:right;
         .price-item {

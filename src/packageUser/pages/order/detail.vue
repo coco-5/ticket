@@ -1,17 +1,33 @@
 <template>
     <view class="page">
         <view class="block"></view>
-
+ 
         <view class="wrap-status">
-            <view class="ico"></view>
-            <view class="text">待支付</view>
-            <view class="time">剩余09分50秒 </view>
+            <image 
+                class="ico"
+                :src="orderDetail.statusIcon"
+            ></image>
+            <view class="text">{{orderDetail.statusText}}</view>
+            <view 
+                class="time"
+                v-if="orderDetail.status == 0"
+            >
+                <c-count-down>
+
+                </c-count-down>
+                剩余09分50秒 
+            </view>
         </view>
 
         <view class="wrap-top">
             <view class="top">
-                <c-trip-detail></c-trip-detail>
-                <c-trip-detail></c-trip-detail>
+                <c-trip-detail
+                    v-for="(item,index) in tripList"
+                    :key="index"
+                    :item="item"
+                    :isShowType="true"
+                    :isShowLong="true"
+                ></c-trip-detail>
             </view>
         </view>
 
@@ -20,8 +36,11 @@
                 乘客<view class="ico"></view>
             </view>
             <view class="bd">
-                <c-passenger-item></c-passenger-item>
-                <c-passenger-item></c-passenger-item>
+                <c-passenger-item
+                    v-for="(item,index) in listPassenger"
+                    :key="index"
+                    :item="item"
+                ></c-passenger-item>
             </view>
         </view>
 
@@ -30,7 +49,9 @@
                 订单明细<view class="ico"></view>
             </view>
             <view class="bd">
-                <c-order-item></c-order-item>
+                <c-order-item
+                    :detail="orderDetail"
+                ></c-order-item>
             </view>
         </view>
 
@@ -44,21 +65,50 @@
             ></c-banner>
         </view>
 
-        <view class="actions">
-            <view class="btn">取消订单</view>
-            <view class="btn orange">去支付</view>
-        </view>
+        <template v-if="[0,1].includes(orderDetail.status)">
+            <view 
+                class="actions"
+                 v-if="orderDetail.status == 0"
+            >
+                <view 
+                    class="btn"
+                    @click="goHome"
+                >
+                    返回首页
+                </view>
+                <view 
+                    class="btn"
+                    @click="handlerCancelOrder"
+                >
+                    取消订单
+                </view>
+                <view 
+                    class="btn orange"
+                    @click="handlerPay"
+                >
+                    去支付
+                </view>
+            </view>
+        </template>
+
+        <c-bottom></c-bottom>
     </view>
 </template>
 
 <script>
+import utils from '@/utils/utils'
+import order from '@/types/order'
+import passenger from '@/types/passenger'
 import { getAdvertiseListApi } from '@/api/common'
 import { getOrderDetailApi } from '@/api/order'
 export default {
     data(){
         return{
+            orderDetail:{},
             advertiseList:[],
             advertiseIndex:0,
+            tripList:[],
+            listPassenger:[],   
         }
     },
     onLoad(e){
@@ -83,6 +133,31 @@ export default {
 
             return new Promise((resolve)=>{
                 getOrderDetailApi(params).then((res)=>{
+                    if(res.data.code == 200){
+                        let data = res.data.data || {}
+                        let orderStatus = order.orderStatus
+
+                        for(let i=0; i<orderStatus.length; i++){
+                            if(orderStatus[i].value == data.status){
+                                data.statusText = orderStatus[i].label
+                                data.statusIcon = orderStatus[i].icon
+                            }
+                        }
+                    
+                        let passengerTypeList = passenger.passengerTypeList
+                        let certificateTypeList = passenger.certificateTypeList
+
+                        data.passengerList.length && data.passengerList.forEach((item)=>{
+                            item.passengerTypeName = utils.getValue(passengerTypeList,item.passengerType, 'label')
+                            item.certificateTypeName = utils.getValue(certificateTypeList,item.certificateType, 'label')
+                        })
+
+                        this.tripList.push(this.returnTripData(data,0))
+
+                        this.listPassenger = data.passengerList || []
+
+                        this.orderDetail = data
+                    }
                     resolve()
                 })
             })
@@ -102,6 +177,41 @@ export default {
                 })
             })
         },
+        returnTripData(data, trip = 0){
+            return {
+                formattedSetoffDate:data.departDate,
+                setoffTime:data.departTime,
+                fromPort:data.fromPort,
+                arriveTime:data.arriveTime,
+                toPort:data.toPort,
+                seatRank:data.seatRank,
+                duration:data.duration,
+                trip,
+            }
+        },
+        goHome(){
+            uni.reLaunch({
+                url:'/pages/index/index'
+            })     
+        },
+        handlerCancelOrder(){
+            uni.showModal({
+                title:'提示',
+                content:'是否取消订单？',
+                success:(res)=>{
+                    if(res.confirm){
+                    }
+                }
+            })
+        },
+        cancelOrder(){
+            let params = {
+                
+            }
+        },
+        handlerPay(){
+
+        }
     }
 }
 </script>
@@ -131,7 +241,6 @@ export default {
         margin:32rpx 24rpx 0 40rpx;
         width:50rpx;
         height:50rpx;
-        background:url('http://8.138.130.153:6003/vue/upload/static/order/icon-time.png') no-repeat;
         background-size:contain;
     }
     .text {
@@ -237,21 +346,23 @@ export default {
 .wrap-passanger,
 .wrap-order {
     margin:20rpx auto;
+    padding-bottom:8rpx;
     width:710rpx;
     background:#FFF;
     border-radius:20rpx;
     .hd {
         position:relative;
-        padding:0 40rpx;
+        margin:0 40rpx;
         height:110rpx;
         line-height:110rpx;
+        border-bottom:1px solid rgba(0,0,0,0.04);
         color:#000;
         font-size:32rpx;
         font-weight:500;
         .ico {
             position:absolute;
             top:50%;
-            right:40rpx;
+            right:0;
             transform:translateY(-50%);
             width:21rpx;
             height:11rpx;
@@ -266,13 +377,19 @@ export default {
     }
 }
 
+.wrap-order {
+    .bd {
+        padding-top:24rpx;
+    }
+}
+
 .banner {
     height:189rpx;
     background:#CCC;
 }
 
 .actions {
-    padding:0 32rpx;
+    padding:0 32rpx 0 0;
     height:136rpx;
     line-height:136rpx;
     text-align:right;

@@ -1,7 +1,19 @@
 <template>
-    <view class="c-desc">
+    <view 
+        class="c-desc"
+        :class="{
+            'border':needBorder
+        }"
+    >
         <view class="detail">
-            <view class="tag">{{item.isRoundTrip}}去程</view>
+            <view 
+                class="tag"
+                :class="{
+                    back:item.trip
+                }"
+            >
+                {{item.trip ? '返程' : '去程'}}
+            </view>
             <view class="date">{{item.formattedSetoffDate}}</view>
         </view>
         <view class="dates">
@@ -27,6 +39,19 @@
                 <view class="t">{{item.toPort}}</view>
             </view>
         </view>
+        <view 
+            class="card-type"
+            v-if="item.ticketType && item.ticketType.length"
+        >
+            <text class="t">票型</text>
+            <text 
+                class="tag"
+                v-for="(item,index) in item.ticketType"
+                :key="index"
+            >
+                {{item}}
+            </text>
+        </view>
     </view>
 </template>
 
@@ -38,6 +63,10 @@ export default {
             default:false
         },
         isShowType:{
+            type:Boolean,
+            default:false
+        },
+        needBorder:{
             type:Boolean,
             default:false
         },
@@ -133,6 +162,27 @@ export default {
                 background-size:contain;
             }
         }
+    }
+    .card-type {
+        padding-bottom:40rpx;
+        height:24rpx;
+        line-height:24rpx;
+        text {
+            display:inline-block;
+            font-size:22rpx;
+            vertical-align:middle;
+        }
+        .t {
+            margin-right:24rpx;
+            color:rgba(0,0,0,.6);
+        }
+        .tag {
+            margin-right:8rpx;
+            color:#000;
+        }
+    }
+    &.border {
+        border-bottom:1px solid rgba(0,0,0,0.08);
     }
 }
 </style>

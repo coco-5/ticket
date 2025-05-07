@@ -1,7 +1,7 @@
 <template>
     <view 
         class="c-passenger"
-        :class="needAction ? 'action' : ''"
+        :class="needAction ? 'action' : 'no-action'"
     >
         <view 
             class="ico"
@@ -72,6 +72,16 @@ export default {
             border-radius:5rpx;
             color:#A3A3A3;
             font-size:18rpx;
+        }
+    }
+    .passport {
+        .t,
+        .n {
+            display:inline-block;
+            vertical-align:middle;
+        }
+        .n {
+            margin-right:12rpx;
         }
     }
 }
@@ -189,14 +199,6 @@ export default {
             line-height:30rpx;
             color:#8D8D8D;
             font-size:24rpx;
-            .t,
-            .n {
-                display:inline-block;
-                vertical-align:middle;
-            }
-            .n {
-                margin-right:12rpx;
-            }
         }
         .edit {
             position:absolute;
@@ -208,6 +210,25 @@ export default {
             background:url('http://8.138.130.153:6003/vue/upload/static/passenger/icon-edit.png') no-repeat;
             background-size:contain;
             //icon-edit
+        }
+    }
+    &.no-action {
+        position:relative;
+        padding:8rpx 0;
+        border-bottom:1px solid rgba(0,0,0,0.06);
+        height:80rpx;
+        line-height:80rpx;
+        .passport {
+            position:absolute;
+            top:50%;
+            right:0;
+            transform:translateY(-50%);
+            .n {
+                color:#8D8D8D;   
+            }
+        }
+        &:last-child {
+            border-bottom:none;
         }
     }
 }

@@ -10,3 +10,13 @@ export function getMemberCardInfoApi(params){
         })
     })
 }
+
+export function memberUpdateApi(params){
+    params = Object.assign({}, params)
+
+    return new Promise((resolve, reject)=>{
+        _this.$http.post(`/passenger/update/merchant`,params).then((res)=>{
+            resolve(res)
+        })
+    })
+}

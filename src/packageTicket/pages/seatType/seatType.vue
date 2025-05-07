@@ -10,25 +10,12 @@
                         :isShowLong="true"
                     ></c-trip-detail>
                 </template>
-                <view 
-                    class="card-type"
-                    v-if="detail.ticketType && detail.ticketType.length"
-                >
-                    <text class="t">票型</text>
-                    <text 
-                        class="tag"
-                        v-for="(item,index) in detail.ticketType"
-                        :key="index"
-                    >
-                        {{item}}
-                    </text>
-                </view>
                 <view class="more">
                     <view 
                         class="item"
                         v-for="(item,index) in ruleList"
                         :key="index"
-                        @click="chooseRule(item)"
+                        @click="chooseRule(item,index)"
                     >
                         {{item.label}}
                     </view>
@@ -105,7 +92,18 @@
             ></c-no-content>  
         </view>
 
-        <view class="tips">如需要购买VIP包房请到线下售票厅购买</view>
+        <view class="tips">
+            <view class="p"><text>* </text>MOP即澳门币</view>
+            <view class="p"><text>* </text>RMB即人民币</view>
+            <view 
+                class="p"
+                v-if="['MAO', 'WZ'].includes(options.fromPortCode) ||['MAO', 'WZ'].includes(options.toPortCode)"
+            >
+                <text>* </text>所有单程票当天有效,不限票面显示的班次
+            </view>
+        </view>
+
+        <view class="bottom-tips">如需要购买VIP包房请到线下售票厅购买</view>
 
         <c-pop
             height="65vh"
@@ -121,7 +119,7 @@
                         v-for="(item,index) in ruleList"
                         :key="index"
                     >
-                        <text>{{item.name}}</text>
+                        <text>{{item.label}}</text>
                     </view>   
                     <view 
                         class="close" 
@@ -141,6 +139,8 @@
                 </view>
             </template>
         </c-pop>
+
+        <c-bottom></c-bottom>
     </view>
 </template>
  
@@ -151,7 +151,7 @@ import { getOneWayTicketDetailApi, getRuleApi, getRoundTicketDetailApi } from '@
 export default {
     data(){
         return{
-            opetions:{},
+            options:{},
             ruleList:ticket.ruleList,
             ruleIndex:0,
             listSpace:[],
@@ -235,13 +235,15 @@ export default {
                     let voyage = data.voyage || {}
                     let voyageReturn = data.voyageReturn || {}
 
-                    console.log(9999,'data',data)
+                    voyage.ticketType = data.ticketType || []
 
-                    tripList.push(this.returnTripData(voyage,1))
+                    voyageReturn.ticketType = data.returnTicketType || []
+
+                    tripList.push(this.returnTripData(voyage,0))
 
                     tripList.push(this.returnTripData(voyageReturn,1))
 
-                    voyage.dtseatrankPrice.forEach((item)=>{
+                    voyage.dtseatrankPrice && voyage.dtseatrankPrice.length && voyage.dtseatrankPrice.forEach((item)=>{
                         item.typeName = utils.getValue(ticket.typeMap,item.type)
                     })
 
@@ -251,13 +253,11 @@ export default {
 
                     this.tripList = tripList
 
-                    console.log(9999,'tripList',tripList)
-
-                    this.iniNavigationBarTitle(data)
+                    this.iniNavigationBarTitle(voyage)
                 }
             })
         },
-        returnTripData(data, isRoundTrip = 0){
+        returnTripData(data, trip = 0){
             return {
                 formattedSetoffDate:data.formattedSetoffDate,
                 setoffTime:data.setoffTime,
@@ -266,7 +266,7 @@ export default {
                 toPort:data.toPort,
                 ticketType:data.ticketType,
                 duration:data.duration,
-                isRoundTrip:isRoundTrip
+                trip,
             }
         },
         getRule(){
@@ -305,9 +305,9 @@ export default {
                 url
             })
         },
-        chooseRule(item){
+        chooseRule(item,index){
             this.isShoPop = true
-
+            this.ruleIndex = index
             this.popType = item.type
         },
         cbClosePop(){
@@ -333,89 +333,8 @@ export default {
         background:linear-gradient(205deg, #FFF7F4, #FFFFFF);
         border-radius:20rpx;
         overflow:hidden;
-        .detail {
-            margin:28rpx 0;
-            height:32rpx;
-            .tag,
-            .date {
-                display:inline-block;
-                vertical-align:middle;
-            }
-            .tag {
-                margin-right:8rpx;
-                width:50rpx;
-                height:30rpx;
-                line-height:30rpx;
-                border:1px solid #FE6630;
-                border-radius:5rpx;
-                color:#FE6630;
-                font-size:18rpx;
-                text-align:center;
-            }
-            .date {
-                color:#000;
-                font-size:22rpx;
-            }
-        }
-        .dates {
-            position:relative;
-            padding-bottom:32rpx;
-            border-bottom:1px solid rgba(0,0,0,0.08);
-            .date-item {
-                display:inline-block;
-                width:48%;
-                height:100rpx;
-                vertical-align:middle;
-                text-align:left;
-                &:last-child {
-                    text-align:right;
-                }
-                .d {
-                    margin-bottom:16rpx;
-                    height:50rpx;
-                    line-height:50rpx;
-                    color:#000;
-                    font-size:48rpx;
-                }
-                .t {
-                    height:30rpx;
-                    line-height:30rpx;
-                    color:rgba(0,0,0,.7)
-                }
-            }
-            .long {
-                position:absolute;
-                top:50%;
-                left:50%;
-                transform:translate(-50%,-50%);
-                width:103rpx;
-                height:5rpx;
-                background:url('http://8.138.130.153:6003/vue/upload/static/order/car2.png') no-repeat;
-                background-size:contain;
-            }
-        }
-        .card-type {
-            padding-top:24rpx;
-            height:24rpx;
-            line-height:24rpx;
-            text {
-                display:inline-block;
-                font-size:22rpx;
-                vertical-align:middle;
-            }
-            .t {
-                margin-right:24rpx;
-                color:rgba(0,0,0,.6);
-            }
-            .tag {
-                margin-right:8rpx;
-                color:#000;
-            }
-        }
         .more {
-            margin-top:40rpx;
             padding-top:40rpx;
-            border-top:1px solid rgba(0,0,0,0.08);
             text-align:right;
             .item {
                 display:inline-block;
@@ -463,6 +382,7 @@ export default {
                 }
                 .num {
                     color:#EC702E;
+                    font-size:20rpx;
                 }
             }
             .a {
@@ -515,7 +435,7 @@ export default {
     }
 }
 
-.tips {
+.bottom-tips {
     position:absolute;
     bottom:60rpx;
     left:0;
@@ -525,6 +445,24 @@ export default {
     color:#939292;
     font-size:24rpx;
     text-align:center;
+}
+
+.tips {
+    margin-top:20rpx;
+    padding:0 44rpx;
+    line-height:48rpx;
+    font-size:32rpx;
+    color:#c36b54;
+    .p {
+        margin-bottom:8rpx;
+        line-height:36rpx;
+        color:rgba(119, 119, 119, 1);
+        font-size:24rpx;
+        text {
+            margin-right:4rpx;
+            color:#ff0000;
+        }
+    }
 }
 
 .tabs {

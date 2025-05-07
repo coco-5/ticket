@@ -24,7 +24,7 @@
                     <view class="item">
                         <view class="label">票价</view>
                         <view class="text">
-                            MOP30{{tripList[0].price1}} / <text v-if="tripList[0].price5">RMB{{tripList[0].price5}}/</text>成人 
+                            MOP{{tripList[0].price1}} / <text v-if="tripList[0].price5">RMB{{tripList[0].price5}}/</text>成人 
                             <text v-if="!(detail.tportCode == 'HKM' || detail.fportCode == 'HKM')">
                                 MOP{{tripList[0].price2}}/儿童 免费/携童
                             </text>
@@ -141,7 +141,10 @@
             </view>
             <view class="actions">
                 <view class="text">订单总金额</view>
-                <view class="btn">
+                <view 
+                    class="btn"
+                    v-if="options.fromPortCode === 'MAO' || options.toPortCode === 'MAO'"
+                >
                     <view 
                         class="item"
                         @click="submitPay(2)"
@@ -150,6 +153,18 @@
                         <view class="price">RMB<text>{{rmb}}</text></view>
                         <view class="t">提交订单</view>
                     </view>
+                    <view 
+                        class="item mop"
+                        @click="submitPay(1)"
+                    >
+                        <view class="price">MOP<text>{{mop}}</text></view>
+                        <view class="t">提交订单</view>
+                    </view>
+                </view>
+                <view 
+                    class="btn btn-mop"
+                    v-else
+                >
                     <view 
                         class="item mop"
                         @click="submitPay(1)"
@@ -187,7 +202,7 @@
 import utils from '@/utils/utils'
 import ticket from '@/types/ticket'
 import popPassenger from '@/packageTicket/components/pop-passenger'
-import { getOneWayTicketDetailApi, getRuleApi } from '@/api/ticket'
+import { getOneWayTicketDetailApi, getRuleApi, getRoundTicketDetailApi } from '@/api/ticket'
 import { getPassengerListApi } from '@/api/passenger'
 import { getOrderSubmitApi } from '@/api/order'
 import { getVipListApi } from '@/api/vip'
@@ -230,14 +245,20 @@ export default {
         getList(){
             uni.showLoading()
 
-            let list = [
-                this.getOneWayTicketDetail(),
-                this.getRule(),
-                this.getPassengerList(),
-                this.getVipList()
-            ]
+            let list = []
+
+            if(this.options.isRoundTrip == 1){
+                list.push(this.getRoundTicketDetail())
+            }else{
+                this.getOneWayTicketDetail()
+            }
+
+            list.push(this.getRule())
+            list.push(this.getPassengerList())
+            list.push(this.getVipList())
 
             Promise.all(list).then((res)=>{
+                this.getPrice()
                 uni.hideLoading()
             })
         },
@@ -257,44 +278,85 @@ export default {
                     if(res.data.code == 200){
                         let data = res.data.data || {}
                         let tripList = []
-                        let dtseatrank = ''
 
-                        data.dtseatrankPrice && data.dtseatrankPrice.length && data.dtseatrankPrice.forEach((item)=>{
-                            item.typeName = utils.getValue(ticket.typeMap,item.type)
-                            if(item.type == this.options.type){
-                                dtseatrank = item
-                            }
-                        })
-
-                        tripList.push({
-                            formattedSetoffDate:data.formattedSetoffDate,
-                            setoffTime:data.setoffTime,
-                            fromPort:data.fromPort,
-                            arriveTime:data.arriveTime,
-                            toPort:data.toPort,
-                            ticketType:data.ticketType,
-                            duration:data.duration,
-                            isRoundTrip:0,
-                            seatRank:dtseatrank.seatRank,
-                            price1:dtseatrank.price1,
-                            price5:dtseatrank.price5,
-                            price2:dtseatrank.price2
-                        })
+                        tripList.push(this.returnTripData(data,0))
 
                         this.detail = data
 
                         this.tripList = tripList
 
-                        console.log(9999,'111 tripList',this.tripList)
-
                         this.listSpace = data.dtseatrankPrice || []
 
-                        this.getPrice()
+                        //this.getPrice()
                     }
                     resolve()
 
                 })
             })
+        },
+        getRoundTicketDetail(){
+            let options = this.options
+            let params = {
+                sailDate:options.sailDate,
+                sailDateReturn:options.sailDateReturn,
+                fromPortCode:options.fromPortCode,
+                toPortCode:options.toPortCode,
+                isRoundTrip:1,
+                returnVoyageId:options.returnVoyageId,
+                voyageId:options.voyageId,
+            }
+
+            return new Promise((resolve)=>{
+                getRoundTicketDetailApi(params).then((res)=>{
+                    if(res.data.code == 200){
+                        let data = res.data.data || {}
+                        let tripList = []
+                        let voyage = data.voyage || {}
+                        let voyageReturn = data.voyageReturn || {}
+
+                        voyage.ticketType = data.ticketType || []
+
+                        voyageReturn.ticketType = data.returnTicketType || []
+
+                        tripList.push(this.returnTripData(voyage,0))
+
+                        tripList.push(this.returnTripData(voyageReturn,1))
+
+                        this.listSpace = voyage.dtseatrankPrice || []
+
+                        this.detail = data
+
+                        this.tripList = tripList
+
+                        //this.getPrice()
+                    }
+                    resolve()
+                })
+            })
+        },
+        returnTripData(data, trip = 0){
+            let dtseatrank = ''
+
+            data.dtseatrankPrice && data.dtseatrankPrice.length && data.dtseatrankPrice.forEach((item)=>{
+                if(item.seatRankId == this.options.seatRankId){
+                    dtseatrank = item
+                }
+            })
+
+            return {
+                formattedSetoffDate:data.formattedSetoffDate,
+                setoffTime:data.setoffTime,
+                fromPort:data.fromPort,
+                arriveTime:data.arriveTime,
+                toPort:data.toPort,
+                ticketType:data.ticketType,
+                duration:data.duration,
+                seatRank:dtseatrank.seatRank,
+                price1:dtseatrank.price1,
+                price5:dtseatrank.price5,
+                price2:dtseatrank.price2,
+                trip,
+            }
         },
         getRule(){
             //获取购票退票规则
@@ -333,8 +395,8 @@ export default {
                         this.listPassenger = data
 
                         this.initSelectPassengerList(data, true)
+                        resolve()
                     }
-                    resolve()
                 })
             })
         },
@@ -601,6 +663,8 @@ export default {
             let discountRmbPrice = this.couponData ? this.couponData.discountRmbPrice : 0
             let vipPrice = this.vipData ? this.vipData.mop : 0
             let vipRmbPrice = this.vipData ? this.vipData.rmb : 0
+
+            console.log(1111,'num',num)
 
             this.mop = Number(tripList.price1) * double * num + addedPrice + vipPrice - discountPrice
 
@@ -998,6 +1062,14 @@ export default {
                     background:linear-gradient(87deg, #FFA63F, #EB5628);
                     border-radius:0 45rpx 45rpx 0;
                     color:#FFF;
+                }
+            }
+            &.btn-mop {
+                width:auto;
+                border-color:transparent;
+                .item {
+                    width:250rpx;
+                    border-radius:45rpx;
                 }
             }
         }

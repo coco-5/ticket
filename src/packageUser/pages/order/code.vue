@@ -96,36 +96,47 @@
 
             <view 
                 class="banner"
-                v-if="bannerList.length > 0"
+                v-if="advertiseList.length > 0"
             >
                 <c-banner
                     style="height:189rpx;"
-                    :list="bannerList"
+                    :list="advertiseList"
                 ></c-banner>
             </view>
         </view>
 
         <view v-if="tabIndex == 1">
             <view class="wrap-top">
-                <c-trip-detail></c-trip-detail>
+                <c-trip-detail
+                    v-for="(item,index) in tripList"
+                    :key="index"
+                    :item="item"
+                    :isShowType="true"
+                    :isShowLong="true"
+                ></c-trip-detail>
             </view>
 
             <view class="wrap-passanger">
                 <view class="hd">
-                    乘客
+                    乘客<view class="ico"></view>
                 </view>
                 <view class="bd">
-                    <c-passenger-item></c-passenger-item>
-                    <c-passenger-item></c-passenger-item>
+                    <c-passenger-item
+                        v-for="(item,index) in listPassenger"
+                        :key="index"
+                        :item="item"
+                    ></c-passenger-item>
                 </view>
             </view>
 
             <view class="wrap-order">
                 <view class="hd">
-                    订单明细
+                    订单明细<view class="ico"></view>
                 </view>
                 <view class="bd">
-                    <c-order-item></c-order-item>
+                    <c-order-item
+                        :detail="orderDetail"
+                    ></c-order-item>
                 </view>
             </view>
         </view>
@@ -138,7 +149,9 @@
 
 <script>
 import utils from '@/utils/utils'
+import order from '@/types/order'
 import passenger from '@/types/passenger'
+import { getAdvertiseListApi } from '@/api/common'
 import { getOrderDetailApi } from '@/api/order'
 
 export default {
@@ -150,13 +163,18 @@ export default {
             ],
             tabIndex:0,
             nodes:'<p>请在发船当天提前半小时</p><p>携带所有乘船人的有效出境证件</p>',
-            bannerList:['','',''],
             codeList:['','',''],
             codeIndex:0,
             passengerList:[],
             passengerIndex:0,
             detail:{},
             passenger,
+            //
+            orderDetail:{},
+            advertiseList:[],
+            advertiseIndex:0,
+            tripList:[],
+            listPassenger:[],  
         }
     },
     onLoad(e){
@@ -167,26 +185,77 @@ export default {
         //this.setCode()
     },
     methods:{
+        getList(){
+            let list = [
+                this.getAdvertiseList(),
+                this.getOrderDetail(),
+            ]
+
+            Promise.all(list).then(()=>{
+            })
+        },
+        getAdvertiseList(){
+            let params = {
+                position:4
+            }
+
+            return new Promise((resolve)=>{
+                getAdvertiseListApi(params).then((res)=>{
+                    if(res.data.code == 200){
+                        let data = res.data.data || []
+                        this.advertiseList = data
+                    }
+                    resolve()
+                })
+            })
+        },
         getOrderDetail(){
             let params = {
                 orderId:this.options.orderId
             }
 
-            getOrderDetailApi(params).then((res)=>{
-                if(res.data.code == 200){
-                    let data = res.data.data || {}
+            return new Promise((resolve)=>{
+                getOrderDetailApi(params).then((res)=>{
+                    if(res.data.code == 200){
+                        let data = res.data.data || {}
+                        let orderStatus = order.orderStatus
+
+                        for(let i=0; i<orderStatus.length; i++){
+                            if(orderStatus[i].value == data.status){
+                                data.statusText = orderStatus[i].label
+                                data.statusIcon = orderStatus[i].icon
+                            }
+                        }
                     
-                    let passengerTypeList = this.passenger.passengerTypeList
+                        let passengerTypeList = passenger.passengerTypeList
+                        let certificateTypeList = passenger.certificateTypeList
 
-                    data.passengerList.length && data.passengerList.forEach((item)=>{
-                        item.passengerTypeName = utils.getValue(passengerTypeList,item.passengerType, 'label')
-                    })
+                        data.passengerList.length && data.passengerList.forEach((item)=>{
+                            item.passengerTypeName = utils.getValue(passengerTypeList,item.passengerType, 'label')
+                            item.certificateTypeName = utils.getValue(certificateTypeList,item.certificateType, 'label')
+                        })
 
-                    this.detail = data
+                        this.tripList.push(this.returnTripData(data,0))
 
-                    this.passengerList = data.passengerList || []
-                }
+                        this.listPassenger = data.passengerList || []
+
+                        this.orderDetail = data
+                    }
+                    resolve()
+                })
             })
+        },
+        returnTripData(data, trip = 0){
+            return {
+                formattedSetoffDate:data.departDate,
+                setoffTime:data.departTime,
+                fromPort:data.fromPort,
+                arriveTime:data.arriveTime,
+                toPort:data.toPort,
+                seatRank:data.seatRank,
+                duration:data.duration,
+                trip,
+            }
         },
         setCode(){
             this.$nextTick(()=>{

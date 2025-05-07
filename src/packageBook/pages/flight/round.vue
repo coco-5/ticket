@@ -24,6 +24,15 @@
                         :key="index"
                     ></card>
                 </view>
+                <view 
+                    class="no-content"
+                    v-else
+                >
+                    <c-no-content
+                        type="box"
+                        title="当前没有符合条件的航班"
+                    ></c-no-content>  
+                </view>
             </div>
             <div class="item-list arrival">
                 <view class="hd">
@@ -42,6 +51,15 @@
                         @cbChoose="choose"
                         :key="index"
                     ></card>
+                </view>
+                <view 
+                    class="no-content"
+                    v-else
+                >
+                    <c-no-content
+                        type="box"
+                        title="当前没有符合条件的航班"
+                    ></c-no-content>  
                 </view>
             </div>
         </div>
@@ -92,11 +110,15 @@ export default {
             this.listStyle = `height:calc(100vh - 124rpx - 100rpx - 83rpx - ${a}px);`
         },
         getList(){
+            uni.showLoading()
+
             let list = [
                 this.getRoundTicketList()
             ]
 
-            Promise.all(list)
+            Promise.all(list).then(()=>{
+                uni.hideLoading()
+            })
         },
         getRoundTicketList(){
             let options = this.options
@@ -110,26 +132,29 @@ export default {
                 voyageId:'',
             }
 
-            getRoundTicketListApi(params).then((res)=>{
-                if(res.data.code == 200){
-                    let data = res.data.data
+            return new Promise((resolve)=>{
+                getRoundTicketListApi(params).then((res)=>{
+                    if(res.data.code == 200){
+                        let data = res.data.data
 
-                    this.dest = {
-                        fromPort:data.fromPort,
-                        toPort:data.toPort
+                        this.dest = {
+                            fromPort:data.fromPort,
+                            toPort:data.toPort
+                        }
+
+                        data.voyage && data.voyage.length && data.voyage.forEach((item)=>{
+                            item.isChoose = false
+                        })
+
+                        data.voyageReturn && data.voyageReturn.length && data.voyageReturn.forEach((item)=>{
+                            item.isChoose = false
+                        })                 
+
+                        this.listDeparture = data.voyage || []
+                        this.listArrival = data.voyageReturn || []
                     }
-
-                    data.voyage && data.voyage.length && data.voyage.forEach((item)=>{
-                        item.isChoose = false
-                    })
-
-                    data.voyageReturn && data.voyageReturn.length && data.voyageReturn.forEach((item)=>{
-                        item.isChoose = false
-                    })                 
-
-                    this.listDeparture = data.voyage || []
-                    this.listArrival = data.voyageReturn || []
-                }
+                    resolve()
+                })
             })
         },
         choose(item,type){
@@ -256,5 +281,19 @@ export default {
         font-size:34rpx;
         text-align:center;
     }
+}
+
+.no-content {
+    padding:300rpx 0;
+    background:#FFF;
+}
+
+::v-deep .no-content .icon {
+    width:240rpx!important;
+    height:240rpx!important;
+}
+
+::v-deep .no-content .title {
+    font-size:20rpx!important;
 }
 </style>

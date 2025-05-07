@@ -33,13 +33,13 @@
                 v-for="(item,index) in allList[`type-`+tabIndex].list"
                 :key="index"
             >
-                <view class="state">{{getValue(order.orderStatus,item.status)}}</view>
+                <view class="state">{{item.statusDesc}}</view>
                 <view class="name">
                     <text class="t">{{item.fromPort}}</text>
                     <text class="i"></text>
-                    <text class="t">{{item.toPort}} {{item.isRoundTrip ? '双程' : '单程'}}</text>
+                    <text class="t">{{item.toPort}} （{{item.isRoundTrip ? '双程' : '单程'}}）</text>
                 </view>
-                <view class="desc">{{item.seatRank}}{{item.passengerCount}}位</view>
+                <view class="desc"><text>{{item.seatRank}}</text>{{item.passengerCount}}位</view>
                 <view class="date">去程时间：{{item.departDate}} {{item.departTime}}</view>
                 <view 
                     class="date"
@@ -52,39 +52,45 @@
                     <text class="p">{{item.currencyType === 1 ? item.price : item.rmbPrice}}</text>
                 </view>
                 <view class="actions">
-                    <template v-if="item.status === 0">
+                    <template v-if="item.status == 0">
                         <view 
                             class="btn" 
-                            @click.stop="cancelOrder"
+                            :data-item="item"
+                            @click.stop="handlerCancel"
                         >
                             取消订单
                         </view>
                         <view 
                             class="btn orange" 
+                            :data-item="item"
                             @click.stop="payOrder"
                         >
+                            去支付
+
                             <!-- {{userStroe.user?.merchantAcitve ? '付款二维码' : '去支付' }} -->
                         </view>
                     </template>
-                    <template v-if="item.status === 1">
+                    <template v-if="item.status == 1">
                         <view 
                             class="btn" 
+                            :data-item="item"
                             @click.stop="refundOrder"
                             >
                             退票
                         </view>
                         <view 
-                            :data-item="item"
                             class="btn orange" 
+                            :data-item="item"
                             @click.stop="handleCode"
                         >
                             验票二维码
                         </view>
                     </template>
-                    <template v-if="item.status === -1">
+                    <template v-if="item.status == -1">
                         <view 
                             class="btn" 
-                            @click.stop="delOrder"
+                            :data-item="item"
+                            @click.stop="handlerDelOrder"
                         >
                             删除
                         </view>
@@ -114,7 +120,7 @@
 import utils from '@/utils/utils'
 import order from '@/types/order'
 import { getAdvertiseListApi } from '@/api/common'
-import { getOrderListApi } from '@/api/order'
+import { getOrderListApi, getOrderDeleteApi, getOrderCancelApi } from '@/api/order'
 export default{
     data(){
         return{
@@ -271,13 +277,42 @@ export default{
 
             let url = `/packageUser/pages/order/detail?${utils.paramsStringify(query)}`
 
+            if(item.status == 1){
+                url = `/packageUser/pages/order/code?${utils.paramsStringify(query)}`
+            }
+
             uni.navigateTo({
                 url
             })
 
         },
-        cancelOrder(e){
-            console.log(99999,'cancelOrder',e)
+        handlerCancel(e){
+            let item = e.currentTarget.dataset.item
+            uni.showModal({
+                title:'温馨提示',
+                content:'确认取消订单吗？',
+                success:(res)=>{
+                    if(res.confirm){
+                        this.orderDelete(item)
+                    }
+                }
+            })
+        },
+        cancelOrder(item){
+            getOrderCancelApi(item.id,{}).then((res)=>{
+                if(res.data.code == 200){
+                    uni.showToast({
+                        title:'取消成功',
+                        icon:'none'
+                    })
+                    this.reloadList()
+                }else{
+                    uni.showToast({
+                        title:res.data.msg,
+                        icon:'none'
+                    })
+                }
+            })
         },
         payOrder(item){
             let query = {}
@@ -302,15 +337,44 @@ export default{
             uni.navigateTo({
                 url,
             })
-
-    /* path: '/order',
-    query: {
-      orderId: props.item.id,
-      orderSn: props.item.orderSn,
-    }, */
         },
-        delOrder(e){
+        handlerDelOrder(e){
+            let item = e.currentTarget.dataset.item
+            uni.showModal({
+                title:'温馨提示',
+                content:'确定删除订单吗？',
+                success:(res)=>{
+                    if(res.confirm){
+                        this.orderDelete(item)
+                    }
+                }
+            })
+        },
+        orderDelete(item){
+            getOrderDeleteApi(item.id,{}).then((res)=>{
+                if(res.data.code == 200){
+                    uni.showToast({
+                        title:'删除成功',
+                        icon:'none'
+                    })
+                    this.reloadList()
+                }else{
+                    uni.showToast({
+                        title:res.data.msg,
+                        icon:'none'
+                    })
+                }
+            })
+        },
+        reloadList(){
+            let listObj = this.allList[`type-`+this.tabIndex]
 
+            listObj.pageNum = 1
+            listObj.isRequest = false
+            listObj.list = []
+            listObj.done = false
+
+            this.getOrderList()
         }
     }
 }
@@ -367,7 +431,7 @@ export default{
         border-radius:20rpx;
         overflow:hidden;
         .name {
-            margin-bottom:24rpx;
+            margin-bottom:32rpx;
             height:32rpx;
             line-height:32rpx;
             color:#000;
@@ -389,27 +453,33 @@ export default{
             margin-bottom:24rpx;
             height:32rpx;
             line-height:32rpx;
-            color:rgba(0,0,0,.8);
-            font-size:24rpx;    
+            color:#555;
+            font-size:24rpx;  
+            text {
+                display:inline-block;
+                margin-right:8rpx;
+                vertical-align:middle;
+            }  
         }
         .date {
             margin-bottom:24rpx;
             height:32rpx;
             line-height:32rpx;
-            color:rgba(0,0,0,.8);
+            color:#555;
             font-size:24rpx;  
         }
         .price {
             margin-bottom:24rpx;
+            font-weight:500;
             text-align:right;
             text {
                 display:inline-block;
                 color:#000;
-                vertical-align:middle;
-                .t {
+                &.t {
                     font-size:22rpx;
+                    margin-right:8rpx;
                 }
-                .p {
+                &.p {
                     margin-left:8rpx;
                     font-size:32rpx;
                     font-weight:500;

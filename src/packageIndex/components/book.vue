@@ -32,10 +32,10 @@
                     @click="showDestPop(item)"
                 >
                     <template v-if="item.type == 'departureDest'">
-                        {{departureList[departureIndex].portName}} 
+                        {{departureList[departureIndex].portName || ''}} 
                     </template>
                     <template v-else>
-                        {{arrivalList[arrivalIndex].portName}}
+                        {{arrivalList[arrivalIndex].portName || ''}}
                     </template>
                 </view>
             </view>
@@ -116,14 +116,16 @@
         </c-pop>
 
         <c-pop
-            height="65vh"
+            height="70vh"
             :isShow="isShowDatePop"
             @cbClosePop="cbCloseDatePop"
         >
             <template #content>
                 <c-date
-                    :onDate="departureDate"
-                    @cbChoose="cbChooseDate"
+                    :height="'70vh'"
+                    :onDate="showDatePopType == 'arrivalDate' ? arrivalDate : departureDate"
+                    @cbConfirm="cbConfirmDate"
+                    @cbClose="cbCloseDatePop"
                 ></c-date>
             </template>
         </c-pop>
@@ -160,6 +162,7 @@ export default {
             arrivalList:[],
             arrivalIndex:0,
             isShowDatePop:false,
+            showDatePopType:'',
             departureDate:'',
             arrivalDate:'',
         }
@@ -266,9 +269,14 @@ export default {
         changeType(item){
             this.tabType = item.type
         },
-        cbChooseDate(date){
-            this.departureDate = date
-            this.cbCloseDatePop()   
+        cbConfirmDate(date){
+            if(this.showDatePopType == 'arrivalDate'){
+                this.arrivalDate = date
+            }else{
+                this.departureDate = date
+            }  
+            
+            this.cbCloseDatePop()
         },
         showDestPop(item){
             if(item.type == 'departureDest'){
@@ -278,6 +286,7 @@ export default {
             }    
         },
         showDatePop(item){
+            this.showDatePopType = item.type
             this.isShowDatePop = true
         },
         exChangeDest(){

@@ -2,31 +2,38 @@ export default {
     orderStatus:[
         {
             value:-2,
-            label:'已删除'
+            label:'已删除',
+            icon:'http://8.138.130.153:6003/vue/upload/static/order/fail.png'
         },
         {
             value:-1,
-            label:'已取消'
+            label:'已取消',
+            icon:'http://8.138.130.153:6003/vue/upload/static/order/fail.png'
         },
         {
             value:0,
-            label:'未支付'
+            label:'未支付',
+            icon:'http://8.138.130.153:6003/vue/upload/static/order/icon-time.png'
         },
         {
             value:1,
-            label:'已支付'
+            label:'已支付',
+            icon:'http://8.138.130.153:6003/vue/upload/static/order/succes.png'
         },
         {
             value:2,
-            label:'退票中'
+            label:'退票中',
+            icon:'http://8.138.130.153:6003/vue/upload/static/order/fail.png'
         },
         {
             value:3,
-            label:'已退票'
+            label:'已退票',
+            icon:'http://8.138.130.153:6003/vue/upload/static/order/fail.png'
         },
         {
             value:4,
-            label:'已开航'
+            label:'已开航',
+            icon:'http://8.138.130.153:6003/vue/upload/static/order/succes.png'
         }
     ],
     payStatus:[

@@ -1,3 +1,5 @@
+
+
 <template>
     <view class="page">
         <view class="user-info">
@@ -10,12 +12,14 @@
                         @chooseavatar="chooseavatar" 
                         plain="true"
                     >
-                        <image :src="ticketMember.avatar"></image>
+                        <image :src="ticketMember.avatarWechat"></image>
                     </button>
                 </block>
             </view>
             <view 
-                class="name">{{ticketMember.nickName || '用户'}}
+                class="name"
+            >
+                {{ticketMember.nicknameWechat || '用户'}}
             </view>
             <view class="tags">
                 <view class="tag tag-jm">珠澳居民</view>
@@ -60,6 +64,7 @@
 <script>
 import utils from '@/utils/utils'
 import { getAdvertiseListApi } from '@/api/common'
+import { memberUpdateApi } from '@/api/member'
 export default {
     data(){
         return{
@@ -90,6 +95,10 @@ export default {
     methods:{
         getMemberInfo(){
             this.ticketMember = uni.getStorageSync('ticketMember') || {}
+
+            if(this.ticketMember.avatarWechat){
+                this.ticketMember.avatarWechat = this.ticketMember.avatarWechat.replace('http://','https://')
+            }
         },
         getList(){
             let list = [
@@ -135,33 +144,22 @@ export default {
             uni.showLoading()
 
 			uni.uploadFile({
-				url:`https://japi.hqwx.com/api/upload/form/images`,
-                fileType:'image',
-                name:'pics',
-                filePath:filePath,
-                formData:{
-					passport:'345bd63e96bd01e015bddd06cfdf44f04ab81349f6c2450473d0eebb0486f3481d660b3153df70e743797ecbe98ccc6ea05cf78e8d30796fe63c470c512eda687ac1a4c58e641d1f4c2c3ab34673f9235e'
-                },
-                success: (res) => {
-                    uni.hideLoading()
-                    res = JSON.parse(res.data)
-                },
-                fail: (res) => {
-                    uni.hideLoading()
-                }
-			})
-
-            return
-
-			uni.uploadFile({
 				url:`${this.$hq.baseConfig.proxyApi.main}/api/common/upload`,
                 header:{
-                    token:uni.getStorageSync('token')
+                    Authorization:'Bearer ' + uni.getStorageSync('token')
                 },
                 fileType:'image',
                 name:'file',
                 filePath:filePath,
                 success:(res)=>{
+                    let json = JSON.parse(res.data)
+                    if(json.code == 200){
+                        let url = json.url
+                        console.log(9999,'url',url)
+                        this.update({
+                            avatarWechat:url
+                        })
+                    }
                     uni.hideLoading()
                 },
                 fail: (res) => {
@@ -169,6 +167,22 @@ export default {
                 }
 			})
         },
+        update(params){
+            params.id = this.ticketMember.id
+            memberUpdateApi(params).then((res)=>{
+                if(res.data.code == 200){
+                    uni.showToast({
+                        title:'修改成功',
+                        icon:'none'
+                    })
+                }else{
+                    uni.showToast({
+                        title:res.data.msg,
+                        icon:'none'
+                    })
+                }
+            })
+        }
     }
 }
 </script>

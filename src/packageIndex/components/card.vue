@@ -10,81 +10,91 @@
                     class="a"
                     :style="{height:'calc(65vh - ' + bottom + 'rpx)'}"
                 >
-                    <template v-if="list.length > 0">
-                        <view class="hd">
-                            票卡
-                            <view class="close"></view>
-                        </view>
+                    <view class="hd">
+                        票卡
                         <view 
-                            class="bd"
+                            class="close"
+                            @click="cbClosePop"
+                        ></view>
+                    </view>
+                    <view 
+                        class="bd"
+                        v-if="list.length > 0"
+                    >
+                        <view 
+                            class="item"
+                            :class="item.class"
+                            v-for="(item,index) in list"
+                            :key="index"
+                            v-if="item.display == 1"
+                            @click="choose(item)"
                         >
-                            <view 
-                                class="item"
-                                :class="item.class"
-                                v-for="(item,index) in list"
-                                :key="index"
-                                v-if="item.display == 1"
-                                @click="choose(item)"
-                            >
-                                <view class="b">
-                                    <view class="left">
-                                        <template v-if="item.type == 1">
-                                            <view class="num">{{item.num}}</view>
-                                            <view class="imtes">可用（次）</view>
-                                        </template>
-                                        <template v-else-if="item.type == 3">
-                                            <view class="num">{{item.discountRate / 10}}折</view>
-                                            <view class="imtes">购买享受</view>
-                                        </template>
-                                        <template v-else>
-                                            <view class="num">{{item.faceValueMoney}}</view>
-                                            <view class="imtes">可用（元）</view>
-                                        </template>
-                                    </view>
-                                    <view class="info">
-                                        <view class="title">{{item.name}}</view>
+                            <view class="b">
+                                <view class="left">
+                                    <template v-if="item.type == 1">
+                                        <view class="num">{{item.num}}</view>
+                                        <view class="imtes">可用（次）</view>
+                                    </template>
+                                    <template v-else-if="item.type == 3">
+                                        <view class="num">{{item.discountRate / 10}}折</view>
+                                        <view class="imtes">购买享受</view>
+                                    </template>
+                                    <template v-else>
+                                        <view class="num">{{item.faceValueMoney}}</view>
+                                        <view class="imtes">可用（元）</view>
+                                    </template>
+                                </view>
+                                <view class="info">
+                                    <view class="title">{{item.name}}</view>
+                                    <view 
+                                        class="tags"
+                                        v-if="item.ticketCardProtList && item.ticketCardProtList.length"
+                                    >
                                         <view 
-                                            class="tags"
-                                            v-if="item.ticketCardProtList && item.ticketCardProtList.length"
+                                            class="tag"
+                                            v-for="(tag,i) in item.ticketCardProtList"
+                                            :key="i"
                                         >
-                                            <view 
-                                                class="tag"
-                                                v-for="(tag,i) in item.ticketCardProtList"
-                                                :key="i"
-                                            >
-                                                限{{tag.fromPortName}}-{{tag.toPortName}}   
-                                            </view>
-                                        </view>
-                                        <view class="date">有效期：{{item.st}}-{{item.et}}</view>
-                                        <view class="detail">
-                                            详细说明<text class="ico"></text>
+                                            限{{tag.fromPortName}}-{{tag.toPortName}}   
                                         </view>
                                     </view>
-                                    <view class="actions"></view>
+                                    <view class="date">有效期：{{item.st}}-{{item.et}}</view>
+                                    <view class="detail">
+                                        详细说明<text class="ico"></text>
+                                    </view>
                                 </view>
-                                <view class="remark">
-                                    <rich-text :nodes="item.desc"></rich-text>
-                                </view>
+                                <view class="actions"></view>
+                            </view>
+                            <view class="remark">
+                                <rich-text :nodes="item.desc"></rich-text>
                             </view>
                         </view>
-                        <view class="ft">
-                            <view 
-                                class="btn" 
-                                @click="confirm"
-                            >
-                                确定
-                            </view>
-                        </view>
-                    </template>
-
+                    </view>
                     <view 
                         class="c-no-content"
                         v-else
                     >
                         <c-no-content
-                            type="note"
-                            title="当前没有相关订单"
+                            type="file"
+                            title="暂无可用票卡"
                         ></c-no-content>    
+                    </view>
+
+                    <view class="ft">
+                        <view 
+                            class="btn" 
+                            @click="confirm"
+                            v-if="list.length > 0"
+                        >
+                            确定
+                        </view>
+                        <view 
+                            class="btn" 
+                            @click="confirm"
+                            v-else
+                        >
+                            购买票卡
+                        </view>
                     </view>
                 </view>
             </template>
@@ -94,7 +104,7 @@
 
 <script>
 import utils from '@/utils/utils'
-import { getTicketCardListApi } from '@/api/ticket'
+import { getTicketCardListApi, getTicketCardMyListApi } from '@/api/ticket'
 export default {
     props:{
         isShow:{
@@ -129,7 +139,7 @@ export default {
 
             Promise.all(list)
         },
-        getTicket(){
+        getTicket1(){
             return new Promise((resolve)=>{
                 getTicketCardListApi({}).then((res)=>{
                     if(res.data.code == 200){
@@ -159,6 +169,15 @@ export default {
                     }
                 })
 
+            })
+        },
+        getTicket(){
+            getTicketCardMyListApi({}).then((res)=>{
+                if(res.data.code == 200){
+                    let data = res.data.data || []     
+
+                    this.list = data
+                }
             })
         },
         cbClosePop(){
@@ -331,5 +350,9 @@ export default {
             text-align:center;
         }
     }
+}
+
+.c-no-content {
+    margin-top:100rpx;
 }
 </style>
