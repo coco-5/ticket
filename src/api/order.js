@@ -77,4 +77,22 @@ export function getOrderExpenselApi(id,params){
         })
     })
 }
-//
+export function checkRefundApi(id,params){
+    params = Object.assign({}, params)
+
+    return new Promise((resolve, reject)=>{
+        _this.$http.post(`/order/checkRefund/${id}`,params).then((res)=>{
+            resolve(res)
+        })
+    })
+}
+
+export function refundOrderApi(id,params){
+    params = Object.assign({}, params)
+
+    return new Promise((resolve, reject)=>{
+        _this.$http.post(`/order/refund/${id}`,params).then((res)=>{
+            resolve(res)
+        })
+    })
+}

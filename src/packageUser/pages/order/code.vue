@@ -148,7 +148,21 @@
         </view>
 
         <view class="actions">
-            <view class="btn">退票</view>
+            <template v-if="orderDetail.status == 1">
+                <view 
+                    class="btn btn1" 
+                    @click="goHome"
+                >
+                    返回首页
+                </view>
+                <view 
+                    class="btn btn1"
+                    @click="checkOrder"
+                >
+                    退票
+                </view>
+            </template>
+            
         </view>
 
         <c-bottom></c-bottom>
@@ -160,7 +174,7 @@ import utils from '@/utils/utils'
 import order from '@/types/order'
 import passenger from '@/types/passenger'
 import { getAdvertiseListApi } from '@/api/common'
-import { getOrderDetailApi,getOrderExpenselApi } from '@/api/order'
+import { getOrderDetailApi,getOrderExpenselApi,checkRefundApi, refundOrderApi } from '@/api/order'
 
 export default {
     data(){
@@ -181,6 +195,7 @@ export default {
             tripList:[], 
             ticketList:[],
             ticketIndex:0,
+            loading:false,
         }
     },
     onLoad(e){
@@ -284,6 +299,54 @@ export default {
                 uni.hideLoading()
                 if(res.data.code == 200){
 
+                }
+            })
+        },
+        goHome(){
+            uni.redirectTo({
+                url:`/pages/index/index`
+            })
+        },
+        checkOrder(){
+            if(this.loading) return
+
+            this.loading = true
+
+            uni.showLoading()
+
+            checkRefundApi(this.orderDetail.id,{}).then((res)=>{
+                uni.hideLoading()
+                this.loading = false
+
+                if(res.data.code == 200){
+                    let data = res.data.data
+
+                    const unit = this.orderDetail.currencyType == 1 ? 'MOP' : 'RMB'
+
+                    uni.showModal({
+                        title:'退票提示',
+                        content:`本次退票收取手续费${data.serviceFee}${unit}，退款金额为${data.refundMoney}${unit}，确定退票吗？ `,
+                        success:(res)=>{
+                            if(res.confirm){
+                                this.refundOrder()
+                            }
+                        }
+                    })
+                }
+            })
+        },
+        refundOrder(){
+            if(this.loading) return
+
+            this.loading = true
+
+            uni.showLoading()
+
+            refundOrderApi(this.orderDetail.id,{}).then((res)=>{
+                uni.hideLoading()
+                this.loading = false
+                if(res.data.code == 200){
+                    this.getOrderDetail()
                 }
             })
         },
@@ -591,23 +654,32 @@ export default {
     height:189rpx;
 }
 .actions {
+    box-sizing:border-box;
     position:fixed;
     bottom:0;
     left:0;
+    padding:0 32rpx;
     width:100%;
     height:150rpx;
     background:#FFF;
     overflow:hidden;
+    text-align:right;
     .btn {
         margin:14rpx auto 0;
         width:664rpx;
-        height:100rpx;
-        border-radius:50rpx;
+        height:80rpx;
+        border-radius:40rpx;
         border:1px solid #B2B2B2;
-        line-height:100rpx;
-        color:#B2B2B2;
-        font-size:34rpx;
+        line-height:80rpx;
+        color:#666;
+        font-size:32rpx;
         text-align:center;
+        &.btn1 {
+            display:inline-block;
+            width:200rpx;
+            margin-left:24rpx;
+            vertical-align:middle;
+        }
     }
 }
 
