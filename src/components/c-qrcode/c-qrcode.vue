@@ -4,6 +4,7 @@
             id="qrcode" 
             canvas-id="qrcode" 
             :style="style"
+            size="178"
         ></canvas>
     </view>
 </template>
@@ -14,7 +15,7 @@ export default {
     props:{
         style:{
             type:String,
-            default:'width:200px;height:200px;'
+            default:'width:178px;height:178px;'
         }
     },
     data(){
@@ -23,7 +24,11 @@ export default {
     methods:{
         setCode(url){
             var qr = new UQRCode()
-            qr.data = url
+            qr.setOptions({
+                data:url,
+                size:178,
+                margin:0
+            })
             qr.make()
             var canvasContext = uni.createCanvasContext('qrcode',this)
             qr.canvasContext = canvasContext
@@ -35,6 +40,8 @@ export default {
 
 <style lang="scss" scoped>
 .c-code {
-
+    margin:0 auto;
+    width:356rpx;
+    height:356rpx;
 }
 </style>

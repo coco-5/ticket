@@ -385,7 +385,6 @@ export default {
 
 .banner {
     height:189rpx;
-    background:#CCC;
 }
 
 .actions {

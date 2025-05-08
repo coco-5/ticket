@@ -62,7 +62,17 @@ export function getOrderCancelApi(id,params){
     params = Object.assign({}, params)
 
     return new Promise((resolve, reject)=>{
-        _this.$http.post(`/order/cancel/{id}`,params).then((res)=>{
+        _this.$http.post(`/order/cancel/${id}`,params).then((res)=>{
+            resolve(res)
+        })
+    })
+}
+
+export function getOrderExpenselApi(id,params){
+    params = Object.assign({}, params)
+
+    return new Promise((resolve, reject)=>{
+        _this.$http.get(`/order/create/expense/${id}`,params).then((res)=>{
             resolve(res)
         })
     })

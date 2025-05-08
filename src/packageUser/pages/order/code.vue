@@ -12,97 +12,85 @@
             </view>
         </view>
 
-        <!-- <c-qrcode
-            ref="qrcode"
-        ></c-qrcode> -->
-
         <view v-if="tabIndex == 0">
             <view class="wrap-code">
                 <view class="dest">
-                    <text class="t">{{detail.fromPort}}</text>
+                    <text class="t">{{orderDetail.fromPort}}</text>
                     <text class="i"></text>
-                    <text class="t">{{detail.toPort}}</text>
+                    <text class="t">{{orderDetail.toPort}}</text>
                 </view>
                 <view class="tips-nodes">
                     <rich-text :nodes="nodes"></rich-text>
                 </view>
                 <view class="tips-code">凭二维码验票乘船</view>
-                <view class="swpier-code">
+                <view 
+                    class="swpier-code"
+                    v-if="ticketList.length"
+                >
                     <view 
                         class="btn prev"
-                        :class="codeIndex == 0 ? 'disabled' : ''"
+                        :class="ticketIndex == 0 ? 'disabled' : ''"
+                        @click="prev"
                     ></view>
                     <view 
                         class="btn next"
+                        :class="ticketIndex == ticketList.length - 1 ? 'disabled' : ''"
+                        @click="next"
                     ></view>
-                    <swiper class="swiper">
-                        <swiper-item 
-                            class="swiper-item"
-                            v-for="(item,index) in codeList"
-                            :key="index"
-                        >
-                            <image />
-                        </swiper-item>
-                    </swiper>
+                    <view class="list-code">
+                        <c-qrcode
+                            ref="qrcode"
+                        ></c-qrcode>
+                    </view>
                     <view class="dots">
                         <view 
                             class="dot"
-                            :class="index == codeIndex ? 'on' : ''"
-                            v-for="(item,index) in codeList"
+                            :class="index == ticketIndex ? 'on' : ''"
+                            v-for="(item,index) in ticketList"
                             :key="index"
                         ></view>
                     </view>
                 </view>
-                <view class="btn-refresh">{{passengerList[passengerIndex].status}}</view>
+                <view class="btn-refresh">{{ticketList[ticketIndex].statusDesc}}</view>
                 <view class="btn-line"></view>
                 <view 
                     class="item-passenger"
-                    v-if="passengerList.length"
+                    v-if="ticketList.length"
                 >
                     <view 
-                        v-for="(item,index) in passengerList"
+                        v-for="(item,index) in ticketList"
                         :key="index"
-                        v-if="passengerIndex == index"
+                        v-if="ticketIndex == index"
                     >
                         <view class="user">
                             <view class="name">
                                 <text class="n">{{item.passengerName}}</text>
-                                <text class="t">{{item.passengerTypeName}}</text>
+                                <text class="t">成人</text>
                             </view>
-                            <view class="cheng">去程</view>
+                            <view class="cheng">{{item.trip == 1 ? '去程' : '返程'}}</view>
                         </view>
                         <view class="item">
-                            <text class="label">港澳通行证</text>
-                            <text class="right">C10****41</text>
+                            <text class="label">{{item.certificateTypeName}}</text>
+                            <text class="right">{{item.certificateNumber}}</text>
                         </view>
                         <view class="item">
                             <text class="label">票号</text>
-                            <text class="right">1180747363</text>
+                            <text class="right">{{item.ticketCode}}</text>
                         </view>
                         <view class="item">
                             <text class="label">座位</text>
-                            <text class="right">55号</text>
+                            <text class="right">{{item.seatNumber}}号</text>
                             <view class="tips">*座位号以当天入闸后的实际座位号为准</view>
                         </view>
                         <view class="item">
                             <text class="label">出发时间</text>
-                            <text class="right">2024-04-01  10:40</text>
+                            <text class="right">{{item.trip === 1 ? orderDetail.departDate : orderDetail.returnDate}}</text>
                         </view>
                     </view>
                 </view>
             </view>
 
             <view class="thanks">感谢您购买我司轮渡航班，祝您旅途愉快！</view>
-
-            <view 
-                class="banner"
-                v-if="advertiseList.length > 0"
-            >
-                <c-banner
-                    style="height:189rpx;"
-                    :list="advertiseList"
-                ></c-banner>
-            </view>
         </view>
 
         <view v-if="tabIndex == 1">
@@ -122,7 +110,7 @@
                 </view>
                 <view class="bd">
                     <c-passenger-item
-                        v-for="(item,index) in listPassenger"
+                        v-for="(item,index) in passengerList"
                         :key="index"
                         :item="item"
                     ></c-passenger-item>
@@ -141,9 +129,29 @@
             </view>
         </view>
 
+        <view 
+            class="banner"
+            v-if="advertiseList.length > 0"
+        >
+            <c-banner
+                style="height:189rpx;"
+                :list="advertiseList"
+            ></c-banner>
+        </view>
+
+        <view
+            class="expense-btn"
+            v-if="orderDetail.status == 4 || orderDetail.status == 1 || orderDetail.status == 6"
+            @click="handleExpense"
+        >
+            报销凭证
+        </view>
+
         <view class="actions">
             <view class="btn">退票</view>
         </view>
+
+        <c-bottom></c-bottom>
     </view>
 </template>
 
@@ -152,7 +160,7 @@ import utils from '@/utils/utils'
 import order from '@/types/order'
 import passenger from '@/types/passenger'
 import { getAdvertiseListApi } from '@/api/common'
-import { getOrderDetailApi } from '@/api/order'
+import { getOrderDetailApi,getOrderExpenselApi } from '@/api/order'
 
 export default {
     data(){
@@ -163,26 +171,22 @@ export default {
             ],
             tabIndex:0,
             nodes:'<p>请在发船当天提前半小时</p><p>携带所有乘船人的有效出境证件</p>',
-            codeList:['','',''],
-            codeIndex:0,
             passengerList:[],
             passengerIndex:0,
-            detail:{},
             passenger,
             //
             orderDetail:{},
             advertiseList:[],
             advertiseIndex:0,
-            tripList:[],
-            listPassenger:[],  
+            tripList:[], 
+            ticketList:[],
+            ticketIndex:0,
         }
     },
     onLoad(e){
         this.options = e
 
         this.getOrderDetail()
-
-        //this.setCode()
     },
     methods:{
         getList(){
@@ -229,6 +233,9 @@ export default {
                     
                         let passengerTypeList = passenger.passengerTypeList
                         let certificateTypeList = passenger.certificateTypeList
+                        let ticketList = data.ticketList || []
+
+                        console.log(9999,'ticketList',data.ticketList)
 
                         data.passengerList.length && data.passengerList.forEach((item)=>{
                             item.passengerTypeName = utils.getValue(passengerTypeList,item.passengerType, 'label')
@@ -237,9 +244,13 @@ export default {
 
                         this.tripList.push(this.returnTripData(data,0))
 
-                        this.listPassenger = data.passengerList || []
+                        this.passengerList = data.passengerList || []
+
+                        this.ticketList = ticketList
 
                         this.orderDetail = data
+
+                        this.setCode()
                     }
                     resolve()
                 })
@@ -258,12 +269,38 @@ export default {
             }
         },
         setCode(){
+            let code = this.ticketList[this.ticketIndex].qrCode
             this.$nextTick(()=>{
-                this.$refs.qrcode.setCode('https://www.baidu.com')
+                this.$refs.qrcode.setCode(code)
             })
         },
         changeTab(index){
             this.tabIndex = index
+        },
+        handleExpense(){
+            uni.showLoading()
+
+            getOrderExpenselApi(this.orderDetail.id,{}).then((res)=>{
+                uni.hideLoading()
+                if(res.data.code == 200){
+
+                }
+            })
+        },
+        prev(){
+            if(this.ticketIndex == 0){
+                return
+            }
+            this.ticketIndex--
+            this.setCode()
+
+        },
+        next(){
+            if(this.ticketIndex >= this.ticketList.length - 1){
+                return
+            }
+            this.ticketIndex++
+            this.setCode()
         }
     }
 }
@@ -294,7 +331,7 @@ export default {
             &::before {
                 content:' ';
                 position:absolute;
-                bottom:0;
+                bottom:16rpx;
                 left:50%;
                 transform:translateX(-50%);
                 width:17rpx;
@@ -331,6 +368,7 @@ export default {
         }
     }
     .tips-nodes {
+        line-height:48rpx;
         color:rgba(0,0,0,.7);
         font-size:26rpx;
         text-align:center;
@@ -380,15 +418,11 @@ export default {
             opacity:.5;
         }
     }
-    .swiper {
+    .list-code {
         margin:0 auto;
         width:356rpx;
         height:356rpx;
         background:#EEE;
-        .swiper-item {
-            width:100%;
-            height:100%;
-        }
     }
     .dots {
         margin:24rpx 0;
@@ -516,17 +550,29 @@ export default {
 .wrap-passanger,
 .wrap-order {
     margin:20rpx auto;
+    padding-bottom:8rpx;
     width:710rpx;
     background:#FFF;
     border-radius:20rpx;
     .hd {
         position:relative;
-        padding:0 40rpx;
+        margin:0 40rpx;
         height:110rpx;
         line-height:110rpx;
+        border-bottom:1px solid rgba(0,0,0,0.04);
         color:#000;
         font-size:32rpx;
         font-weight:500;
+        .ico {
+            position:absolute;
+            top:50%;
+            right:0;
+            transform:translateY(-50%);
+            width:21rpx;
+            height:11rpx;
+            background:url('http://8.138.130.153:6003/vue/upload/static/order/icon.png') no-repeat;
+            background-size:contain;
+        }
     }
     .bd {
         padding:0 40rpx;
@@ -535,6 +581,15 @@ export default {
     }
 }
 
+.wrap-order {
+    .bd {
+        padding-top:24rpx;
+    }
+}
+
+.banner {
+    height:189rpx;
+}
 .actions {
     position:fixed;
     bottom:0;
@@ -555,4 +610,18 @@ export default {
         text-align:center;
     }
 }
+
+.expense-btn {
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin:48rpx auto 0;
+    width:664rpx;
+    height:100rpx;
+    background:linear-gradient(87deg, #ffa63f, #eb5628);
+    border-radius:50rpx;
+    font-weight:500;
+    font-size:34rpx;
+    color:#FFF;
+  }
 </style>

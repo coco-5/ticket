@@ -8,7 +8,7 @@
             <view class="name">
                 {{item.addedValueName}}
             </view>
-            <view class="desc">描述描述{{item.remark}}</view>
+            <view class="desc">描述描述{{item.remark || ''}}</view>
             <view class="stepper-box">
                 <text>数量</text> {{item.num}}
             </view>
