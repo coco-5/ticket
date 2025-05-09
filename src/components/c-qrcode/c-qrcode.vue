@@ -23,14 +23,14 @@ export default {
     },
     methods:{
         setCode(url){
-            var qr = new UQRCode()
+            let qr = new UQRCode()
             qr.setOptions({
                 data:url,
                 size:178,
                 margin:0
             })
             qr.make()
-            var canvasContext = uni.createCanvasContext('qrcode',this)
+            let canvasContext = uni.createCanvasContext('qrcode',this)
             qr.canvasContext = canvasContext
             qr.drawCanvas()
         }

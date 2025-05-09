@@ -124,6 +124,7 @@
                 <view class="bd">
                     <c-order-item
                         :detail="orderDetail"
+                        @cbOpen="cbOpen"
                     ></c-order-item>
                 </view>
             </view>
@@ -148,22 +149,50 @@
         </view>
 
         <view class="actions">
-            <template v-if="orderDetail.status == 1">
+            <template v-if="[0,1].includes(orderDetail.status)">
                 <view 
                     class="btn btn1" 
                     @click="goHome"
                 >
                     返回首页
                 </view>
-                <view 
-                    class="btn btn1"
-                    @click="checkOrder"
-                >
-                    退票
-                </view>
+                <template v-if="orderDetail.status === 0">
+                    <view 
+                        class="btn btn1"
+                        @click="handlerCancelOrder"
+                    >
+                        取消订单
+                    </view>
+                    <view 
+                        class="btn btn1"
+                        @click="handlerPay"
+                    >
+                        去支付
+                    </view>
+                </template>
+                <template v-else>
+                    <view 
+                        class="btn btn1"
+                        @click="checkOrder"
+                    >
+                        退票
+                    </view>
+                    <view 
+                        class="btn btn2"
+                        @click="changeTab(0)"
+                        v-if="tabIndex == 1"
+                    >
+                        验票二维码
+                    </view>
+                </template>
             </template>
-            
         </view>
+
+        <c-write-off-code
+            :isShow="isShowCode"
+            :item="codeItem"
+            @cbClose="cbClose"
+        ></c-write-off-code>
 
         <c-bottom></c-bottom>
     </view>
@@ -196,6 +225,8 @@ export default {
             ticketList:[],
             ticketIndex:0,
             loading:false,
+            isShowCode:false,
+            codeItem:''
         }
     },
     onLoad(e){
@@ -291,6 +322,10 @@ export default {
         },
         changeTab(index){
             this.tabIndex = index
+
+            if(index == 0){
+                this.getOrderDetail()
+            }
         },
         handleExpense(){
             uni.showLoading()
@@ -298,7 +333,23 @@ export default {
             getOrderExpenselApi(this.orderDetail.id,{}).then((res)=>{
                 uni.hideLoading()
                 if(res.data.code == 200){
+                    let data = res.data.data
 
+                    if(data){
+                        uni.downloadFile({
+                            url:data.replace('http://', 'https://'),
+                            success:(res)=>{
+                                if(res.statusCode == 200){
+                                    const filePath = res.tempFilePath
+                                    
+                                    uni.openDocument({
+                                        filePath,  
+                                        fileType:'xlsx'   
+                                    })
+                                }
+                            }
+                        })
+                    }
                 }
             })
         },
@@ -349,6 +400,27 @@ export default {
                     this.getOrderDetail()
                 }
             })
+        },
+        handlerCancelOrder(){
+            uni.showModal({
+                title:'提示',
+                content:'是否取消订单？',
+                success:(res)=>{
+                    if(res.confirm){
+                    }
+                }
+            })
+        },
+        handlerPay(){
+
+        },
+        cbOpen(item){
+            this.isShowCode = true
+            this.codeItem = item
+        },
+        cbClose(){
+            this.isShowCode = false
+            this.codeItem = ''
         },
         prev(){
             if(this.ticketIndex == 0){
@@ -665,6 +737,7 @@ export default {
     overflow:hidden;
     text-align:right;
     .btn {
+        box-sizing:border-box;
         margin:14rpx auto 0;
         width:664rpx;
         height:80rpx;
@@ -674,11 +747,17 @@ export default {
         color:#666;
         font-size:32rpx;
         text-align:center;
-        &.btn1 {
+        &.btn1,
+        &.btn2 {
             display:inline-block;
             width:200rpx;
             margin-left:24rpx;
             vertical-align:middle;
+        }
+        &.btn2 {
+            background:linear-gradient(87deg, #ffa63f, #eb5628);
+            color:#FFF;
+            border:0 none;
         }
     }
 }
