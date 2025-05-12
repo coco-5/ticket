@@ -8,7 +8,9 @@
             <template #content>
                 <view 
                     class="a"
-                    :style="{height:'calc(65vh - ' + bottom + 'rpx)'}"
+                    :style="{
+                        height:'calc(65vh - ' + bottom + 'rpx)'}
+                    "
                 >
                     <view class="hd">
                         票卡
@@ -90,7 +92,7 @@
                         </view>
                         <view 
                             class="btn" 
-                            @click="confirm"
+                            @click="goCard"
                             v-else
                         >
                             购买票卡
@@ -188,6 +190,13 @@ export default {
         },
         confirm(){
 
+        },
+        goCard(){
+            let url = `/packageUser/pages/card/buy`
+
+            uni.navigateTo({
+                url,
+            })
         }
     }
 }

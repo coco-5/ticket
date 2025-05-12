@@ -109,7 +109,7 @@ export default {
             opacity:0.7;
         }
         .stepper-box {
-            font-size:20prx;
+            font-size:20rpx;
             color:#000;
             opacity:0.7;
         }

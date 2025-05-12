@@ -27,8 +27,11 @@
             </view>
         </view>
 
-        <view class="credit">
-            <view class="ico"></view>可用积分<text>1000</text>
+        <view 
+            class="credit"
+            v-if="ticketMember && ticketMember.points"
+        >
+            <view class="ico"></view>可用积分<text>{{ticketMember.points || 0}}</text>
         </view>
 
         <view class="list">
@@ -39,7 +42,7 @@
                 :key="index"
             >
                 <image :src="'http://8.138.130.153:6003/vue/upload/static/my/'+item.ico+'.png'"/>
-                <view class="name">{{ item.name }}</view>
+                <view class="name">{{item.name}}</view>
             </view>
         </view>
 

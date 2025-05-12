@@ -12,10 +12,11 @@
                 class="time"
                 v-if="orderDetail.status == 0"
             >
-                <c-count-down>
-
-                </c-count-down>
-                剩余09分50秒 
+            <c-count-down
+                :date="orderDetail.createTime"
+                @cbFinish="cbFinish"
+            >
+            </c-count-down>
             </view>
         </view>
 
@@ -133,6 +134,7 @@ export default {
 
             return new Promise((resolve)=>{
                 getOrderDetailApi(params).then((res)=>{
+                    this.tripList = []
                     if(res.data.code == 200){
                         let data = res.data.data || {}
                         let orderStatus = order.orderStatus
@@ -211,6 +213,9 @@ export default {
         },
         handlerPay(){
 
+        },
+        cbFinish(){
+            this.getOrderDetail()
         }
     }
 }

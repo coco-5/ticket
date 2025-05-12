@@ -266,6 +266,7 @@ export default {
 
             return new Promise((resolve)=>{
                 getOrderDetailApi(params).then((res)=>{
+                    this.tripList = []
                     if(res.data.code == 200){
                         let data = res.data.data || {}
                         let orderStatus = order.orderStatus
@@ -280,8 +281,6 @@ export default {
                         let passengerTypeList = passenger.passengerTypeList
                         let certificateTypeList = passenger.certificateTypeList
                         let ticketList = data.ticketList || []
-
-                        console.log(9999,'ticketList',data.ticketList)
 
                         data.passengerList.length && data.passengerList.forEach((item)=>{
                             item.passengerTypeName = utils.getValue(passengerTypeList,item.passengerType, 'label')

@@ -49,3 +49,12 @@ export function uploadApi(params){
     })
 }
 
+export function getMyOrderListApi(params){
+    params = Object.assign({}, params)
+
+    return new Promise((resolve, reject)=>{
+        _this.$http.get(`/addedValue/myOrderList`,params).then((res)=>{
+            resolve(res)
+        })
+    })
+}

@@ -137,6 +137,7 @@ export default {
                 line-height:50rpx;
                 color:#000;
                 font-size:48rpx;
+                font-weight:500;
             }
             .t {
                 height:30rpx;

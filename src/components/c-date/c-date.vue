@@ -15,6 +15,7 @@
             >
             </view> 
         </view>
+        
         <view class="on-month">2025年5月</view>
         <view class="hd">
             <view 
@@ -25,9 +26,11 @@
                 {{item}}
             </view>
         </view>
+
         <scroll-view 
             class="bd"
             :style="bdStyle"
+            @scroll="scroll"
             scroll-y
         >
             <view 
@@ -37,9 +40,10 @@
             >
                 <view 
                     class="month-hd"
+                    :class="'month-hd-'+index"
                     v-if="index == 1"
                 >
-                    2025年6月
+                    {{month.timeStr}}
                 </view>
                 <view class="month-bd">
                     <view 
@@ -50,7 +54,7 @@
                             'current':date.showDate && date.time == on
                         }"
                         @click="choose(date)"
-                        v-for="(date,i) in month"
+                        v-for="(date,i) in month.dates"
                         :key="i"
                     >
                         <block v-if="date.showDate">
@@ -60,6 +64,7 @@
                 </view>
             </view> 
         </scroll-view>
+
         <view 
             class="ft"
             :style="bottomStyle"
@@ -133,9 +138,16 @@ export default {
                 nextYear = year + 1
             }
 
-            this.months = this.initMonth(year, month)
+            this.months = []
 
-            this.months = this.months.concat(this.initMonth(nextYear, nextMonth))
+            this.months.push(this.initMonth(year, month))
+
+            this.months.push(this.initMonth(nextYear, nextMonth))
+
+            //获取第二个月份的高度
+            setTimeout(()=>{
+                this.getLastMonthTop()
+            },1000)
         },
         initMonth(year, month){
             const firstDay = new Date(year, month, 1)
@@ -144,8 +156,9 @@ export default {
             const startDayOfWeek = firstDay.getDay()
             const dates = []
             const today = new Date(this.nowYear, this.nowMonth, this.nowDate)
-            //const last = new Date(this.nowYear, this.nowMonth, this.nowDate+10)
-            const last = new Date(year, month, daysInMonth)
+            const last = new Date(this.nowYear, this.nowMonth, this.nowDate+30)
+            //const last = new Date(year, month, daysInMonth)
+
 
             for(let i = 0; i < startDayOfWeek; i++){
                 let date = new Date(year, month, 1 - startDayOfWeek + i)
@@ -183,7 +196,21 @@ export default {
                 }
             }
 
+            return {
+                timeStr:`${year}年${month + 1}月`,
+                dates,
+            }
+
             return [dates]
+        },
+        getLastMonthTop(){
+            this.$nextTick(() => {
+
+                //return
+                uni.createSelectorQuery(this).selectAll('.c-date').boundingClientRect((rect)=>{
+                    console.log(999,rect)
+                }).exec()
+            })
         },
         choose(item){
             this.on = (item.date).getTime()
@@ -193,6 +220,10 @@ export default {
         },
         closePop(){
             this.$emit('cbClose')
+        },
+        scroll(e){
+            let scrollTop = e.detail.scrollTop
+            console.log(999,'scroll',scrollTop)
         }
     }
 }

@@ -50,7 +50,15 @@
                     class="price"
                     v-if="!type"
                 >
-                    <text class="t">{{item.originalPrice}}</text>
+                    <view 
+                        class="item del"
+                        v-if="item.discountPrice"
+                    >
+                        <text class="t">MOP</text>{{item.originalPrice}}
+                    </view>
+                    <view class="item">
+                        <text class="t">MOP</text>{{item.discountPrice || item.originalPrice}}
+                    </view>
                 </view>
                 <view 
                     class="btn"
@@ -70,7 +78,7 @@
                     <view class="p">{{item.name}}</view>
                 </view>
             </view>
-            <rich-text :nodes="item.desc"></rich-text>
+            <rich-text :nodes="item.remark"></rich-text>
         </view>
     </view>
 </template>
@@ -142,7 +150,8 @@ export default {
             .date {
                 height:22rpx;
                 line-height:22rpx;
-                color:#CAC1BB;
+                color:#000;
+                opacity:0.6;
                 font-size:20rpx;
     
             }
@@ -207,6 +216,8 @@ export default {
         padding:20rpx;
         background:#F5F5F5;
         border-radius:20rpx;
+        color:#999;
+        font-size:18rpx;
         .item {
             position:relative;
             padding-left:96rpx;
@@ -242,17 +253,28 @@ export default {
         }
         .price {
             position:absolute;
-            top:30rpx;
-            right:40rpx;
+            top:0;
+            right:0;
             height:44rpx;
             line-height:44rpx;
             color:#414141;
-            font-size:20rpx;
+            font-size:28rpx;
             font-weight:500;
             text-align:right;
+            .item {
+                display:inline-block;
+                vertical-align:middle;
+            }
+            .del {
+                margin-right:24rpx;
+                font-size:20rpx;
+                color:#999;
+                text-decoration:line-through;
+            }
             .t {
                 display:inline-block;
-                font-size:28rpx;
+                margin-right:4rpx;
+                font-size:20rpx;
             }
         }
         .btn {
