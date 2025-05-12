@@ -27,10 +27,10 @@ import utils from '@/utils/utils'
 export default {
     data(){
         return{
-            list:[
+            list:[/* 
                 {type:'zhuaoka',name:'珠澳卡',desc:'已有珠澳卡，绑定珠澳卡，即可享受珠澳卡优惠政策'},
-                {type:'zhuaojumen',name:'珠澳居民',desc:'若您为珠海、澳门居民，线上提交申请，线下验证后，即可享受珠澳居民优惠购票'},
-                {type:'zhuaojumen',name:'珠澳居民',desc:'购买珠澳卡，即可享受珠澳卡优惠购票'}
+                {type:'zhuaojumen',name:'珠澳居民',desc:'若您为珠海、澳门居民，线上提交申请，线下验证后，即可享受珠澳居民优惠购票'}, */
+                {type:'zhuaojumen',name:'珠澳居民',desc:'若您为珠澳居民，可线上提交申请，审核通过后，即可享受珠澳居民优惠购票。'}
             ]
         }
     },

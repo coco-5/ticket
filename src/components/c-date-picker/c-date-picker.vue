@@ -21,6 +21,14 @@ export default {
         date:{
             type:String,
             default:'1980-01-01'
+        },
+        start:{
+            type:String,
+            default:'1924-01-01'
+        },
+        end:{
+            type:String,
+            default:'2018-01-01'
         }
     },
     watch:{
@@ -32,21 +40,12 @@ export default {
         }
     },
     data(){
-        return {
-            start:'1924-01-01',
-            end:''     
+        return {    
         }
     },
     mounted(){
-        this.initEnd()
     },
     methods:{
-        initEnd(){
-            let now = new Date()
-            const year = now.getFullYear()
-
-            this.end = `${year}-12-31`
-        },
         change(e){
             console.log(e.detail.value)
             this.$emit('change',e.detail.value)

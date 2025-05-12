@@ -11,11 +11,11 @@ export function getMemberCardInfoApi(params){
     })
 }
 
-export function memberUpdateApi(params){
+export function bindCitizenApi(params){
     params = Object.assign({}, params)
 
     return new Promise((resolve, reject)=>{
-        _this.$http.post(`/passenger/update/merchant`,params).then((res)=>{
+        _this.$http.post(`/member/bindCitizen`,params).then((res)=>{
             resolve(res)
         })
     })

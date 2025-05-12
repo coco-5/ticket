@@ -3,7 +3,6 @@
 <template>
     <view class="page">
         <view class="user-info">
-            
             <view class="avatar">
                 <block v-if="isCompare">
                     <button 
@@ -67,7 +66,7 @@
 <script>
 import utils from '@/utils/utils'
 import { getAdvertiseListApi } from '@/api/common'
-import { memberUpdateApi } from '@/api/member'
+import { memberUpdateApi } from '@/api/passenger'
 export default {
     data(){
         return{

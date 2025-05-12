@@ -15,6 +15,7 @@
                     :class="item.class"
                     v-for="(item,index) in result[options.type].btn"
                     :key="index"
+                    @click="handleClick(item)"
                     >
                     {{item.title}}
                 </view>
@@ -49,7 +50,7 @@ export default {
                 successApply:{
                     icon:'success',
                     title:'申请已提交',
-                    desc:'<p>请携带澳门或珠海身份证前往人工柜台进行线下认证，方</p><p>可享受线上优惠购票。</p><p>人工柜台：</p><p>1、00853-28939944（澳门内港11A码头一楼售票处）</p><p>2、0756-8822088（湾仔口岸售票处）</p>',
+                    desc:'<p> 如三日内优惠仍未生效请联系内港客运码头售票处，电话00853-28939944，或前往内港售票处人工柜台线下认证 </p>',
                     btn:[
                         {title:'返回首页',class:'default','link':'/pages/index/index'},
                     ]
@@ -61,6 +62,11 @@ export default {
         this.options = e
     },
     methods:{
+        handleClick(item){
+            uni.reLaunch({
+                url:item.link
+            })
+        }
     }
 }
 </script>

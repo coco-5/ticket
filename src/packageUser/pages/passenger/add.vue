@@ -29,6 +29,7 @@
                 <template v-else-if="item.type == 'birthday'">
                     <c-date-picker
                         :date="item.value || '2018-01-01'"
+                        :end="endDate"
                         @change="changeBirthday"
                     ></c-date-picker>
                 </template>
@@ -237,13 +238,16 @@ export default {
             certificateTypeImages:map.certificateTypeImages,
             actionsStyle:'',
             showWinDialog:false,
-            date:'1980-01-01'
+            date:'1980-01-01',
+            endDate:'',
         }
     },
     onLoad(e){
         this.options = e
 
         this.fixActionsStyle()
+
+        this.initEnd()
 
         this.initPickerRange()
 
@@ -295,6 +299,12 @@ export default {
                     item.value = this.date
                 }
             })
+        },
+        initEnd(){
+            let now = new Date()
+            const year = now.getFullYear()
+
+            this.endDate = `${year}-12-31`
         },
         fixActionsStyle(){
             let height = 0
