@@ -13,7 +13,7 @@
                 v-if="type == 'buy'"
             >
                 <template v-if="item.type == 1">
-                    <view class="num">{{item.num}}</view>
+                    <view class="num">{{item.useNum}}</view>
                     <view class="imtes">可用（次）</view>
                 </template>
                 <template v-else-if="item.type == 3">
@@ -119,12 +119,13 @@ export default {
     .main {
         .left {
             height:100%;
+            font-size:24rpx;
         }
         .info {
             position:relative;
             height:100%;
             .name {
-                margin:0 0 24rpx;
+                margin:0 0 8rpx;
                 color:#000;
                 font-size:30rpx;
                 font-weight:500;
@@ -133,7 +134,7 @@ export default {
                 text-overflow:ellipsis;
             }
             .tags {
-                margin-bottom:18rpx;
+                margin-bottom:8rpx;
                 .tag {
                     display:inline-block;
                     margin-right:8rpx;

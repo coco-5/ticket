@@ -80,6 +80,7 @@
 </template>
 
 <script>
+import utils from '@/utils/utils'
 import { bindCitizenApi } from '@/api/member'
 export default {
     data(){
@@ -104,7 +105,8 @@ export default {
                     type:'img',
                     placeholder:'',
                     required:true,
-                    value:'https://newxcx.soofound.cn/stage-api/profile/upload/2025/05/12/fKZqg1eSHRvl5016e11c07a14d070f7f847f2193094c_20250512150152A002.jpg',
+                    value:'',
+                    //value:'https://newxcx.soofound.cn/stage-api/profile/upload/2025/05/12/fKZqg1eSHRvl5016e11c07a14d070f7f847f2193094c_20250512150152A002.jpg',
                 },/* 
                 {
                     title:'联系电话',
@@ -349,6 +351,7 @@ export default {
             vertical-align:middle;
             .btn-upload,
             .img {
+                position:relative;
                 display:inline-block;
                 width:200rpx;
                 height:200rpx;
@@ -385,13 +388,18 @@ export default {
                     }
                 }
             }
-            .ico {
-                display:inline-block;
-                width:80rpx;
-                height:80rpx;
-                background-image:url('http://8.138.130.153:6003/vue/upload/static/common/2294174703026.png');
-                background-size:contain;
-                vertical-align:middle;
+            .btn-upload {
+                &::after {
+                    content:' ';
+                    position:absolute;
+                    top:50%;
+                    left:50%;
+                    transform:translate(-50%,-50%);
+                    width:60rpx;
+                    height:60rpx;
+                    background-image:url('http://8.138.130.153:6003/vue/upload/static/common/2294174703026.png');
+                    background-size:contain;
+                }
             }
         }
         .img-tips {

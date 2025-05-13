@@ -29,7 +29,7 @@
                             </view>
                         </view>
                     </view>
-                    <view 
+                   <!--  <view 
                         class="item"
                         v-if="item.ticketCardProtList[portIndex]"
                     >
@@ -50,8 +50,8 @@
                                 {{item.ticketCardProtList[portIndex].toPortName}}
                             </view>
                         </view>
-                    </view>
-                    <view class="tips">使用票卡优惠购买当天生效的默认乘客船票</view>
+                    </view> -->
+                    <view class="tips">使用票卡优惠购买当天生效的默认乘客船</view>
                 </view>
                 <view class="ft">
                     <view 
@@ -99,12 +99,28 @@
                         <view class="info">{{passengerlist[0].certificateNumber}}</view>
                     </view>
                 </view>
-                <view class="ft">
+                <view 
+                    class="ft"
+                    v-if="calculateCode == 200"
+                >
                     <view 
-                        class="close"
+                        class="btn"
                         @click="isShow = false"
-                    ></view>
+                    >
+                        取消
+                    </view>
+                    <view 
+                        class="btn"
+                        @click="buy"
+                    >
+                        购票
+                    </view>
                 </view>
+                <view 
+                    class="close"
+                    @click="isShow = false"
+                    v-else
+                ></view>
             </view>
         </view>
     </view>
@@ -125,6 +141,7 @@ export default {
             step:1,
             portIndex:0,
             fromPortIndex:0,
+            calculateCode:0
         }
     },
     mounted(){
@@ -166,7 +183,7 @@ export default {
 
             getOrderCalculateApi(params).then((res)=>{
                 if(res.data.code == 200){
-
+                    this.calculateCode = 200
                 }else{
                     uni.showToast({
                         title:res.data.msg,
@@ -304,16 +321,16 @@ export default {
 .step2 {
     padding-bottom:60rpx;
     .ft {
+    }
+    .close {
         position:absolute;
         bottom:-150rpx;
         left:50%;
         transform:translateX(-50%);
-        .close {
-            width:54rpx;
-            height:54rpx;
-            background:url("http://8.138.130.153:6003/vue/upload/static/common/WechatIMG1047.png") no-repeat;
-            background-size:contain;
-        }
+        width:54rpx;
+        height:54rpx;
+        background:url("http://8.138.130.153:6003/vue/upload/static/common/WechatIMG1047.png") no-repeat;
+        background-size:contain;
     }
 }
 .item2 {
@@ -321,11 +338,11 @@ export default {
     .label {
         margin-bottom:8rpx;
         color:rgba(0,0,0,.6);
-        font-size:32rpx;
+        font-size:24rpx;
     }
     .info {
         color:#000;
-        font-size:40rpx;
+        font-size:30rpx;
         font-weight:500;
     }
 }

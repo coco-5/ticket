@@ -17,7 +17,7 @@
                     <text class="nickname">{{item.name}}</text>
                     <text class="mobile">{{item.mobile || ''}}</text>
                 </view>
-                <view class="date">有效期：{{item.validateStartTime ? item.validateStartTime : ''}}-{{item.validateEndTime ? item.validateEndTime : ''}}</view>
+                <view class="date">有效期：{{item.expiryDate}}</view>
                 <view class="num">{{item.idcard}}</view>
             </view>
         </view>
@@ -58,6 +58,9 @@ export default {
 
                     if(data.memberCardList && data.memberCardList.length > 0){
                         data.memberCardList.forEach((item)=>{
+                            if(this.isExpired(item.expiryDate)){
+                                item.disabled = true
+                            }
                             item.type = 'zhuaoka'
                             list.push(item)
                         })
@@ -65,13 +68,15 @@ export default {
 
                     if(data.memberCitizenList && data.memberCitizenList.length > 0){
                         data.memberCitizenList.forEach((item)=>{
+                            if(this.isExpired(item.expiryDate)){
+                                item.disabled = true
+                            }
                             item.type = 'zhuaojumen'
                             list.push(item)
                         })
                         
                     }
 
-                    console.log(999,'list',list)
                     this.list = list
                 }else{
                     uni.showToast({
@@ -87,6 +92,15 @@ export default {
             uni.navigateTo({
                 url,
             })
+        },
+        isExpired(expireTime){
+            if(!expireTime)return
+
+            let expireDate = new Date(expireTime)
+
+            const currentDate = new Date()
+
+            return currentDate > expireDate
         }
     }
 }
@@ -109,6 +123,7 @@ export default {
         position:relative;
         margin-bottom:20rpx;
         height:232rpx;
+        color:#FFF;
         background-repeat:no-repeat;
         background-position:top center;
         background-size:contain;
@@ -136,7 +151,7 @@ export default {
             }
         }
         .line {
-            margin:24rpx auto;
+            margin:24rpx auto 12rpx;
             width:636rpx;
             height:11rpx;
             background-repeat:no-repeat;
@@ -147,7 +162,6 @@ export default {
             margin-left:40rpx;
             height:32rpx;
             line-height:32rpx;
-            color:#FFF;
             font-size:28rpx;
             font-weight:500;
             text {
@@ -160,24 +174,20 @@ export default {
             margin-left:40rpx;
             height:30rpx;
             line-height:30rpx;
-            color:#FFF;
             font-size:22rpx;
         }
         .num {
             position:absolute;
             top:40rpx;
             right:40rpx;
-            color:#FFF;
             font-size:22rpx;
         }
         &.zhuaoka {
             background-image:url('http://8.138.130.153:6003/vue/upload/static/vip/type-bg1.png');
+            color:#FFF;
             .name {
                 .ico {
                     background-image:url('http://8.138.130.153:6003/vue/upload/static/vip/type-id1.png');    
-                }
-                .type {
-                    color:#FFF;
                 }
             }
             .line {
@@ -186,12 +196,10 @@ export default {
         }
         &.zhuaojumen {
             background-image:url('http://8.138.130.153:6003/vue/upload/static/vip/type-bg2.png');
+            color:#9E6F3D;
             .name {
                 .ico {
                     background-image:url('http://8.138.130.153:6003/vue/upload/static/vip/type-id2.png');    
-                }
-                .type {
-                    color:#9E6F3D;
                 }
 
             }
@@ -200,17 +208,26 @@ export default {
             }
         }
         &.disabled {
+            position:relative;
             background-image:url('http://8.138.130.153:6003/vue/upload/static/vip/type-bg3.png');
+            color:rgba(0,0,0,.5);
             .name {
                 .ico {
                     background-image:url('http://8.138.130.153:6003/vue/upload/static/vip/type-id3.png');    
                 }
-                .type {
-                    color:rgba(0,0,0,.5);
-                }
             }
             .line {
                 background-image:url('http://8.138.130.153:6003/vue/upload/static/vip/type-border3.png'); 
+            }
+            &::before {
+                content:' ';
+                position:absolute;
+                bottom:10rpx;
+                right:10rpx;
+                width:99rpx;
+                height:99rpx;
+                background:url('http://8.138.130.153:6003/vue/upload/static/ticketCard/invalid.png') no-repeat;
+                background-size:contain;
             }
         }
     }

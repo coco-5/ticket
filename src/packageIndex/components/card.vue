@@ -23,54 +23,13 @@
                         class="bd"
                         v-if="list.length > 0"
                     >
-                        <view 
+                        <c-ticket-card
                             class="item"
-                            :class="item.class"
+                            type="buy"
+                            :item="item"
                             v-for="(item,index) in list"
                             :key="index"
-                            v-if="item.display == 1"
-                            @click="choose(item)"
-                        >
-                            <view class="b">
-                                <view class="left">
-                                    <template v-if="item.type == 1">
-                                        <view class="num">{{item.num}}</view>
-                                        <view class="imtes">可用（次）</view>
-                                    </template>
-                                    <template v-else-if="item.type == 3">
-                                        <view class="num">{{item.discountRate / 10}}折</view>
-                                        <view class="imtes">购买享受</view>
-                                    </template>
-                                    <template v-else>
-                                        <view class="num">{{item.faceValueMoney}}</view>
-                                        <view class="imtes">可用（元）</view>
-                                    </template>
-                                </view>
-                                <view class="info">
-                                    <view class="title">{{item.name}}</view>
-                                    <view 
-                                        class="tags"
-                                        v-if="item.ticketCardProtList && item.ticketCardProtList.length"
-                                    >
-                                        <view 
-                                            class="tag"
-                                            v-for="(tag,i) in item.ticketCardProtList"
-                                            :key="i"
-                                        >
-                                            限{{tag.fromPortName}}-{{tag.toPortName}}   
-                                        </view>
-                                    </view>
-                                    <view class="date">有效期：{{item.st}}-{{item.et}}</view>
-                                    <view class="detail">
-                                        详细说明<text class="ico"></text>
-                                    </view>
-                                </view>
-                                <view class="actions"></view>
-                            </view>
-                            <view class="remark">
-                                <rich-text :nodes="item.desc"></rich-text>
-                            </view>
-                        </view>
+                        ></c-ticket-card>
                     </view>
                     <view 
                         class="c-no-content"
@@ -175,11 +134,30 @@ export default {
         },
         getTicket(){
             getTicketCardMyListApi({}).then((res)=>{
-                if(res.data.code == 200){
-                    let data = res.data.data || []     
+                    if(res.data.code == 200){
+                        let data = res.data.data || []
 
-                    this.list = data
-                }
+                        data.forEach((item)=>{
+                            item.ticketCardProtList = item.ticketProtList
+                            if(item.type == 1){
+                                item.class = 'times'
+                            }else if(item.type == 2){
+                                item.class = 'cash'
+                            }else if(item.type == 3){
+                                item.class = 'discount'
+                            }else if(item.type == 4){
+                                item.class = 'cash'
+                            }
+
+                            item.st = item.validateStartTime.split(' ')[0]
+                            item.st = item.st.replace(/\-/g,'.')
+                            item.et = item.validateEndTime.split(' ')[0]
+                            item.et = item.et.replace(/\-/g,'.')
+                            item.showMore = false
+                        })
+
+                        this.list = data
+                    }
             })
         },
         cbClosePop(){
