@@ -1,13 +1,14 @@
 <template>
     <view 
         class="c-date"
+        id="the-id"
         :style="{
             height:height
         }"
     >
         <view class="top">
             <view class="title">
-                日期选择
+                日期选择 {{ on }}
             </view>        
             <view 
                 class="close" 
@@ -16,7 +17,7 @@
             </view> 
         </view>
         
-        <view class="on-month">2025年5月</view>
+        <view class="on-month">{{months[monthIndex].timeStr}}</view>
         <view class="hd">
             <view 
                 class="item"
@@ -30,6 +31,7 @@
         <scroll-view 
             class="bd"
             :style="bdStyle"
+            :scroll-top="scrollTopIndex * 40 + 'px'"
             @scroll="scroll"
             scroll-y
         >
@@ -58,6 +60,7 @@
                         :key="i"
                     >
                         <block v-if="date.showDate">
+                            {{ date.time }}
                             {{date.date.getDate()}}
                         </block>
                     </view>
@@ -93,7 +96,8 @@ export default {
             deep:true,
             handler(n){
                 this.on = n
-                //console.log('onDate',n)
+
+                console.log(999,'onDate',n)
             }
         }  
     },
@@ -105,7 +109,9 @@ export default {
             bottomStyle:'',
             bdStyle:'',
             current:'',
-            on:'',//当前选中日期
+            on:'',//当前选中日期,
+            scrollTopIndex:2,
+            monthIndex:0,
         }
     },
     mounted(){
@@ -143,11 +149,6 @@ export default {
             this.months.push(this.initMonth(year, month))
 
             this.months.push(this.initMonth(nextYear, nextMonth))
-
-            //获取第二个月份的高度
-            setTimeout(()=>{
-                this.getLastMonthTop()
-            },1000)
         },
         initMonth(year, month){
             const firstDay = new Date(year, month, 1)
@@ -203,15 +204,6 @@ export default {
 
             return [dates]
         },
-        getLastMonthTop(){
-            this.$nextTick(() => {
-
-                //return
-                uni.createSelectorQuery(this).selectAll('.c-date').boundingClientRect((rect)=>{
-                    console.log(999,rect)
-                }).exec()
-            })
-        },
         choose(item){
             this.on = (item.date).getTime()
         },
@@ -223,7 +215,12 @@ export default {
         },
         scroll(e){
             let scrollTop = e.detail.scrollTop
-            console.log(999,'scroll',scrollTop)
+
+            if(scrollTop > 275){
+                this.monthIndex = 1
+            }else{
+                this.monthIndex = 0
+            }
         }
     }
 }
@@ -272,7 +269,7 @@ export default {
     }
     .bd {
         height:calc(100% - 60rpx - 58rpx - 142rpx);
-        overflow-y:auto;
+        //overflow-y:auto;
         .month-hd {
             height:100rpx;
             line-height:100rpx;

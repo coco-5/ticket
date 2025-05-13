@@ -32,12 +32,13 @@
         </view>
 
         <c-pop
-            height="65vh"
+            height="70vh"
             :isShow="isShowDatePop"
             @cbClosePop="cbCloseDatePop"
         >
             <template #content>
                 <c-date
+                    :height="'70vh'"
                     :onDate="onDate"
                     @cbChoose="cbChooseDate"
                 ></c-date>

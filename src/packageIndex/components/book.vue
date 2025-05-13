@@ -161,7 +161,7 @@ export default {
             isShowArrivalPop:false,
             arrivalList:[],
             arrivalIndex:0,
-            isShowDatePop:false,
+            isShowDatePop:true,
             showDatePopType:'',
             departureDate:'',
             arrivalDate:'',

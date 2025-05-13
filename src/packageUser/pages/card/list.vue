@@ -6,6 +6,7 @@
                 :class="tabIndex == index ? 'on' : ''"
                 v-for="(item,index) in tabs"
                 :key="index"
+                @click="tabIndex = index"
             >
                 <text>{{item.name}}</text>
             </view>
