@@ -41,6 +41,7 @@
                     :height="'70vh'"
                     :onDate="onDate"
                     @cbChoose="cbChooseDate"
+                    @cbConfirm="cbConfirmDate"
                 ></c-date>
             </template>
         </c-pop>
@@ -76,7 +77,6 @@ export default{
     methods:{
         initOndate(date){
             this.onDate = date
-
             this.checkIndex()
         },
         initDate(){
@@ -149,10 +149,16 @@ export default{
             this.isShowDatePop = false
         },
         cbChooseDate(date){
+            return
             this.fixed = true
             this.initOndate(date)
             this.cbCloseDatePop()   
         },
+        cbConfirmDate(date){
+            this.fixed = true
+            this.initOndate(date)
+            this.cbCloseDatePop()   
+        }
     }
 }
 </script>

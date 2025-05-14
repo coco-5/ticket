@@ -45,7 +45,7 @@
                     :class="'month-hd-'+index"
                     v-if="index == 1"
                 >
-                    {{month.timeStr}}
+                    {{month.timeStr}} 
                 </view>
                 <view class="month-bd">
                     <view 
@@ -53,14 +53,13 @@
                         :class="{
                             'disabled':date.disabled, 
                             'today':date.showDate && date.today, 
-                            'current':date.showDate && date.time == on
+                            'current':date.showDate && date.dateStr == on
                         }"
                         @click="choose(date)"
                         v-for="(date,i) in month.dates"
                         :key="i"
                     >
                         <block v-if="date.showDate">
-                            {{ date.time }}
                             {{date.date.getDate()}}
                         </block>
                     </view>
@@ -96,8 +95,6 @@ export default {
             deep:true,
             handler(n){
                 this.on = n
-
-                console.log(999,'onDate',n)
             }
         }  
     },
@@ -160,7 +157,6 @@ export default {
             const last = new Date(this.nowYear, this.nowMonth, this.nowDate+30)
             //const last = new Date(year, month, daysInMonth)
 
-
             for(let i = 0; i < startDayOfWeek; i++){
                 let date = new Date(year, month, 1 - startDayOfWeek + i)
                 dates.push({
@@ -173,7 +169,9 @@ export default {
 
             for(let i = 1; i <= daysInMonth; i++){
                 let date = new Date(year, month, i)
+                let dateStr = `${year}-${utils.formatNumber(month+1)}-${utils.formatNumber(i)}`
                 dates.push({
+                    dateStr,
                     time:date.getTime(),
                     date,
                     disabled:date < today || date > last,
@@ -205,9 +203,10 @@ export default {
             return [dates]
         },
         choose(item){
-            this.on = (item.date).getTime()
+            this.on = item.dateStr
         },
         confirm(){
+            console.log(999,'on',this.on)
             this.$emit('cbConfirm',this.on)
         },
         closePop(){

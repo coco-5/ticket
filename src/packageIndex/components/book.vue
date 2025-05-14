@@ -62,10 +62,10 @@
                     @click="showDatePop(item)"
                 >
                     <template v-if="item.type == 'departureDate'">
-                        {{timeFormat(departureDate,'yyyy-mm-dd')}}
+                        {{departureDate}}
                     </template>
                     <template v-if="item.type == 'arrivalDate'">
-                        {{timeFormat(arrivalDate,'yyyy-mm-dd')}}
+                        {{arrivalDate}}
                     </template>
                 </view>
             </view>  
@@ -161,7 +161,7 @@ export default {
             isShowArrivalPop:false,
             arrivalList:[],
             arrivalIndex:0,
-            isShowDatePop:true,
+            isShowDatePop:false,
             showDatePopType:'',
             departureDate:'',
             arrivalDate:'',
@@ -239,13 +239,19 @@ export default {
             const month = today.getMonth()
             const date = today.getDate()
 
-            this.departureDate = new Date(year, month, date).getTime()
+            //this.departureDate = new Date(year, month, date).getTime()
+            this.departureDate = `${year}-${utils.formatNumber(month + 1)}-${utils.formatNumber(date)}`
         },
         initArrivalDate(){
-            let today = new Date(this.departureDate)
-            let different = 6
+            let today = new Date(this.departureDate).getTime()
+            let different = 6 * 24 * 60 * 60 * 1000
+            let on = new Date(today + different)
+            const year = on.getFullYear()
+            const month = on.getMonth()
+            const date = on.getDate()
 
-            this.arrivalDate = today.setDate(today.getDate() + different)
+            //this.arrivalDate = today.setDate(today.getDate() + different)
+            this.arrivalDate = `${year}-${utils.formatNumber(month + 1)}-${utils.formatNumber(date)}`
         },
         cbCloseDepartPop(){
             this.isShowDeparturePop = false
@@ -308,8 +314,8 @@ export default {
             let query = {
                 fromPortCode:this.departureList[this.departureIndex].portCode || '',
                 toPortCode:this.arrivalList[this.arrivalIndex].portCode || '',
-                sailDate:this.timeFormat(this.departureDate) || '',
-                sailDateReturn:this.tabType == 'round' ? this.timeFormat(this.arrivalDate) : this.timeFormat(this.departureDate),
+                sailDate:this.departureDate || '',
+                sailDateReturn:this.tabType == 'round' ? this.arrivalDate : this.departureDate,
                 isRoundTrip:this.tabType == 'round' ? 1 : 0  
             }
 
