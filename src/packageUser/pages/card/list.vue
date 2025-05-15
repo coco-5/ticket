@@ -46,7 +46,10 @@
             ref="cTicketListPop"
         ></c-ticket-list-pop>
 
-        <view class="actions">
+        <view 
+            class="actions"
+            :style="bottomStyle"
+        >
             <view 
                 class="btn"
                 @click="go"
@@ -54,10 +57,13 @@
                 购买票卡
             </view>
         </view>
+
+        <c-bottom></c-bottom>
     </view>
 </template>
 
 <script>
+import utils from '@/utils/utils'
 import { getTicketCardMyListApi } from '@/api/ticket'
 export default {
     data(){
@@ -73,11 +79,14 @@ export default {
                 }
             ],
             tabIndex:0, 
-            list:[]     
+            list:[],
+            bottomStyle:''    
         }
     },
     onLoad(e){
         this.options = e
+
+        this.bottomStyle = `padding-bottom:${utils.fixIPhoneX() ? 48 : 0}rpx;`
 
         this.getList()
     },
@@ -208,17 +217,25 @@ export default {
 
 .actions {
     position:fixed;
-    bottom:50rpx;
-    left:50%;
-    transform:translateX(-50%);
-    width:664rpx;
-    height:100rx;
-    line-height:100rpx;
-    border-radius:50rpx;
-    background:linear-gradient(87deg, #FFA63F, #EB5628);
-    color:#FFF;
-    font-size:34rpx;
-    font-weight:500;
+    z-index:2;
+    bottom:0;
+    left:0;
+    width:100%;
+    height:128rpx;
+    background:#FFF;
     text-align:center;
+    overflow:hidden;
+    .btn {
+        margin:16rpx auto;
+        width:664rpx;
+        height:100rx;
+        line-height:100rpx;
+        border-radius:50rpx;
+        background:linear-gradient(87deg, #FFA63F, #EB5628);
+        color:#FFF;
+        font-size:34rpx;
+        font-weight:500;
+        text-align:center;
+    }
 }
 </style>

@@ -101,20 +101,28 @@
                 </view>
                 <view 
                     class="ft"
-                    v-if="calculateCode == 200 && options.fromPortCode == 'MAO' || options.toPortCode == 'MAO'"
+                    v-if="calculateCode == 200 && item.ticketProtList[portIndex].fromPortCode == 'MAO' || item.ticketProtList[portIndex].toPortCode == 'MAO'"
                 >
-                    <view 
-                        class="btn"
-                        @click="pay(1)"
-                    >
-                        <text>RMB</text>{{calculate.rmbPrice}}
-                    </view>
-                    <view 
-                        class="btn"
-                        @click="pay(2)"
-                    >
-                        <text>MOP</text>{{calculate.price}}
-                    </view>
+                    <template v-if="calculate">
+                        <view 
+                            class="btn"
+                            @click="pay(2)"
+                        >
+                            <view class="price">
+                                RMB<text>{{calculate.rmbPrice || 0}}</text>
+                            </view>
+                            <view class="text">提交订单</view>
+                        </view>
+                        <view 
+                            class="btn"
+                            @click="pay(1)"
+                        >
+                            <view class="price">
+                                RMB<text>{{calculate.price || 0}}</text>
+                            </view>
+                            <view class="text">提交订单</view>
+                        </view>
+                    </template>
                 </view>
                 <view 
                     class="close"
@@ -128,14 +136,13 @@
 
 <script>
 import { getPassengerListApi } from '@/api/passenger'
-import { getOrderCalculateApi } from '@/api/order'
+import { getOrderCalculateApi, cardSubmitApi } from '@/api/order'
 export default {
     props:{
 
     },
     data(){
         return{
-            options:'',
             item:{},
             isShow:false,
             passengerlist:[],
@@ -144,6 +151,7 @@ export default {
             fromPortIndex:0,
             calculateCode:0,
             calculate:'',
+            isSubmiting:false,
         }
     },
     mounted(){
@@ -151,12 +159,10 @@ export default {
     },
     methods:{
         show(item){
-            this.options = item.ticketProtList[0]
             this.item = item
             this.isShow = true
         },
         close(){
-            this.options = ''
             this.item = ''
             this.isShow = false
             this.step = 1
@@ -184,6 +190,7 @@ export default {
         getOrderCalculate(){
             let item = this.item
             let index = this.portIndex
+            
             let params = {
                 cardCode:item.code || 0,
                 cardSourceType:item.sourceType || 0,
@@ -209,6 +216,47 @@ export default {
             this.portIndex = index
             this.fromPortIndex = 0
         },
+        pay(currencyType){
+            if(this.isSubmiting) return
+
+            this.isSubmiting = true
+
+            let item = this.item
+            let target = item.ticketCardProtList[this.portIndex]
+            let params = {
+                cardCode:item.code,
+                cardSourceType:item.sourceType,
+                fromPortCode:target.fromPortCode,
+                fromPortName:target.fromPortName,
+                toPortCode:target.toPortCode,
+                toPortName:target.toPortName,
+            }
+
+            cardSubmitApi(params).then((res)=>{
+                if(res.data.code == 200){
+                    this.isSubmiting = false
+                    let data = res.data.data || {}
+
+                    this.goCode(data)
+                }else{
+                    uni.showToast({
+                        title:res.data.msg,
+                        icon:'none'
+                    })
+                }
+            })
+        },
+        goCode(data){
+            let query = {
+                orderId:data.orderId,
+            }
+
+            let url = `/packageUser/pages/order/code?${utils.paramsStringify(query)}`
+
+            uni.redirectTo({
+                url,
+            })
+        }
     }
 }
 </script>
@@ -216,14 +264,14 @@ export default {
 <style lang="scss" scoped>
 .c-pop {
     position:fixed;
-    z-index:2;
+    z-index:10;
     top:0;
     left:0;
     width:100%;
     height:100vh;
     .win-bg {
         position:fixed;
-        z-index:2;
+        z-index:10;
         top:0;
         left:0;
         width:100%;
@@ -232,7 +280,7 @@ export default {
     }
     .win-main {
         position:fixed;
-        z-index:3;
+        z-index:11;
         top:50%;
         left:50%;
         transform:translate(-50%,-50%);
@@ -346,6 +394,27 @@ export default {
         height:54rpx;
         background:url("http://8.138.130.153:6003/vue/upload/static/common/WechatIMG1047.png") no-repeat;
         background-size:contain;
+    }
+    .ft {
+        .btn {
+            font-size:22rpx!important;
+            font-weight:500!important;
+            .text {
+                height:30rpx!important;
+                line-height:30rpx!important;
+            }
+            .price {
+                margin-bottom:8rpx;
+                padding-top:8rpx;
+                height:40rpx!important;
+                line-height:40rpx!important;
+                text {
+                    display:inline-block;
+                    margin-left:8rpx;
+                    font-size:38rpx;
+                }
+            }
+        }
     }
 }
 .item2 {

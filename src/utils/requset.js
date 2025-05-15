@@ -11,7 +11,7 @@ function request(){
         baseData : {
         },
         //超时时间，单位 ms
-        timeout:30000,
+        timeout:90 * 1000,
         //期望返回的数据格式，默认 json
         dataType:'json',
         // 设置响应的数据类型。合法值：text、arraybuffer,App和支付宝小程序不支持

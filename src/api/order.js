@@ -96,3 +96,12 @@ export function refundOrderApi(id,params){
         })
     })
 }
+
+export function cardSubmitApi(params){
+    params = Object.assign({}, params)
+    return new Promise((resolve, reject)=>{
+        _this.$http.post(`/order/card/submit`,params).then((res)=>{
+            resolve(res)
+        })
+    })
+}
