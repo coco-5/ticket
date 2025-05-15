@@ -24,6 +24,7 @@
                 :key="index"
                 @showMore="showMore"
                 @goBuy="goBuy"
+                @showPortMore="showPortMore"
             ></c-ticket-card>
         </view>
 
@@ -40,6 +41,10 @@
         <c-ticket-pop
             ref="cTicketPop"
         ></c-ticket-pop>
+
+        <c-ticket-list-pop
+            ref="cTicketListPop"
+        ></c-ticket-list-pop>
 
         <view class="actions">
             <view 
@@ -124,6 +129,13 @@ export default {
                     list[i].showMore = !list[i].showMore
                     break
                 }
+            }
+        },
+        showPortMore(item){
+            let list = item.ticketProtList
+
+            if(list && list.length){
+                this.$refs.cTicketListPop.show(list)     
             }
         },
         goBuy(item){

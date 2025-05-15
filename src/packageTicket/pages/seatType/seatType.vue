@@ -97,7 +97,7 @@
             <view class="p"><text>* </text>RMB即人民币</view>
             <view 
                 class="p"
-                v-if="['MAO', 'WZ'].includes(options.fromPortCode) ||['MAO', 'WZ'].includes(options.toPortCode)"
+                v-if="['MAO', 'WZ'].includes(options.fromPortCode) || ['MAO', 'WZ'].includes(options.toPortCode)"
             >
                 <text>* </text>所有单程票当天有效,不限票面显示的班次
             </view>
@@ -178,7 +178,11 @@ export default {
                 this.getOneWayTicketDetail()
             }
 
-            Promise.all(list)
+            uni.showLoading()
+
+            Promise.all(list).then(()=>{
+                uni.hideLoading()
+            })
         },
         getOneWayTicketDetail(){
             let options = this.options
@@ -228,33 +232,36 @@ export default {
                 voyageId:options.voyageId,
             }
 
-            getRoundTicketDetailApi(params).then((res)=>{
-                if(res.data.code == 200){
-                    let data = res.data.data || {}
-                    let tripList = []
-                    let voyage = data.voyage || {}
-                    let voyageReturn = data.voyageReturn || {}
+            return new Promise((resolve)=>{
+                getRoundTicketDetailApi(params).then((res)=>{
+                    if(res.data.code == 200){
+                        let data = res.data.data || {}
+                        let tripList = []
+                        let voyage = data.voyage || {}
+                        let voyageReturn = data.voyageReturn || {}
 
-                    voyage.ticketType = data.ticketType || []
+                        voyage.ticketType = data.ticketType || []
 
-                    voyageReturn.ticketType = data.returnTicketType || []
+                        voyageReturn.ticketType = data.returnTicketType || []
 
-                    tripList.push(this.returnTripData(voyage,0))
+                        tripList.push(this.returnTripData(voyage,0))
 
-                    tripList.push(this.returnTripData(voyageReturn,1))
+                        tripList.push(this.returnTripData(voyageReturn,1))
 
-                    voyage.dtseatrankPrice && voyage.dtseatrankPrice.length && voyage.dtseatrankPrice.forEach((item)=>{
-                        item.typeName = utils.getValue(ticket.typeMap,item.type)
-                    })
+                        voyage.dtseatrankPrice && voyage.dtseatrankPrice.length && voyage.dtseatrankPrice.forEach((item)=>{
+                            item.typeName = utils.getValue(ticket.typeMap,item.type)
+                        })
 
-                    this.listSpace = voyage.dtseatrankPrice || []
+                        this.listSpace = voyage.dtseatrankPrice || []
 
-                    this.detail = data
+                        this.detail = data
 
-                    this.tripList = tripList
+                        this.tripList = tripList
 
-                    this.iniNavigationBarTitle(voyage)
-                }
+                        this.iniNavigationBarTitle(voyage)
+                    }
+                    resolve()    
+                })
             })
         },
         returnTripData(data, trip = 0){

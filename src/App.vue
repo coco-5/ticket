@@ -15,9 +15,10 @@
             //         console.log('login',loginRes);
             //     }
             // });
+            this.smsLogin()
         },
         onShow: function() {
-            this.smsLogin()
+            
         },
         onHide: function() {
         },
@@ -30,6 +31,7 @@
                     success:res=>{
                         if(res.errMsg == 'login:ok'){
                             let code = res.code
+                            //return
                             wxLoginApi({
                                 code,
                             }).then((res)=>{

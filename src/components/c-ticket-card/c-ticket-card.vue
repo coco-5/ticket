@@ -6,11 +6,10 @@
         <view 
             class="main"
             :class="item.class"
-            v-if="type == 'buy' || item.display == 1"
         >
             <view 
                 class="left"
-                v-if="type == 'buy'"
+                v-if="['buy', 'checked'].includes(type)"
             >
                 <template v-if="item.type == 1">
                     <view class="num">{{item.useNum}}</view>
@@ -35,9 +34,17 @@
                         class="tag"
                         v-for="(tag,i) in item.ticketCardProtList"
                         :key="i"
+                        v-if="i < 2"
                     >
                         限{{tag.fromPortName}}-{{tag.toPortName}}   
                     </view>
+                </view>
+                <view 
+                    class="tags-more"
+                    v-if="item.ticketCardProtList && item.ticketCardProtList.length > 2"
+                    @click="showPortMore"
+                >
+                    更多航线
                 </view>
                 <view class="date">有效期：{{item.st}}-{{item.et}}</view>
                 <view 
@@ -107,6 +114,9 @@ export default {
         goBuy(){
             this.$emit('goBuy',this.item)
 
+        },
+        showPortMore(){
+            this.$emit('showPortMore',this.item)
         }
     }
 }
@@ -134,11 +144,12 @@ export default {
                 text-overflow:ellipsis;
             }
             .tags {
-                margin-bottom:8rpx;
+                margin-bottom:16rpx;
+                height:32rpx;
                 .tag {
                     display:inline-block;
                     margin-right:8rpx;
-                    padding:0 14rpx;
+                    padding:0 12rpx;
                     height:30rpx;
                     line-height:30rpx;
                     border:1px solid #FE6630;
@@ -147,6 +158,13 @@ export default {
                     font-size:18rpx;
                     vertical-align:top;
                 }
+            }
+            .tags-more {
+                margin-bottom:16rpx;
+                height:32rpx;
+                font-size:20rpx;
+                text-decoration:underline;
+                color:rgba(0, 0, 0, 0.6);
             }
             .date {
                 height:22rpx;
@@ -306,7 +324,8 @@ export default {
     }
 }
 
-.card-buy {
+.card-buy,
+.card-checked {
     .main {
         position:relative;
         padding-left:194rpx;
@@ -356,7 +375,7 @@ export default {
         }
         .info {
             box-sizing:border-box;
-            padding:24rpx;
+            padding:24rpx 8rpx 24rpx 24rpx;
             background:#fff3ec;
             border-radius:20rpx;
         }

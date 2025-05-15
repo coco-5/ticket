@@ -21,8 +21,18 @@
                 {{ticketMember.nicknameWechat || '用户'}}
             </view>
             <view class="tags">
-                <view class="tag tag-jm">珠澳居民</view>
-                <view class="tag tag-card">珠澳卡</view>
+                <view 
+                    class="tag tag-jm"
+                    v-if="baseInfo.isTicketCitizen"
+                >
+                    珠澳居民
+                </view>
+                <view 
+                    class="tag tag-card"
+                    v-if="baseInfo.isTicketCard"
+                >
+                    珠澳卡
+                </view>
             </view>
         </view>
 
@@ -67,6 +77,7 @@
 import utils from '@/utils/utils'
 import { getAdvertiseListApi } from '@/api/common'
 import { memberUpdateApi } from '@/api/passenger'
+import { getBaseInfoApi } from '@/api/member'
 export default {
     data(){
         return{
@@ -83,6 +94,7 @@ export default {
             advertiseIndex:0,
             ticketMember:{},
             isCompare:false,
+            baseInfo:{},
         }
     },
     onLoad(e) {
@@ -104,10 +116,22 @@ export default {
         },
         getList(){
             let list = [
+                this.getBaseInfo(),
                 this.getAdvertiseList()
             ]
 
             Promise.all(list).then(()=>{
+            })
+        },
+        getBaseInfo(){
+            return new Promise((resolve)=>{
+                getBaseInfoApi({}).then((res)=>{
+                    if(res.data.code == 200){
+                        let data = res.data.data
+
+                        this.baseInfo = data
+                    }
+                })
             })
         },
         getAdvertiseList(){

@@ -2,7 +2,6 @@
     <view class="page">
         <view 
             class="banner"
-            v-if="bannerList.length > 0"
         >
             <c-banner
                 style="height:437rpx;"

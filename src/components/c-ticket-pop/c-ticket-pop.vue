@@ -56,7 +56,7 @@
                 <view class="ft">
                     <view 
                         class="btn"
-                        @click="isShow = false"
+                        @click="close"
                     >
                         取消
                     </view>
@@ -101,24 +101,24 @@
                 </view>
                 <view 
                     class="ft"
-                    v-if="calculateCode == 200"
+                    v-if="calculateCode == 200 && options.fromPortCode == 'MAO' || options.toPortCode == 'MAO'"
                 >
                     <view 
                         class="btn"
-                        @click="isShow = false"
+                        @click="pay(1)"
                     >
-                        取消
+                        <text>RMB</text>{{calculate.rmbPrice}}
                     </view>
                     <view 
                         class="btn"
-                        @click="buy"
+                        @click="pay(2)"
                     >
-                        购票
+                        <text>MOP</text>{{calculate.price}}
                     </view>
                 </view>
                 <view 
                     class="close"
-                    @click="isShow = false"
+                    @click="close"
                     v-else
                 ></view>
             </view>
@@ -135,13 +135,15 @@ export default {
     },
     data(){
         return{
+            options:'',
             item:{},
             isShow:false,
             passengerlist:[],
             step:1,
             portIndex:0,
             fromPortIndex:0,
-            calculateCode:0
+            calculateCode:0,
+            calculate:'',
         }
     },
     mounted(){
@@ -149,8 +151,18 @@ export default {
     },
     methods:{
         show(item){
+            this.options = item.ticketProtList[0]
             this.item = item
             this.isShow = true
+        },
+        close(){
+            this.options = ''
+            this.item = ''
+            this.isShow = false
+            this.step = 1
+            this.passengerlist = []
+            this.calculateCode = 0
+            this.calculate = ''
         },
         buy(){
             if(this.step == 1){
@@ -184,6 +196,7 @@ export default {
             getOrderCalculateApi(params).then((res)=>{
                 if(res.data.code == 200){
                     this.calculateCode = 200
+                    this.calculate = res.data.data
                 }else{
                     uni.showToast({
                         title:res.data.msg,
@@ -237,10 +250,10 @@ export default {
             text-align:center;
         }
         .bd {
-            padding:0 60rpx;
+            //padding:0 60rpx;
             .title {
                 position:relative;
-                margin-bottom:40rpx;
+                margin:0 40rpx 40rpx;
                 padding:0 20rpx;
                 height:64rpx;
                 line-height:64rpx;
@@ -260,7 +273,7 @@ export default {
                 }
             }
             .item {
-                margin-bottom:40rpx;
+                margin:0 20rpx 40rpx 40rpx;
                 .label {
                     margin-bottom:28rpx;
                     height:34rpx;
@@ -271,9 +284,9 @@ export default {
                 }
                 .tag {
                     display:inline-block;
-                    margin-right:24rpx;
+                    margin-right:8rpx;
                     margin-bottom:12rpx;
-                    padding:0 28rpx;
+                    padding:0 16rpx;
                     height:64rpx;
                     line-height:64rpx;
                     border-radius:4rpx;
@@ -288,6 +301,7 @@ export default {
                 }
             }
             .tips {
+                margin:0 40rpx;
                 height:30rpx;
                 line-height:30rpx;
                 color:#737373;
@@ -320,7 +334,8 @@ export default {
 
 .step2 {
     padding-bottom:60rpx;
-    .ft {
+    .bd {
+        margin:0 60rpx;
     }
     .close {
         position:absolute;

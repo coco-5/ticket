@@ -20,3 +20,14 @@ export function bindCitizenApi(params){
         })
     })
 }
+
+export function getBaseInfoApi(params){
+    params = Object.assign({}, params)
+
+    return new Promise((resolve, reject)=>{
+        _this.$http.get(`/member/baseInfo`,params).then((res)=>{
+            resolve(res)
+        })
+    })
+}
+//

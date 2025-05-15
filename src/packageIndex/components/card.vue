@@ -25,7 +25,7 @@
                     >
                         <c-ticket-card
                             class="item"
-                            type="buy"
+                            type="checked"
                             :item="item"
                             v-for="(item,index) in list"
                             :key="index"
