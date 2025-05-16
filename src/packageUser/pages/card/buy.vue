@@ -83,8 +83,6 @@ export default {
                         item.showMore = false
                     })
 
-                    console.log(9999,'data',data)
-
                     this.list = data
                 }
             })

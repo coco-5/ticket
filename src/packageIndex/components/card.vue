@@ -29,6 +29,7 @@
                             :item="item"
                             v-for="(item,index) in list"
                             :key="index"
+                            @showMore="showMore"
                         ></c-ticket-card>
                     </view>
                     <view 
@@ -162,6 +163,16 @@ export default {
         },
         cbClosePop(){
             this.$emit('cbClosePop')
+        },
+        showMore(item){
+            let list = this.list
+
+            for(let i=0;i<list.length;i++){
+                if(list[i].id == item.id){
+                    list[i].showMore = !list[i].showMore
+                    break
+                }
+            }
         },
         choose(item){
 

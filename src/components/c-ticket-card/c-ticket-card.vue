@@ -74,6 +74,16 @@
                     购买
                 </view>
             </view>
+            <view 
+                class="checkbox"
+                v-if="type == 'checked'"
+            >
+                <view 
+                    class="icon"
+                    :class="item.checked ? 'on' : ''"
+                    @click="hanlderChecked(item)"
+                ></view>
+            </view>
         </view>
         <view 
             class="more"
@@ -204,7 +214,7 @@ export default {
             }
         }
         &.discount {
-            background:#E0EFEA;
+            //background:#E0EFEA;
             .tags {
                 .tag {
                     border-color:#28BB89;
@@ -217,7 +227,7 @@ export default {
             }
         }
         &.cash {
-            background:#E3F1FE;
+            //background:#E3F1FE;
             .tags {
                 .tag {
                     border-color:#368EF6;
@@ -264,7 +274,7 @@ export default {
         box-sizing:border-box;
         position:relative;
         padding:24rpx 28rpx;
-        background:#FFF3EC;
+        //background:#FFF3EC;
         border-radius:20rpx;
         overflow:hidden;
         .left {
@@ -379,6 +389,26 @@ export default {
             background:#fff3ec;
             border-radius:20rpx;
         }
+        .checkbox {
+            position:absolute;
+            right:4rpx;
+            top:50%;
+            transform:translateY(-50%);
+            width:34rpx;
+            height:34rpx;
+            .icon {
+                display:inline-block;
+                width:34rpx;
+                height:34rpx;
+                border-radius:50%;
+                border:1px solid rgba(0, 0, 0, 0.4);
+                &.on {
+                    border:0 none;
+                    background:url('http://8.138.130.153:6003/vue/upload/static/common/ico-checked.png') no-repeat;
+                    background-size:contain;
+                }
+            } 
+        }
         &.discount {
             .left {
                 background:linear-gradient(205deg, #48d2a3, #28bb89);
@@ -386,6 +416,7 @@ export default {
             .info {
                 background:#e0efea;
                 color:rgba(40, 187, 137, 1);
+                border-radius:0 20rpx 20rpx 0;
             }
         }
         &.cash {
@@ -395,8 +426,21 @@ export default {
             .info {
                 background:#e3f1fe;
                 color:#e3f1fe;  
+                border-radius:0 20rpx 20rpx 0;
             }
         }
+    }
+}
+
+.card-checked {
+    .main {
+        padding-right:50rpx;
+        .btn {
+            display:none!important;
+        }
+    }
+    .more {
+        margin-right:50rpx;
     }
 }
 </style>

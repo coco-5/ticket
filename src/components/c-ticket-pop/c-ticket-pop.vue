@@ -127,7 +127,6 @@
                 <view 
                     class="close"
                     @click="close"
-                    v-else
                 ></view>
             </view>
         </view>
@@ -135,6 +134,7 @@
 </template>
 
 <script>
+import utils from '@/utils/utils'
 import { getPassengerListApi } from '@/api/passenger'
 import { getOrderCalculateApi, cardSubmitApi } from '@/api/order'
 export default {
@@ -221,6 +221,8 @@ export default {
 
             this.isSubmiting = true
 
+            uni.showLoading()
+
             let item = this.item
             let target = item.ticketCardProtList[this.portIndex]
             let params = {
@@ -233,8 +235,9 @@ export default {
             }
 
             cardSubmitApi(params).then((res)=>{
+                this.isSubmiting = false
+                uni.hideLoading()
                 if(res.data.code == 200){
-                    this.isSubmiting = false
                     let data = res.data.data || {}
 
                     this.goCode(data)

@@ -91,6 +91,7 @@ export default {
 
 <style lang="scss" scoped>
 .c-desc {
+    border-bottom:1px solid #EBE9E9;
     .detail {
         margin:28rpx 0;
         height:32rpx;

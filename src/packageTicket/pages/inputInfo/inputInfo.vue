@@ -663,12 +663,12 @@ export default {
             let discountRmbPrice = this.couponData ? this.couponData.discountRmbPrice : 0
             let vipPrice = this.vipData ? this.vipData.mop : 0
             let vipRmbPrice = this.vipData ? this.vipData.rmb : 0
+            let price1 = (tripList && tripList.price1) ? Number(tripList.price1) : 0
+            let price5 = (tripList && tripList.price5) ? Number(tripList.price5) : 0
 
-            console.log(1111,'num',num)
+            this.mop = price1 * double * num + addedPrice + vipPrice - discountPrice
 
-            this.mop = Number(tripList.price1) * double * num + addedPrice + vipPrice - discountPrice
-
-            this.rmb = Number(tripList.price5) * double * num + addedRmbPrice + vipRmbPrice - discountRmbPrice
+            this.rmb = price5 * double * num + addedRmbPrice + vipRmbPrice - discountRmbPrice
         },
         handleDetail(item){
 

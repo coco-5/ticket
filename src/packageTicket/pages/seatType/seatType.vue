@@ -36,7 +36,12 @@
                     <view class="t">
                         <view class="name">
                             <text class="t1">{{item.seatRank}}</text>
-                            <text class="t2">{{item.typeName}}</text>
+                            <text 
+                                class="t2"
+                                v-if="item.type != 1"
+                            >
+                                {{item.typeName}} 
+                            </text>
                         </view>
                         <view 
                             class="num"
@@ -384,8 +389,13 @@ export default {
                     font-weight:500;
                 }
                 .t2 {
-                    color:#999;
-                    font-size:18rpx;
+                    margin-left:12rpx;
+                    background:#fff5f2;
+                    border-radius:10rpx;
+                    border:1px solid #fd5a26;
+                    padding:4rpx 8rpx;
+                    font-size:22rpx;
+                    color:#fd5925;
                 }
                 .num {
                     color:#EC702E;
