@@ -31,18 +31,23 @@
                         class="btn prev"
                         :class="ticketIndex == 0 ? 'disabled' : ''"
                         @click="prev"
+                        v-if="ticketList.length > 1"
                     ></view>
                     <view 
                         class="btn next"
                         :class="ticketIndex == ticketList.length - 1 ? 'disabled' : ''"
                         @click="next"
+                        v-if="ticketList.length > 1"
                     ></view>
                     <view class="list-code">
                         <c-qrcode
                             ref="qrcode"
                         ></c-qrcode>
                     </view>
-                    <view class="dots">
+                    <view 
+                        class="dots"
+                        v-if="ticketList.length > 1"
+                    >
                         <view 
                             class="dot"
                             :class="index == ticketIndex ? 'on' : ''"

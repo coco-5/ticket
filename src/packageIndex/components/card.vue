@@ -30,6 +30,7 @@
                             v-for="(item,index) in list"
                             :key="index"
                             @showMore="showMore"
+                            @cbChecked="cbChecked"
                         ></c-ticket-card>
                     </view>
                     <view 
@@ -87,7 +88,8 @@ export default {
     data() {
         return {
             list:[],
-            bottom:0
+            bottom:0,
+            card:''
         }
     },
     mounted(){
@@ -155,6 +157,7 @@ export default {
                             item.et = item.validateEndTime.split(' ')[0]
                             item.et = item.et.replace(/\-/g,'.')
                             item.showMore = false
+                            item.checked = false
                         })
 
                         this.list = data
@@ -174,11 +177,28 @@ export default {
                 }
             }
         },
-        choose(item){
+        cbChecked(item){
+            let list = this.list
 
+            list.forEach((v)=>{
+                if(v.code == item.code){
+                    v.checked = true
+                }else{
+                    v.checked = false
+                }
+            })
+            this.card = item
         },
         confirm(){
+            if(!this.card){
+                uni.showToast({
+                    title:'请勾选票卡',
+                    icon:'none'
+                })
+                return
+            }
 
+            this.$emit('cbConfirm',this.card)
         },
         goCard(){
             let url = `/packageUser/pages/card/buy`

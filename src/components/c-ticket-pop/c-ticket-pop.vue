@@ -267,14 +267,14 @@ export default {
 <style lang="scss" scoped>
 .c-pop {
     position:fixed;
-    z-index:10;
+    z-index:11;
     top:0;
     left:0;
     width:100%;
     height:100vh;
     .win-bg {
         position:fixed;
-        z-index:10;
+        z-index:11;
         top:0;
         left:0;
         width:100%;
@@ -283,7 +283,7 @@ export default {
     }
     .win-main {
         position:fixed;
-        z-index:11;
+        z-index:12;
         top:50%;
         left:50%;
         transform:translate(-50%,-50%);

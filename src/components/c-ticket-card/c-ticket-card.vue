@@ -127,6 +127,9 @@ export default {
         },
         showPortMore(){
             this.$emit('showPortMore',this.item)
+        },
+        hanlderChecked(item){
+            this.$emit('cbChecked',item)
         }
     }
 }
