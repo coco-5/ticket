@@ -401,6 +401,7 @@ export default {
             })
         },
         checkData(){
+            console.log(9999,'addedValue',this.options)
             if(uni.getStorageSync('coupon') || uni.getStorageSync('addedValue')){
                 this.couponData = uni.getStorageSync('coupon')
 

@@ -22,7 +22,10 @@
                     >
                     </view> 
                 </view>
-                <view class="contents">
+                <scroll-view 
+                    class="contents"
+                    scroll-y
+                >
                     <view 
                         class="item"
                         v-for="(item,index) in ruleList"
@@ -31,7 +34,7 @@
                     >
                         <rich-text :nodes="item.desc"></rich-text>
                     </view>
-                </view>
+                </scroll-view>
             </template>
         </c-pop>
     </view>
@@ -158,6 +161,23 @@ export default {
                 z-index:1;
             }
         }
+    }
+}
+
+.contents {
+    height:calc(65vh - 120rpx - 42rpx - 68rpx);
+    .item {
+        padding:0 50rpx;   
+    }
+}
+
+::v-deep .contents {
+    margin:0;
+    list-style:none;
+    color:#000;
+    font-size:24rpx;
+    p {
+        margin-bottom:32rpx;
     }
 }
 </style>

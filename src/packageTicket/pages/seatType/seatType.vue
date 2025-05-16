@@ -38,7 +38,7 @@
                             <text class="t1">{{item.seatRank}}</text>
                             <text 
                                 class="t2"
-                                v-if="item.type != 1"
+                                v-if="[3].includes(item.type)"
                             >
                                 {{item.typeName}} 
                             </text>

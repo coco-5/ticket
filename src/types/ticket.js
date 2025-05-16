@@ -11,12 +11,13 @@ export default {
             value:1,
             label:'取票说明',
             desc:'',
-            name:''
+            name:'',
         },
         {
             value:2,
             label:'退票说明',
-            desc:'refundRule',
+            desc:'',
+            name:'refundRule',
         }   
     ],
     typeMap:[

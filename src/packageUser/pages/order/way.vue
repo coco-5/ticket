@@ -46,7 +46,6 @@ export default {
     },
     methods:{
         pay(item){
-            console.log(9999,111,item)
             let options = this.options
             let params = {
                 addedValuePrice:options.addedValuePrice,
