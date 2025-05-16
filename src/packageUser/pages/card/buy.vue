@@ -14,6 +14,7 @@
                     class="item"
                     :item="item"
                     @showMore="showMore"
+                    @showPortMore="showPortMore"
                     @goBuy="goBuy"
                 ></c-ticket-card>
             </view>
@@ -28,6 +29,10 @@
                 title="暂无可用票卡"
             ></c-no-content>    
         </view>
+
+        <c-ticket-list-pop
+            ref="cTicketListPop"
+        ></c-ticket-list-pop>
     </view>
 </template>
 
@@ -95,6 +100,13 @@ export default {
                     list[i].showMore = !list[i].showMore
                     break
                 }
+            }
+        },
+        showPortMore(item){
+            let list = item.ticketCardProtList
+
+            if(list && list.length){
+                this.$refs.cTicketListPop.show(list)     
             }
         },
         goBuy(item){

@@ -15,11 +15,16 @@
             :isShow="isShowCard"
             @cbClosePop="cbCloseCard"
             @cbConfirm="cbConfirm"
+            @cbShowPortMore="cbShowPortMore"
         ></card>
 
         <c-ticket-pop
             ref="cTicketPop"
         ></c-ticket-pop>
+
+        <c-ticket-list-pop
+            ref="cTicketListPop"
+        ></c-ticket-list-pop>
     </view>
 </template>
 
@@ -86,7 +91,11 @@ export default {
             this.isShowCard = false   
 
             this.$refs.cTicketPop.show(item)
-        }  
+        },
+        cbShowPortMore(item){
+            this.isShowCard = false   
+            this.$refs.cTicketListPop.show(item)    
+        } 
     }
 }
 </script>

@@ -217,7 +217,6 @@ export default {
             }
         }
         &.discount {
-            //background:#E0EFEA;
             .tags {
                 .tag {
                     border-color:#28BB89;
@@ -230,7 +229,6 @@ export default {
             }
         }
         &.cash {
-            //background:#E3F1FE;
             .tags {
                 .tag {
                     border-color:#368EF6;
@@ -277,7 +275,7 @@ export default {
         box-sizing:border-box;
         position:relative;
         padding:24rpx 28rpx;
-        //background:#FFF3EC;
+        background:#FFF3EC;
         border-radius:20rpx;
         overflow:hidden;
         .left {
@@ -321,6 +319,12 @@ export default {
             color:#EE622C;
             font-size:24rpx;
             text-align:center;
+        }
+        &.discount {
+            background:#E0EFEA;
+        }
+        &.cash {
+            background:#E3F1FE;
         }
     }
     &.disabled {

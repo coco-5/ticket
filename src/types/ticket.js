@@ -1,19 +1,22 @@
+
 export default {
     ruleList:[
         {
             value:0,
             label:'预定须知',
             desc:'',
+            name:'ticketRule',
         },
         {
             value:1,
             label:'取票说明',
             desc:'',
+            name:''
         },
         {
             value:2,
             label:'退票说明',
-            desc:'',
+            desc:'refundRule',
         }   
     ],
     typeMap:[

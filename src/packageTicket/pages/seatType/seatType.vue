@@ -15,7 +15,7 @@
                         class="item"
                         v-for="(item,index) in ruleList"
                         :key="index"
-                        @click="chooseRule(item,index)"
+                        @click="chooseRule(index)"
                     >
                         {{item.label}}
                     </view>
@@ -110,40 +110,13 @@
 
         <view class="bottom-tips">如需要购买VIP包房请到线下售票厅购买</view>
 
-        <c-pop
-            height="65vh"
-            :isShow="isShoPop"
+        <c-rule-pop
+            :isShoPop="isShoPop"
+            :ruleIndex="ruleIndex"
+            :options="options"
             @cbClosePop="cbClosePop"
-        >
-            <template #content>
-                <view class="tabs">
-                    <view 
-                        class="item"
-                        :class="{'active': ruleIndex == index}"
-                        @click="ruleIndex = index"
-                        v-for="(item,index) in ruleList"
-                        :key="index"
-                    >
-                        <text>{{item.label}}</text>
-                    </view>   
-                    <view 
-                        class="close" 
-                        @click="isShoPop = false"
-                    >
-                    </view> 
-                </view>
-                <view class="contents">
-                    <view 
-                        class="item"
-                        v-for="(item,index) in ruleList"
-                        v-if="ruleIndex == index"
-                        :key="index"
-                    >
-                        <rich-text :nodes="item.content"></rich-text>
-                    </view>
-                </view>
-            </template>
-        </c-pop>
+            @cbChangeIndex="cbChangeIndex"
+        ></c-rule-pop>
 
         <c-bottom></c-bottom>
     </view>
@@ -152,7 +125,7 @@
 <script>
 import utils from '@/utils/utils'
 import ticket from '@/types/ticket'
-import { getOneWayTicketDetailApi, getRuleApi, getRoundTicketDetailApi } from '@/api/ticket'
+import { getOneWayTicketDetailApi, getRoundTicketDetailApi } from '@/api/ticket'
 export default {
     data(){
         return{
@@ -161,7 +134,6 @@ export default {
             ruleIndex:0,
             listSpace:[],
             isShoPop:false,
-            popType:'',
             detail:'',
             tripList:[]
         }
@@ -173,9 +145,7 @@ export default {
     },
     methods:{
         getList(){
-            let list = [
-                this.getRule()
-            ]
+            let list = []
 
             if(this.options.isRoundTrip == 1){
                 list.push(this.getRoundTicketDetail())
@@ -281,23 +251,6 @@ export default {
                 trip,
             }
         },
-        getRule(){
-            //获取购票退票规则
-            let options = this.options
-            let params = {
-                fromPortCode:options.fromPortCode,
-                toPortCode:options.toPortCode,
-                sailDate:options.sailDate,
-                voyageId:options.voyageId,
-                isRoundTrip:0,
-            }
-
-            return new Promise((resolve)=>{
-                getRuleApi(params).then((res)=>{
-                    resolve()
-                })
-            })
-        },
         iniNavigationBarTitle(data){
             uni.setNavigationBarTitle({
                 title:`${data.fromPort}-${data.toPort}`
@@ -317,14 +270,15 @@ export default {
                 url
             })
         },
-        chooseRule(item,index){
+        chooseRule(index){
             this.isShoPop = true
             this.ruleIndex = index
-            this.popType = item.type
         },
         cbClosePop(){
             this.isShoPop = false
-            this.popType = ''
+        },
+        cbChangeIndex(index){
+            this.ruleIndex = index
         }
     }
 }
@@ -482,53 +436,6 @@ export default {
     }
 }
 
-.tabs {
-    position:relative;
-    padding:60rpx 50rpx;
-    height:42rpx;
-    line-height:42rpx;
-    color:#000;
-    font-size:32rp;
-    font-weight:500;
-    .close {
-        position:absolute;
-        top:30rpx;
-        right:24rpx;
-        width:42rpx;
-        height:43rpx;
-        background:url('http://8.138.130.153:6003/vue/upload/static/common/icon-colse.png') no-repeat;
-        background-size:contain;
-    }
-    .item {
-        position:relative;
-        display:inline-block;
-        margin-right:84rpx;
-        color:#888;
-        vertical-align:middle;
-        &:last-child {
-            margin-right:0;
-        }
-        &.active {
-            color:#000;
-            font-weight:500;
-            &::before {
-                content:' ';
-                position:absolute;
-                bottom:0;
-                left:50%;
-                transform:translateX(-50%);
-                width:130rpx;
-                height:13rpx;
-                background:rgba(#FF7937,0.5);
-                text-align:center;
-            }
-            text {
-                position:relative;
-                z-index:1;
-            }
-        }
-    }
-}
 
 .no-content {
     margin:300rpx auto 0;

@@ -31,6 +31,7 @@
                             :key="index"
                             @showMore="showMore"
                             @cbChecked="cbChecked"
+                            @showPortMore="showPortMore"
                         ></c-ticket-card>
                     </view>
                     <view 
@@ -199,6 +200,13 @@ export default {
             }
 
             this.$emit('cbConfirm',this.card)
+        },
+        showPortMore(item){
+            let list = item.ticketProtList
+
+            if(list && list.length){
+                this.$emit('cbShowPortMore',list)   
+            }
         },
         goCard(){
             let url = `/packageUser/pages/card/buy`
