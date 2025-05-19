@@ -43,7 +43,7 @@
                 class="desc"
                 v-if="selectdData"
             >
-                <view class="name">已选{{name}}</view>
+                <view class="name"><text>已选</text>{{name}}</view>
                 <view class="price">
                     总价
                     <text class="unit">MOP</text>
@@ -82,11 +82,11 @@ export default {
     onLoad(e){
         this.options = e
 
+        this.storageName = 'addedValueList'
+
         this.fixActionsStyle()
 
         this.initList()
-
-        this.getList()
     },
     methods:{
         fixActionsStyle(){
@@ -96,6 +96,8 @@ export default {
         initList(){
             let addValueList = this.addValueList
             let allList = []
+            //存起来全部的数据，是为了在填写页面，返回来的时候，可以获取到
+            let stroage = uni.getStorageSync(this.storageName) || []
 
             addValueList.forEach((item)=>{
                 allList.push({
@@ -107,13 +109,30 @@ export default {
                 })
             })
 
+            if(stroage.length){
+                allList.forEach((item)=>{
+                    stroage.forEach((v)=>{
+                        if(v.type == item.type){
+                            item.pageNum = v.pageNum
+                            item.list = v.list
+                            item.isRequest = v.isRequest
+                            item.done = v.done
+                        }
+                    })
+                })
+            }
+
             this.allList = allList
+
+            this.checkAddedData()
+
+            this.getList()
         },
         getList(){
             let list = [
-                this.getOneWayTicketDetail(),
-                this.getRule(),
-                this.getPassengerList(),
+                //this.getOneWayTicketDetail(),
+                //this.getRule(),
+                //this.getPassengerList(),
                 this.getAddedValuePage()
             ]
 
@@ -229,13 +248,17 @@ export default {
                         target.list = target.list.concat(rows)
                     }
 
-                    this.checkAddedData()
+                    uni.setStorageSync(this.storageName,this.allList)
+
                     resolve()
                 })    
             })
         },
+        setAllListStorage(){
+            uni.setStorageSync(this.storageName,this.allList)
+        },
         checkAddedData(){
-            let addedValue = uni.getStorageSync('addedValue') || {}
+            let addedValue = utils.checkSerivces(this.options,'addedValue') || {}
             let allList = this.allList
 
             allList.forEach((item)=>{
@@ -250,6 +273,7 @@ export default {
                     }    
                 })
             })
+            this.checkSelectdData()
         },
         handleDetail(item){
 
@@ -336,7 +360,7 @@ export default {
             this.mop = mop
         },
         confirm(){
-            uni.setStorageSync('addedValue', this.selectdData)    
+            utils.setServices(this.options,'addedValue',this.selectdData)
 
             uni.navigateBack({
                 delta:1
@@ -400,21 +424,28 @@ export default {
         overflow:hidden;
         vertical-align:middle;
         .name {
+            display:inline-block;
             margin:34rpx 0 8rpx;
             max-width:400rpx;
             height:34rpx;
             line-height:34rpx;
-            color:rgba(0,0,0,.55);
+            color:rgba(0,0,0,.8);
             font-size:30rpx;
             white-space:nowrap;
             overflow:hidden;
             text-overflow:ellipsis;
+            vertical-align:top;
+            text {
+                margin-right:16rpx;
+                color:rgba(0,0,0,.55);  
+            }
         }
         .price {
             color:#FE6630;
             font-weight:500;
             font-size:28rpx;
             .unit {
+                margin:0 8rpx;
                 font-size:22rpx;
             }
         }

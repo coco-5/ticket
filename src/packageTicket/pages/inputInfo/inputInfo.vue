@@ -258,7 +258,10 @@ export default {
             list.push(this.getVipList())
 
             Promise.all(list).then((res)=>{
-                this.getPrice()
+                setTimeout(()=>{
+                    this.getPrice()
+                },10)
+                
                 uni.hideLoading()
             })
         },
@@ -286,7 +289,6 @@ export default {
                         this.tripList = tripList
 
                         this.listSpace = data.dtseatrankPrice || []
-
                         //this.getPrice()
                     }
                     resolve()
@@ -401,14 +403,14 @@ export default {
             })
         },
         checkData(){
-            console.log(9999,'addedValue',this.options)
-            if(uni.getStorageSync('coupon') || uni.getStorageSync('addedValue')){
                 this.couponData = uni.getStorageSync('coupon')
 
-                let addedData = uni.getStorageSync('addedValue')
+                let addedData = utils.checkSerivces(this.options,'addedValue')
+
                 let name = []
                 let mop = 0
                 let rmb = 0
+
                 for(let p in addedData){
                     name.push(addedData[p].name)     
                     mop += addedData[p].price * addedData[p].value    
@@ -422,7 +424,6 @@ export default {
                 }
 
                 this.tripList.length && this.getPrice()
-            }
         },
         initSelectPassengerList(data, needDefault = false){
             let array = utils.deepCloneArray(data)
@@ -594,11 +595,17 @@ export default {
             }
             getOrderSubmitApi(params).then((res)=>{
                 if(res.data.code == 200){
+                    this.clearStorage()
                     this.goPay(res.data.data,params)    
                 }
             })
 
             return
+        },
+        clearStorage(){
+            utils.clearServices(this.options)
+
+            uni.clearStorageSync('addedValueList')
         },
         goPay(data, params){
             let query = {

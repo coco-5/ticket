@@ -187,8 +187,32 @@ let utils = {
     },
     deepCloneArray(arr){
         return JSON.parse(JSON.stringify(arr))
-    }
+    },
+    checkSerivces(options,key){
+        let name = `${options.fromPortCode},${options.toPortCode},${options.sailDate},${options.sailDateReturn || ''},${options.isRoundTrip},${options.voyageId},${options.returnVoyageId || 0},${options.seatRankId},${options.type}`
+        let data = uni.getStorageSync('services') || {}
 
+        if(data && data[name]){
+            return data[name][key]
+        }
+
+        return {}
+    },
+    setServices(options,key,value){
+        let name = `${options.fromPortCode},${options.toPortCode},${options.sailDate},${options.sailDateReturn || ''},${options.isRoundTrip},${options.voyageId},${options.returnVoyageId || 0},${options.seatRankId},${options.type}`
+        let data = uni.getStorageSync('services') || {}
+
+        data[name] = {}
+
+        data[name][key] = value
+
+        uni.setStorageSync('services', data)
+    },
+    clearServices(options){
+        let name = `${options.fromPortCode},${options.toPortCode},${options.sailDate},${options.sailDateReturn || ''},${options.isRoundTrip},${options.voyageId},${options.returnVoyageId || 0},${options.seatRankId},${options.type}`
+
+        uni.clearStorageSync(name)
+    }
 }
 
 export default utils

@@ -42,9 +42,9 @@
             >
                 <view class="name"><text>已选</text>{{selectdData.name || ''}}</view>
                 <view class="price">
-                    总价 {{ selectdData.type }}
+                    总价 
                     <text class="unit">{{selectdData.type == 4 ? 'RMB' : 'MOP' }}</text>
-                    <text>{{selectdData.type == 4 ? selectdData.discountRmbPrice : selectdData.discountPrice}}</text>
+                    <text>{{selectdData.type == 4 ? (selectdData.discountRmbPrice || 0) : (selectdData.discountPrice || 0)}}</text>
                 </view>
             </view>
             <view 
@@ -187,13 +187,13 @@ export default {
 
         },
         confirm(){
-            if(!this.selectdData.code){
+            /* if(!this.selectdData.code){
                 uni.showToast({
                     title:'请选择优惠券',
                     icon:'none'
                 })
                 return
-            }
+            } */
 
             uni.setStorageSync('coupon',this.selectdData)
 
