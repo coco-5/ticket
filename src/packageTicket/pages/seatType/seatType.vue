@@ -152,7 +152,7 @@ export default {
             if(this.options.isRoundTrip == 1){
                 list.push(this.getRoundTicketDetail())
             }else{
-                this.getOneWayTicketDetail()
+                list.push(this.getOneWayTicketDetail())
             }
 
             uni.showLoading()
@@ -193,7 +193,6 @@ export default {
                         this.iniNavigationBarTitle(data)
                     }
                     resolve()
-
                 })
             })
         },
@@ -283,7 +282,7 @@ export default {
             this.ruleIndex = index
         },
         clearStorage(){
-            utils.clearServices(this.options)
+            utils.clearServices()
 
             uni.clearStorageSync('addedValueList')
         },

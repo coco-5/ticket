@@ -55,7 +55,6 @@ export default {
             let tempFilePath = e.tempFilePath
 
             this.tempFiles.push(tempFilePath)
-            console.log(999,'tempFiles',this.tempFiles)
         },
         uploadFile(file){
             console.log(9999,'file',file)
@@ -67,8 +66,6 @@ export default {
             }
 
             let url = `${decodeURIComponent(this.options.from)}?${utils.paramsStringify(query)}`
-
-            console.log(999,'url',url)
 
             uni.redirectTo({
                 url

@@ -96,8 +96,6 @@ export default {
                         let data = res.data.data || []
 
                         this.list = data
-
-                        console.log(999,'list',this.list)
                     }
                 })
             })

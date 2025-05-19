@@ -210,10 +210,8 @@ let utils = {
 
         uni.setStorageSync('services', data)
     },
-    clearServices(options){
-        let name = `${options.fromPortCode},${options.toPortCode},${options.sailDate},${options.sailDateReturn || ''},${options.isRoundTrip},${options.voyageId},${options.returnVoyageId || 0},${options.seatRankId},${options.type}`
-
-        uni.clearStorageSync(name)
+    clearServices(){
+        uni.clearStorageSync('services')
     }
 }
 

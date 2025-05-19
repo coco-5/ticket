@@ -105,7 +105,12 @@ export default {
         },
         changeAdvertise(index){
             this.advertiseIndex = index
-        }
+        },
+        clearStorage(){
+            utils.clearServices()
+
+            uni.clearStorageSync('addedValueList')
+        },
     },
     onShareAppMessage(e){
         return {

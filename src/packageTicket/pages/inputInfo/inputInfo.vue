@@ -610,7 +610,7 @@ export default {
             return
         },
         clearStorage(){
-            utils.clearServices(this.options)
+            utils.clearServices()
 
             uni.clearStorageSync('addedValueList')
         },

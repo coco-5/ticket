@@ -144,9 +144,6 @@ export default {
 
             this.setValue('date',this.startDate)
         },
-        changeBirthday(data){
-            this.setValue('date',data)
-        },
         handlerUpload(){
             uni.chooseImage({
                 count:1, 
@@ -253,8 +250,6 @@ export default {
                 name:this.getValue('name'),
             }
 
-            console.log(99999,'params',params)
-
             bindCitizenApi(params).then((res)=>{
                 if(res.data.code == 200){
                     uni.showToast({ 
@@ -285,6 +280,9 @@ export default {
             let value = e.detail.value   
             this.setValue(item.type, value)
         },
+        changeDate(data){
+            this.setValue('date',data)
+        }
     }
 }
 </script>

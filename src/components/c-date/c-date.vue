@@ -206,7 +206,6 @@ export default {
             this.on = item.dateStr
         },
         confirm(){
-            console.log(999,'on',this.on)
             this.$emit('cbConfirm',this.on)
         },
         closePop(){
