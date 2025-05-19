@@ -196,13 +196,15 @@ let utils = {
             return data[name][key]
         }
 
-        return {}
+        return ''
     },
     setServices(options,key,value){
         let name = `${options.fromPortCode},${options.toPortCode},${options.sailDate},${options.sailDateReturn || ''},${options.isRoundTrip},${options.voyageId},${options.returnVoyageId || 0},${options.seatRankId},${options.type}`
         let data = uni.getStorageSync('services') || {}
 
-        data[name] = {}
+        if(!data[name]){
+            data[name] = {}
+        }
 
         data[name][key] = value
 

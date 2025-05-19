@@ -69,7 +69,7 @@ export default {
         return{
             actionsStyle:'',
             list:[],
-            selectdData:{},//选中的票卡
+            selectdData:'',//选中的票卡
         }
     },
     onLoad(e){
@@ -195,7 +195,7 @@ export default {
                 return
             } */
 
-            uni.setStorageSync('coupon',this.selectdData)
+            utils.setServices(this.options,'coupon',this.selectdData)
 
             uni.navigateBack({
                 delta:1

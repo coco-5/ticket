@@ -145,6 +145,8 @@ export default {
     },
     methods:{
         getList(){
+            this.clearStorage()
+            
             let list = []
 
             if(this.options.isRoundTrip == 1){
@@ -279,7 +281,12 @@ export default {
         },
         cbChangeIndex(index){
             this.ruleIndex = index
-        }
+        },
+        clearStorage(){
+            utils.clearServices(this.options)
+
+            uni.clearStorageSync('addedValueList')
+        },
     }
 }
 </script>

@@ -74,7 +74,7 @@ export default {
             allList:[],
             addValueList:ticket.addValueList,
             actionsStyle:'',
-            selectdData:{},
+            selectdData:'',
             name:'',
             mop:0
         }

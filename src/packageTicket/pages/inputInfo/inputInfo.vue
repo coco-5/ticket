@@ -403,27 +403,34 @@ export default {
             })
         },
         checkData(){
-                this.couponData = uni.getStorageSync('coupon')
+            let services = uni.getStorageSync('services')   
+            this.couponData = ''
+            this.addedData = ''
 
+            if(services){
+                this.couponData = utils.checkSerivces(this.options,'coupon')
                 let addedData = utils.checkSerivces(this.options,'addedValue')
 
-                let name = []
-                let mop = 0
-                let rmb = 0
+                if(addedData){
+                    let name = []
+                    let mop = 0
+                    let rmb = 0
 
-                for(let p in addedData){
-                    name.push(addedData[p].name)     
-                    mop += addedData[p].price * addedData[p].value    
-                    rmb += addedData[p].rmbPrice * addedData[p].value
-                }
+                    for(let p in addedData){
+                        name.push(addedData[p].name)     
+                        mop += addedData[p].price * addedData[p].value    
+                        rmb += addedData[p].rmbPrice * addedData[p].value
+                    }
 
-                this.addedData = {
-                    name:name.join(','),
-                    mop,
-                    rmb
+                    this.addedData = {
+                        name:name.join(','),
+                        mop,
+                        rmb
+                    }
                 }
 
                 this.tripList.length && this.getPrice()
+            }
         },
         initSelectPassengerList(data, needDefault = false){
             let array = utils.deepCloneArray(data)
@@ -913,9 +920,13 @@ export default {
         color:#FD5A26;
     }
     .more {
+        width:360rpx;
         color:rgba(#000,.6);
         font-size:28rpx;
         white-space:nowrap;
+        text-overflow:ellipsis;
+        overflow:hidden;
+        vertical-align:middle;
     }
     .price {
         position:absolute;
