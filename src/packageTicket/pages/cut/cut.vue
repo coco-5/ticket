@@ -57,7 +57,6 @@ export default {
             this.tempFiles.push(tempFilePath)
         },
         uploadFile(file){
-            console.log(9999,'file',file)
             this.goPassenger(file)
         },
         goPassenger(file){

@@ -55,7 +55,6 @@ export default {
     },
     methods:{
         pay(item){
-            console.log(9999,222,item)
             this.$emit('pay',item)
         }
     }

@@ -115,20 +115,15 @@
             </template>
         </c-pop>
 
-        <c-pop
+        <c-pop-date
             height="70vh"
             :isShow="isShowDatePop"
+            :onDate="showDatePopType == 'arrivalDate' ? arrivalDate : departureDate"
             @cbClosePop="cbCloseDatePop"
+            @cbConfirm="cbConfirmDate"
+            v-if="arrivalDate"
         >
-            <template #content>
-                <c-date
-                    :height="'70vh'"
-                    :onDate="showDatePopType == 'arrivalDate' ? arrivalDate : departureDate"
-                    @cbConfirm="cbConfirmDate"
-                    @cbClose="cbCloseDatePop"
-                ></c-date>
-            </template>
-        </c-pop>
+        </c-pop-date>
     </view>
 </template>
 

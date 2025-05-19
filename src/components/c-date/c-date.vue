@@ -1,14 +1,11 @@
 <template>
-    <view 
+    <view
         class="c-date"
-        id="the-id"
-        :style="{
-            height:height
-        }"
     >
+        
         <view class="top">
             <view class="title">
-                日期选择 {{ on }}
+                日期选择
             </view>        
             <view 
                 class="close" 
@@ -16,8 +13,9 @@
             >
             </view> 
         </view>
-        
+
         <view class="on-month">{{months[monthIndex].timeStr}}</view>
+
         <view class="hd">
             <view 
                 class="item"
@@ -28,12 +26,12 @@
             </view>
         </view>
 
-        <scroll-view 
+        <scroll-view
             class="bd"
-            :style="bdStyle"
-            :scroll-top="scrollTopIndex * 40 + 'px'"
-            @scroll="scroll"
             scroll-y
+            :style="bdStyle"
+            :scrollTop="scrollTop"
+            @scroll="scroll"
         >
             <view 
                 class="month"
@@ -64,7 +62,7 @@
                         </block>
                     </view>
                 </view>
-            </view> 
+            </view>
         </scroll-view>
 
         <view 
@@ -107,7 +105,7 @@ export default {
             bdStyle:'',
             current:'',
             on:'',//当前选中日期,
-            scrollTopIndex:2,
+            scrollTop:2,
             monthIndex:0,
         }
     },
@@ -146,6 +144,8 @@ export default {
             this.months.push(this.initMonth(year, month))
 
             this.months.push(this.initMonth(nextYear, nextMonth))
+
+            this.checkScrollTop()
         },
         initMonth(year, month){
             const firstDay = new Date(year, month, 1)
@@ -155,6 +155,7 @@ export default {
             const dates = []
             const today = new Date(this.nowYear, this.nowMonth, this.nowDate)
             const last = new Date(this.nowYear, this.nowMonth, this.nowDate+30)
+            let current = false
             //const last = new Date(year, month, daysInMonth)
 
             for(let i = 0; i < startDayOfWeek; i++){
@@ -170,7 +171,15 @@ export default {
             for(let i = 1; i <= daysInMonth; i++){
                 let date = new Date(year, month, i)
                 let dateStr = `${year}-${utils.formatNumber(month+1)}-${utils.formatNumber(i)}`
+
+                current = false
+
+                if(dateStr == this.on){
+                    current = true
+                }
+
                 dates.push({
+                    current,
                     dateStr,
                     time:date.getTime(),
                     date,
@@ -201,6 +210,26 @@ export default {
             }
 
             return [dates]
+        },
+        checkScrollTop(){
+            let months = this.months
+            let grid = 0
+            let gridIndex = 0
+
+            months.forEach((month,index)=>{
+                if(month.dates && month.dates.length > 0){
+                    month.dates.forEach((item,i)=>{
+                        if(item.current == true){
+                            gridIndex = index
+                            grid = Math.floor(i / 7)
+                        }
+                    })
+                }    
+            })
+
+            setTimeout(()=>{
+                this.scrollTop = (grid * 55 + gridIndex * 50) || 0
+            },10)
         },
         choose(item){
             this.on = item.dateStr

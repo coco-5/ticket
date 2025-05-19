@@ -1,6 +1,6 @@
 <template>
     <view class="page">
-        <view class="tips">你可以通过以下三种方式，成为会员，享受会员优惠价格购票:</view>
+        <!-- <view class="tips">你可以通过以下三种方式，成为会员，享受会员优惠价格购票:</view> -->
 
         <view class="list">
             <view 

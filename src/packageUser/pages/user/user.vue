@@ -1,5 +1,3 @@
-
-
 <template>
     <view class="page">
         <view class="user-info">
@@ -181,7 +179,6 @@ export default {
                     let json = JSON.parse(res.data)
                     if(json.code == 200){
                         let url = json.url
-                        console.log(9999,'url',url)
                         this.update({
                             avatarWechat:url
                         })

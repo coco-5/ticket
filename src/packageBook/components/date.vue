@@ -31,20 +31,16 @@
             <view class="text">日历</view>
         </view>
 
-        <c-pop
+        <c-pop-date
             height="70vh"
             :isShow="isShowDatePop"
+            :onDate="onDate"
             @cbClosePop="cbCloseDatePop"
+            @cbConfirm="cbConfirmDate"
+            @cbChoose="cbChooseDate"
+            v-if="onDate"
         >
-            <template #content>
-                <c-date
-                    :height="'70vh'"
-                    :onDate="onDate"
-                    @cbChoose="cbChooseDate"
-                    @cbConfirm="cbConfirmDate"
-                ></c-date>
-            </template>
-        </c-pop>
+        </c-pop-date>
     </view>
 </template>
 
